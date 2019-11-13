@@ -1,0 +1,4 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.neverpile.authorization.autoconfig.PolicyRepositoryAutoConfiguration,\
+com.neverpile.authorization.autoconfig.AuthorizationServiceAutoConfiguration,\
+com.neverpile.authorization.autoconfig.NeverpileEurekaAuthorizationAutoConfiguration

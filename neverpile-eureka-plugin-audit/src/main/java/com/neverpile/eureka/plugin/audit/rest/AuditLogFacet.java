@@ -1,0 +1,107 @@
+package com.neverpile.eureka.plugin.audit.rest;
+
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.neverpile.eureka.api.DocumentIdGenerationStrategy;
+import com.neverpile.eureka.plugin.audit.service.AuditEvent;
+import com.neverpile.eureka.plugin.audit.service.AuditLogService;
+import com.neverpile.eureka.plugin.audit.service.AuditEvent.Type;
+import com.neverpile.eureka.model.Document;
+import com.neverpile.eureka.rest.api.document.DocumentDto;
+import com.neverpile.eureka.rest.api.document.DocumentFacet;
+import com.neverpile.eureka.rest.api.hateoas.Links;
+
+@Component
+@ConditionalOnProperty(name = "neverpile.facet.audit.enabled", matchIfMissing = true)
+public class AuditLogFacet implements DocumentFacet<List<AuditEventDto>> {
+
+  private final ModelMapper modelMapper = new ModelMapper();
+
+  @Autowired
+  private AuditLogService auditLogService;
+
+  @Autowired
+  private DocumentIdGenerationStrategy idGenerationStrategy;
+
+  @Override
+  public String getName() {
+    return "audit";
+  }
+
+  @Override
+  public boolean includeByDefault() {
+    return false; // the audit log is expensive and rarely examined
+  }
+  
+  @Override
+  public JavaType getValueType(final TypeFactory f) {
+    return f.constructCollectionLikeType(List.class, AuditEventDto.class);
+  }
+
+  @Override
+  public void onRetrieve(final Document document, final DocumentDto dto) {
+    attachAuditLog(document, dto);
+
+    dto.add(Links.facet(document, this));
+  }
+
+  @Override
+  public void beforeCreate(final Document newDocument, final DocumentDto requestDto) {
+    auditLogService.logEvent(newDocument.getDocumentId(), createAuditEvent(Type.CREATE));
+  }
+
+  @Override
+  public void beforeUpdate(final Document currentDocument, final Document updatedDocument,
+      final DocumentDto updateDto) {
+    auditLogService.logEvent(currentDocument.getDocumentId(), createAuditEvent(Type.UPDATE));
+  }
+
+  @Override
+  public void onDelete(final Document currentDocument) {
+    auditLogService.logEvent(currentDocument.getDocumentId(), createAuditEvent(Type.DELETE));
+  }
+
+  private AuditEvent createAuditEvent(final Type type) {
+    AuditEvent eventDto = new AuditEvent();
+    eventDto.setTimestamp(new Date());
+    eventDto.setType(type);
+    eventDto.setAuditId(idGenerationStrategy.createDocumentId());
+
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    if (auth.isAuthenticated()) {
+      eventDto.setUserID(auth.getName());
+    } else {
+      eventDto.setUserID("<anonymous>");
+    }
+
+    return eventDto;
+  }
+
+  private void attachAuditLog(final Document document, final DocumentDto dto) {
+    dto.setFacet(getName(), auditLogService.getEventLog(document.getDocumentId()).stream().map(audit -> {
+      AuditEventDto auditDto = modelMapper.map(audit, AuditEventDto.class);
+      
+      auditDto.add(Links.facet(document, this, audit.getAuditId()));
+      
+      return auditDto;
+    }).collect(Collectors.toList()) //
+    );
+  }
+
+  @Override
+  public String toString() {
+    return "DocumentFacet{" + "name=" + getName() + '}';
+  }
+}
+

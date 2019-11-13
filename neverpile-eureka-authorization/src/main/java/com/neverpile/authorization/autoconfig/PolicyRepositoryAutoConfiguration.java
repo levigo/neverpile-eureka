@@ -1,0 +1,19 @@
+package com.neverpile.authorization.autoconfig;
+
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Bean;
+
+import com.neverpile.authorization.policy.MutablePolicyRepository;
+import com.neverpile.authorization.policy.PolicyRepository;
+import com.neverpile.authorization.service.impl.SimpleMutablePolicyRepository;
+import com.neverpile.eureka.api.ObjectStoreService;
+
+@ConditionalOnMissingBean(value = PolicyRepository.class)
+@ConditionalOnBean(ObjectStoreService.class)
+public class PolicyRepositoryAutoConfiguration {
+  @Bean
+  public MutablePolicyRepository simpleMutablePolicyRepository() {
+    return new SimpleMutablePolicyRepository();
+  }
+}

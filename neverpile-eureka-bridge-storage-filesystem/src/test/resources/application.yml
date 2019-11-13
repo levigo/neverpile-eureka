@@ -1,0 +1,3 @@
+spring:
+  jta.atomikos.properties:
+    default-jta-timeout: 60000

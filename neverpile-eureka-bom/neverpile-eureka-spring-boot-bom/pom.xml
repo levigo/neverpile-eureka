@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <artifactId>neverpile-eureka-bom</artifactId>
+    <groupId>com.neverpile</groupId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>neverpile-eureka-spring-boot-bom</artifactId>
+  <packaging>pom</packaging>
+  <modules>
+    <module>neverpile-eureka-spring-boot-starter</module>
+  </modules>
+
+  <properties>
+    <spring-boot.version>2.1.7.RELEASE</spring-boot.version>
+    <dropwizard.version>3.2.2</dropwizard.version>
+    <elasticsearch.version>7.3.1</elasticsearch.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <!-- spring boot bom -->
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>${spring-boot.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <!-- spring and cassandra version incompatibility -->
+      <dependency>
+        <groupId>io.dropwizard.metrics</groupId>
+        <artifactId>metrics-core</artifactId>
+        <version>${dropwizard.version}</version>
+      </dependency>
+
+      <!-- spring and elastic version incompatibility -->
+      <dependency>
+        <groupId>org.elasticsearch</groupId>
+        <artifactId>elasticsearch</artifactId>
+        <version>${elasticsearch.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.elasticsearch.client</groupId>
+        <artifactId>elasticsearch-rest-client</artifactId>
+        <version>${elasticsearch.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.elasticsearch.client</groupId>
+        <artifactId>elasticsearch-rest-high-level-client</artifactId>
+        <version>${elasticsearch.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+</project>

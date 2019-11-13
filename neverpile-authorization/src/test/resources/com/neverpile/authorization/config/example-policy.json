@@ -1,0 +1,104 @@
+{
+  "validFrom" : "1970-01-01T00:00:00.000Z",
+  "description": "some policy",
+  "default_effect": "DENY",
+  "rules": [
+    {
+      "name": "Superuser-permissions",
+      "effect": "ALLOW",
+      "subjects": ["role:administrator", "principal:johnny-superuser"],
+      "resources": ["*"],
+      "actions": ["*"]
+    },
+    {
+      "name": "Role 'call-center operator' can query and read all documents",
+      "effect": "ALLOW",
+      "subjects": ["role:call-center-operator"],
+      "resources": ["neverpile:eureka:document"],
+      "actions": ["neverpile:GET", "neverpile:QUERY"]
+    },
+    {
+      "name": "Role 'call-center operator' can update annotations",
+      "effect": "ALLOW",
+      "subjects": ["role:call-center-operator"],
+      "resources": ["neverpile:eureka:document.content.annotations"],
+      "actions": ["neverpile:UPDATE"]
+    },
+    {
+      "name": "Role 'clerk car insurance' can query and read documents with metadata-type 'car-insurance'",
+      "effect": "ALLOW",
+      "subjects": ["role:car-insurance-clerk"],
+      "resources": ["neverpile:eureka:document"],
+      "actions": ["neverpile:GET", "neverpile:QUERY"],
+      "conditions": {
+        "exists": {
+          "target": "neverpile:eureka:document.metadata.car-insurance"
+        }
+      }
+    },
+    {
+      "name": "Role 'intern' can query and read documents (only base document, no annotations) with metadata-type 'car-insurance' except documents related to employees",
+      "effect": "ALLOW",
+      "subjects": ["intern"],
+      
+      "resources": ["neverpile:eureka:document.content.base"],
+      
+      "actions": ["neverpile:GET", "neverpile:QUERY"],
+      
+      "conditions": {
+        "name": "Type car-insurance and insured person is neither employee nor VIP",
+        "exists":  {
+          "name": "Has metadata of type car-insurance",
+          "target": [
+            "neverpile:eureka:document.metadata.car-insurance",
+            "something:else"
+          ]
+        },
+        "not": {
+          "equals": {
+            "name": "Match is-employee=true and employee-status internal and  external but not 'retired' employees",
+            "neverpile:eureka:document.metadata.json.is-employee": "true",
+            "neverpile:eureka:document.metadata.json.employee-status": ["internal", "external"]
+          },
+          "exists": {
+            "target": "neverpile:eureka:document.metadata.json.vip-status"
+          }
+        }
+      }
+    },
+    {
+      "name": "Role 'clerk car insurance' can annotate documents and update metadata of type 'car-insurance'",
+      "effect": "ALLOW",
+      "subjects": ["role:car-insurance-clerk"],
+      "resources": [
+        "neverpile:eureka:document.metadata.car-insurance",
+        "neverpile:eureka:document.content.annotations"
+      ],
+      "actions": ["neverpile:UPDATE"],
+      "conditions": {
+        "exists":  {
+          "target": "neverpile:eureka:document.metadata.car-insurance"
+        }
+      }
+    },
+    {
+      "name": "Users can update documents they own",
+      "effect": "ALLOW",
+      "subjects": ["principal:*"],
+      "resources": ["neverpile:eureka:document.*"],
+      "actions": ["neverpile:UPDATE"],
+      "conditions": {
+        "exists":  {
+          "target": "neverpile:eureka:document.metadata.car-insurance"
+        }
+      }
+    },
+    {
+      "name": "This is here just to verify that resources/subjects/actions all accept single strings as well",
+      "effect": "ALLOW",
+      "subjects": "role:call-center-operator",
+      "resources": "neverpile:eureka:document",
+      "actions": "neverpile:GET"
+    }
+  ]
+}

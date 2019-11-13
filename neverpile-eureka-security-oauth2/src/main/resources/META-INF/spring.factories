@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.neverpile.eureka.security.oauth2.configuration.NeverpileEurekaOAuth2AutoConfiguration

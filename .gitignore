@@ -1,0 +1,51 @@
+/db/
+target/
+.classpath
+.project
+.settings
+.springBeans
+*.trace.db
+/*mv.tmp
+*.mv.db
+
+######################
+# Documents, Facets & Logs
+######################
+neverpile-eureka_default
+transaction-logs
+data
+
+######################
+# GWT
+######################
+src/main/gwt-unitCache
+src/main/public/cccprocessapp/
+src/main/public/WEB-INF/deploy
+
+
+######################
+# MacOS
+######################
+*.DS_Store
+
+######################
+# IntelliJ
+######################
+.idea/**
+*.iml
+*.iws
+*.ipr
+*.ids
+*.orig
+/.factorypath
+
+######################
+# Eclipse
+######################
+/.metadata
+/.recommenders
+
+######################
+# Spring
+######################
+.factorypath

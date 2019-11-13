@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.neverpile.eureka.bridge.storage.cassandra.CassandraStandaloneConfig,\
+com.neverpile.eureka.bridge.storage.cassandra.CassandraEmbeddedConfig
