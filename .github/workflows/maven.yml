@@ -9,9 +9,44 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
+
+    ## Build-Number
+    - name: Generate build number
+      id: buildnumber
+      uses: einaregilsson/build-number@v1 
+      with:
+        token: ${{secrets.GITHUB_TOKEN}}
+    - name: Print new build number
+      run: echo Build number is $BUILD_NUMBER
+
+    ## Enable Caching
+    - uses: actions/cache@v1
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
+
+    ## Configure JDK 1.8
     - name: Set up JDK 1.8
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
-    - name: Build with Maven
+
+    ## Build with maven
+    - name: Prepare maven settings
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        mkdir -p ~/.m2
+        echo "<settings><servers><server><id>github</id><username>x-access-token</username><password>${GITHUB_TOKEN}</password></server></servers></settings>" > ~/.m2/settings.xml 
+
+    - name: Set version
+      run: |
+        export project_version=$(mvn help:evaluate -N -Dexpression=project.version | grep -v '\[' | tail -1 | sed -r -e 's/[-.](snapshot|local)$//i' -e 's/\s+//g')
+        export release_version=${project_version}.${{ steps.buildnumber.outputs.build_number }}
+        echo Truncated version found to be ${project_version}, releasing as ${release_version}
+        mvn versions:set -DnewVersion=${release_version} 
+
+    - name: Perform build
       run: mvn -B package --file pom.xml

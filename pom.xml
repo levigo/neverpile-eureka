@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.neverpile</groupId>
@@ -36,7 +35,7 @@
 
     <cassandra-driver-core.version>3.7.2</cassandra-driver-core.version>
 
-    <eureka-webjar.version>0.1-SNAPSHOT</eureka-webjar.version>
+    <eureka-webjar.version>1.0.3</eureka-webjar.version>
 
     <mockito-core.version>2.13.0</mockito-core.version>
     <metrics-core.version>3.2.2</metrics-core.version>
@@ -49,6 +48,14 @@
     <maven-jar-plugin.version>3.1.2</maven-jar-plugin.version>
   </properties>
 
+  <repositories>
+    <repository>
+      <id>github</id>
+      <name>GitHub levigo Apache Maven Packages</name>
+      <url>https://maven.pkg.github.com/levigo/neverpile-eureka-web-client</url>
+    </repository>
+  </repositories>
+
   <dependencyManagement>
     <dependencies>
       <!-- Spring-Boot -->
@@ -59,7 +66,7 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-      
+
       <!-- Swagger -->
       <dependency>
         <groupId>io.swagger.core.v3</groupId>
@@ -167,7 +174,7 @@
         <artifactId>url-crypto-kit</artifactId>
         <version>1.0-31</version>
       </dependency>
-      
+
       <!-- internal dependencies -->
       <dependency>
         <groupId>com.neverpile</groupId>
@@ -254,7 +261,7 @@
         <artifactId>neverpile-common</artifactId>
         <version>${project.version}</version>
       </dependency>
-      
+
       <!-- Needed with eclipse 2019-09, see https://bugs.eclipse.org/bugs/show_bug.cgi?id=551298 -->
       <!-- and https://stackoverflow.com/questions/57040675/java-lang-noclassdeffounderror-org-junit-platform-commons-preconditionviolation -->
       <!-- FIXME: remove once everyone is on JUnit 5.5.2+ -->
@@ -299,7 +306,7 @@
       <artifactId>junit-platform-commons</artifactId>
       <scope>test</scope>
     </dependency>
-   
+
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
