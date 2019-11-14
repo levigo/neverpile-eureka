@@ -32,7 +32,7 @@ import com.neverpile.eureka.plugin.audit.service.AuditEvent;
 import com.neverpile.eureka.plugin.audit.service.AuditLogService;
 import com.neverpile.eureka.rest.api.document.content.ContentElementResource;
 import com.neverpile.eureka.rest.api.exception.NotFoundException;
-import com.neverpile.eureka.rest.psu.PreSignedUrlEnabled;
+import com.neverpile.urlcrypto.PreSignedUrlEnabled;
 
 import io.micrometer.core.annotation.Timed;
 import io.swagger.annotations.Api;

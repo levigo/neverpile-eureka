@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.neverpile.eureka.api.MultiVersioningDocumentService;
 import com.neverpile.eureka.model.Document;
 import com.neverpile.eureka.rest.api.exception.NotFoundException;
-import com.neverpile.eureka.rest.psu.PreSignedUrlEnabled;
+import com.neverpile.urlcrypto.PreSignedUrlEnabled;
 
 import io.micrometer.core.annotation.Timed;
 import io.swagger.annotations.Api;

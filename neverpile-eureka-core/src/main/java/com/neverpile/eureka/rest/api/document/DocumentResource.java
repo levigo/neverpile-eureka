@@ -37,7 +37,7 @@ import com.neverpile.eureka.rest.api.exception.AlreadyExistsException;
 import com.neverpile.eureka.rest.api.exception.BadInputParameter;
 import com.neverpile.eureka.rest.api.exception.NotFoundException;
 import com.neverpile.eureka.rest.api.exception.ValidationError;
-import com.neverpile.eureka.rest.psu.PreSignedUrlEnabled;
+import com.neverpile.urlcrypto.PreSignedUrlEnabled;
 
 import io.micrometer.core.annotation.Timed;
 import io.swagger.annotations.Api;

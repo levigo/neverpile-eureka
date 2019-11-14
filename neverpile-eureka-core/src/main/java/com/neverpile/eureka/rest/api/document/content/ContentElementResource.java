@@ -60,7 +60,7 @@ import com.neverpile.eureka.rest.api.document.core.ModificationDateFacet;
 import com.neverpile.eureka.rest.api.exception.ConflictException;
 import com.neverpile.eureka.rest.api.exception.NotAcceptableException;
 import com.neverpile.eureka.rest.api.exception.NotFoundException;
-import com.neverpile.eureka.rest.psu.PreSignedUrlEnabled;
+import com.neverpile.urlcrypto.PreSignedUrlEnabled;
 
 import io.micrometer.core.annotation.Timed;
 import io.swagger.annotations.Api;

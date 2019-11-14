@@ -138,7 +138,7 @@
         <version>${lucene.version}</version>
       </dependency>
 
-      <!-- Diverses -->
+      <!-- other stuff -->
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
@@ -161,7 +161,14 @@
         <version>${metrics-core.version}</version>
       </dependency>
 
-      <!-- interne Dependencies -->
+      <!-- neverpile commons -->
+      <dependency>
+        <groupId>com.neverpile</groupId>
+        <artifactId>url-crypto-kit</artifactId>
+        <version>1.0-31</version>
+      </dependency>
+      
+      <!-- internal dependencies -->
       <dependency>
         <groupId>com.neverpile</groupId>
         <artifactId>neverpile-eureka-ignite</artifactId>
@@ -235,11 +242,6 @@
       <dependency>
         <groupId>com.neverpile</groupId>
         <artifactId>neverpile-eureka-plugin-audit</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.neverpile</groupId>
-        <artifactId>neverpile-pre-signed-url-support</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

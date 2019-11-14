@@ -86,14 +86,15 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.neverpile</groupId>
-        <artifactId>neverpile-pre-signed-url-support</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
         <groupId>com.neverpile.eureka.client</groupId>
         <artifactId>neverpile-eureka-client-webjar</artifactId>
         <version>${eureka-webjar.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.neverpile</groupId>
+        <artifactId>url-crypto-kit</artifactId>
+        <version>1.0-31</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
