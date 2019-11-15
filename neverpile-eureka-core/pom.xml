@@ -2,20 +2,20 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>com.neverpile</groupId>
+    <groupId>com.neverpile.eureka</groupId>
     <artifactId>neverpile-eureka</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.1-SNAPSHOT</version>
   </parent>
 
   <artifactId>neverpile-eureka-core</artifactId>
 
   <dependencies>
     <dependency>
-      <groupId>com.neverpile</groupId>
+      <groupId>com.neverpile.eureka</groupId>
       <artifactId>neverpile-common</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.neverpile</groupId>
+      <groupId>com.neverpile.eureka</groupId>
       <artifactId>neverpile-authorization</artifactId>
     </dependency>
 
@@ -106,7 +106,6 @@
     <dependency>
       <groupId>com.neverpile</groupId>
       <artifactId>url-crypto-kit</artifactId>
-      
     </dependency>
 
     <!-- Test dependencies -->

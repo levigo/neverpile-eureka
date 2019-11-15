@@ -3,9 +3,9 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>com.neverpile</groupId>
+    <groupId>com.neverpile.eureka</groupId>
     <artifactId>neverpile-eureka</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.1-SNAPSHOT</version>
   </parent>
   <artifactId>neverpile-authorization</artifactId>
 
@@ -23,13 +23,13 @@
       <artifactId>springfox-swagger2</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.neverpile</groupId>
+      <groupId>com.neverpile.eureka</groupId>
       <artifactId>neverpile-common</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.neverpile</groupId>
+      <groupId>com.neverpile.eureka</groupId>
       <artifactId>neverpile-common</artifactId>
       <version>${project.version}</version>
     </dependency>

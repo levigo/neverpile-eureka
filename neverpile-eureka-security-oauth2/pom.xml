@@ -5,9 +5,9 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>com.neverpile</groupId>
+		<groupId>com.neverpile.eureka</groupId>
 		<artifactId>neverpile-eureka</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>0.1-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>neverpile-eureka-security-oauth2</artifactId>
@@ -19,7 +19,7 @@
 			<artifactId>spring-boot-devtools</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.neverpile</groupId>
+			<groupId>com.neverpile.eureka</groupId>
 			<artifactId>neverpile-eureka-core</artifactId>
 		</dependency>
 
