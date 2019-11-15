@@ -48,5 +48,12 @@ jobs:
         echo Truncated version found to be ${project_version}, releasing as ${release_version}
         mvn versions:set -DnewVersion=${release_version} 
 
-    - name: Perform build
-      run: mvn -B package --file pom.xml
+    ## Deploy
+    - name: Deploy package
+      if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/feature/github-actions-CI'
+      env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        mkdir -p ~/.m2
+        echo "<settings><servers><server><id>github</id><username>x-access-token</username><password>${GITHUB_TOKEN}</password></server></servers></settings>" > ~/.m2/settings.xml 
+        mvn deploy -DaltDeploymentRepository=github::default::https://maven.pkg.github.com/levigo/neverpile-eureka
