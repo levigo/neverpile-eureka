@@ -55,8 +55,8 @@ jobs:
     - name: Deploy package
       if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/feature/github-actions-CI'
       env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         mkdir -p ~/.m2
         echo "<settings><servers><server><id>github</id><username>x-access-token</username><password>${GITHUB_TOKEN}</password></server></servers></settings>" > ~/.m2/settings.xml 
-        mvn deploy -DaltDeploymentRepository=github::default::https://maven.pkg.github.com/levigo/neverpile-eureka
+        mvn deploy -Dmaven.wagon.http.pool=false -DaltDeploymentRepository=github::default::https://maven.pkg.github.com/levigo/neverpile-eureka
