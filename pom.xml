@@ -52,7 +52,7 @@
     <repository>
       <id>github</id>
       <name>GitHub levigo Apache Maven Packages</name>
-      <url>https://maven.pkg.github.com/levigo/neverpile-eureka</url>
+      <url>https://maven.pkg.github.com/levigo/neverpile-eureka-web-client</url>
     </repository>
   </repositories>
 
