@@ -62,6 +62,7 @@ jobs:
         echo "<settings><servers><server><id>github</id><username>x-access-token</username><password>${GITHUB_TOKEN}</password></server></servers></settings>" > ~/.m2/settings.xml 
         mvn deploy -Dmaven.test.skip.exec -Dmaven.wagon.http.pool=false -DaltDeploymentRepository=github::default::https://maven.pkg.github.com/levigo/neverpile-eureka
 
+    ## Notify Slack
     - name: Notify slack
       uses: hennejg/slack-build-notifier@v1
       with:
