@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-      - feature/github-actions-CI
 
 jobs:
   build:
@@ -71,11 +70,11 @@ jobs:
         
     ## Notify Slack
     - name: Notify slack
-      uses: hennejg/slack-build-notifier@v1
+      uses: hennejg/slack-build-notifier@v1.1
       with:
         username: GitHub
         icon_emoji: octocat
-        text: Released new version `${{ steps.version.outputs.release_version }}` of *${{ github.repository }}* to ${REPOSITORY_URL}
+        text: Released new version `${{ steps.version.outputs.release_version }}` of *${{ github.repository }}* to ${{ REPOSITORY_URL }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

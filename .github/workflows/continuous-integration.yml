@@ -30,7 +30,7 @@ jobs:
 
     ## Notify Slack
     - name: Notify slack
-      uses: hennejg/slack-build-notifier@v1
+      uses: hennejg/slack-build-notifier@v1.1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
