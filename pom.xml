@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.neverpile</groupId>
+  <groupId>com.neverpile.eureka</groupId>
   <artifactId>neverpile-eureka</artifactId>
   <packaging>pom</packaging>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.1-SNAPSHOT</version>
 
   <properties>
     <java.version>1.8</java.version>
@@ -36,7 +35,7 @@
 
     <cassandra-driver-core.version>3.7.2</cassandra-driver-core.version>
 
-    <eureka-webjar.version>0.1-SNAPSHOT</eureka-webjar.version>
+    <eureka-webjar.version>1.0.11</eureka-webjar.version>
 
     <mockito-core.version>2.13.0</mockito-core.version>
     <metrics-core.version>3.2.2</metrics-core.version>
@@ -49,6 +48,14 @@
     <maven-jar-plugin.version>3.1.2</maven-jar-plugin.version>
   </properties>
 
+  <repositories>
+    <repository>
+      <id>neverpile</id>
+      <name>Neverpile Apache Maven Packages</name>
+      <url>https://registry.neverpile.com/repository/maven-releases/</url>
+    </repository>
+  </repositories>
+
   <dependencyManagement>
     <dependencies>
       <!-- Spring-Boot -->
@@ -59,7 +66,7 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-      
+
       <!-- Swagger -->
       <dependency>
         <groupId>io.swagger.core.v3</groupId>
@@ -104,7 +111,7 @@
         <version>${elasticsearch.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.neverpile</groupId>
+        <groupId>com.neverpile.eureka</groupId>
         <artifactId>neverpile-eureka-core</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -138,7 +145,7 @@
         <version>${lucene.version}</version>
       </dependency>
 
-      <!-- Diverses -->
+      <!-- other stuff -->
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
@@ -161,34 +168,41 @@
         <version>${metrics-core.version}</version>
       </dependency>
 
-      <!-- interne Dependencies -->
+      <!-- neverpile commons -->
       <dependency>
         <groupId>com.neverpile</groupId>
+        <artifactId>url-crypto-kit</artifactId>
+        <version>1.0-31</version>
+      </dependency>
+
+      <!-- internal dependencies -->
+      <dependency>
+        <groupId>com.neverpile.eureka</groupId>
         <artifactId>neverpile-eureka-ignite</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.neverpile</groupId>
+        <groupId>com.neverpile.eureka</groupId>
         <artifactId>neverpile-eureka-bridge-storage-filesystem</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.neverpile</groupId>
+        <groupId>com.neverpile.eureka</groupId>
         <artifactId>neverpile-eureka-security-oauth2</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.neverpile</groupId>
+        <groupId>com.neverpile.eureka</groupId>
         <artifactId>neverpile-eureka-search-elastic</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.neverpile</groupId>
+        <groupId>com.neverpile.eureka</groupId>
         <artifactId>neverpile-eureka-bridge-storage-cassandra</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.neverpile</groupId>
+        <groupId>com.neverpile.eureka</groupId>
         <artifactId>neverpile-eureka-bridge-storage-s3</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -203,7 +217,7 @@
         <version>${springfox.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.neverpile</groupId>
+        <groupId>com.neverpile.eureka</groupId>
         <artifactId>neverpile-authorization</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -218,12 +232,12 @@
         <version>${spring-boot-admin.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.neverpile</groupId>
+        <groupId>com.neverpile.eureka</groupId>
         <artifactId>neverpile-eureka-hazelcast</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.neverpile</groupId>
+        <groupId>com.neverpile.eureka</groupId>
         <artifactId>neverpile-eureka-plugin-metadata</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -233,26 +247,21 @@
         <version>${eureka-webjar.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.neverpile</groupId>
+        <groupId>com.neverpile.eureka</groupId>
         <artifactId>neverpile-eureka-plugin-audit</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.neverpile</groupId>
-        <artifactId>neverpile-pre-signed-url-support</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.neverpile</groupId>
+        <groupId>com.neverpile.eureka</groupId>
         <artifactId>neverpile-eureka-test-support</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.neverpile</groupId>
+        <groupId>com.neverpile.eureka</groupId>
         <artifactId>neverpile-common</artifactId>
         <version>${project.version}</version>
       </dependency>
-      
+
       <!-- Needed with eclipse 2019-09, see https://bugs.eclipse.org/bugs/show_bug.cgi?id=551298 -->
       <!-- and https://stackoverflow.com/questions/57040675/java-lang-noclassdeffounderror-org-junit-platform-commons-preconditionviolation -->
       <!-- FIXME: remove once everyone is on JUnit 5.5.2+ -->
@@ -297,7 +306,7 @@
       <artifactId>junit-platform-commons</artifactId>
       <scope>test</scope>
     </dependency>
-   
+
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>

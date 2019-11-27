@@ -1,0 +1,81 @@
+name: Continuous Delivery (automatic versioning and deployment) 
+
+on: 
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+
+    ## Build-Number
+    - name: Generate build number
+      id: buildnumber
+      uses: einaregilsson/build-number@v1 
+      with:
+        token: ${{secrets.GITHUB_TOKEN}}
+    - name: Print new build number
+      run: echo Build number is $BUILD_NUMBER
+
+    ## Enable Caching
+    - uses: actions/cache@v1
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
+
+    ## Configure JDK 1.8
+    - name: Set up JDK 1.8
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.8
+
+    ## Build with maven
+    - name: Prepare maven settings
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        mkdir -p ~/.m2
+        echo "<settings><servers><server><id>github</id><username>x-access-token</username><password>${GITHUB_TOKEN}</password></server></servers></settings>" > ~/.m2/settings.xml 
+
+    - name: Set version
+      id: version
+      run: |
+        export project_version=$(mvn help:evaluate -N -Dexpression=project.version | grep -v '\[' | tail -1 | sed -r -e 's/[-.](snapshot|local)$//i' -e 's/\s+//g')
+        export release_version=${project_version}.${{ steps.buildnumber.outputs.build_number }}
+        echo ::set-output name=release_version::${release_version}
+        echo Truncated version found to be ${project_version}, releasing as ${release_version}
+        mvn versions:set -DnewVersion=${release_version} 
+
+    - name: Perform build
+      run: mvn -B package --file pom.xml
+
+    ## Deploy
+    - name: Deploy package
+      env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            REPOSITORY_URL: ${{ secrets.REPOSITORY_URL }}
+            REPOSITORY_USERID: ${{ secrets.REPOSITORY_USERID }}
+            REPOSITORY_CREDENTIALS: ${{ secrets.REPOSITORY_CREDENTIALS }}
+      run: |
+        mkdir -p ~/.m2
+        echo "<settings><servers><server><id>neverpile</id><username>${REPOSITORY_USERID}</username><password>${REPOSITORY_CREDENTIALS}</password></server></servers></settings>" > ~/.m2/settings.xml 
+        mvn deploy -Dmaven.test.skip.exec=true -DaltDeploymentRepository=neverpile::default::${REPOSITORY_URL}
+        
+    ## Notify Slack
+    - name: Notify slack
+      uses: hennejg/slack-build-notifier@v1.1
+      with:
+        username: GitHub
+        icon_emoji: octocat
+        text: Released new version `${{ steps.version.outputs.release_version }}` of *${{ github.repository }}* to ${{ REPOSITORY_URL }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        REPOSITORY_URL: ${{ secrets.REPOSITORY_URL }}

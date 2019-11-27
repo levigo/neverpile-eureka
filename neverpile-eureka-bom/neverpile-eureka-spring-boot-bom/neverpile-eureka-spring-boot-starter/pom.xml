@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
     <artifactId>neverpile-eureka-spring-boot-bom</artifactId>
-    <groupId>com.neverpile</groupId>
-    <version>0.0.1-SNAPSHOT</version>
+    <groupId>com.neverpile.eureka</groupId>
+    <version>0.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -15,31 +15,31 @@
   <dependencies>
     <!-- neverpile -->
     <dependency>
-      <groupId>com.neverpile</groupId>
+      <groupId>com.neverpile.eureka</groupId>
       <artifactId>neverpile-eureka-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.neverpile</groupId>
+      <groupId>com.neverpile.eureka</groupId>
       <artifactId>neverpile-eureka-bridge-storage-filesystem</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.neverpile</groupId>
+      <groupId>com.neverpile.eureka</groupId>
       <artifactId>neverpile-eureka-security-oauth2</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.neverpile</groupId>
+      <groupId>com.neverpile.eureka</groupId>
       <artifactId>neverpile-eureka-authorization</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.neverpile</groupId>
+      <groupId>com.neverpile.eureka</groupId>
       <artifactId>neverpile-eureka-search-elastic</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.neverpile</groupId>
+      <groupId>com.neverpile.eureka</groupId>
       <artifactId>neverpile-eureka-plugin-metadata</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.neverpile</groupId>
+      <groupId>com.neverpile.eureka</groupId>
       <artifactId>neverpile-eureka-plugin-audit</artifactId>
     </dependency>
     <dependency>

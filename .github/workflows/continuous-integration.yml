@@ -1,0 +1,40 @@
+name: Continuous Integration (pull-request checks)
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+
+    ## Enable Caching
+    - uses: actions/cache@v1
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
+
+    ## Configure JDK 1.8
+    - name: Set up JDK 1.8
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.8
+
+    ## Build with maven
+    - name: Perform build
+      run: mvn test
+
+    ## Notify Slack
+    - name: Notify slack
+      uses: hennejg/slack-build-notifier@v1.1
+      with:
+        username: GitHub
+        icon_emoji: octocat
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      if: always()
