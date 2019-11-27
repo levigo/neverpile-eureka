@@ -31,6 +31,9 @@ jobs:
     ## Notify Slack
     - name: Notify slack
       uses: hennejg/slack-build-notifier@v1.1
+      with:
+        username: GitHub
+        icon_emoji: octocat
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
