@@ -50,9 +50,9 @@
 
   <repositories>
     <repository>
-      <id>github</id>
-      <name>GitHub levigo Apache Maven Packages</name>
-      <url>https://maven.pkg.github.com/levigo/neverpile-eureka-web-client</url>
+      <id>neverpile</id>
+      <name>Neverpile Apache Maven Packages</name>
+      <url>https://registry.neverpile.com/repository/maven-releases/</url>
     </repository>
   </repositories>
 
