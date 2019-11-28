@@ -6,7 +6,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
 import javax.ws.rs.core.MediaType;
 
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.RepresentationModel;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -22,7 +22,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 
 @ApiModel(value = "ContentElement", description = "A content element associated with a document")
-public class ContentElementDto extends ResourceSupport implements IDto {
+public class ContentElementDto extends RepresentationModel<ContentElementDto> implements IDto {
   private String contentElementId;
   
   private String fileName;

@@ -7,7 +7,7 @@ import javax.validation.constraints.Pattern;
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.RepresentationModel;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -21,7 +21,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(value = "MetadataElement", description = "A metadata element associated with a document")
-public class MetadataElementDto extends ResourceSupport implements IDto {
+public class MetadataElementDto extends RepresentationModel<MetadataDto> implements IDto {
   private String schema;
 
   @ApiModelProperty(value = "The MIME-Type of the metadata element as specified in RFC 2045 without parameters", dataType = "string")

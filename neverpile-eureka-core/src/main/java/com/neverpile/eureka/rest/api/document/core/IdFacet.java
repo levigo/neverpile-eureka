@@ -1,6 +1,6 @@
 package com.neverpile.eureka.rest.api.document.core;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 import java.util.Collections;
 import java.util.Set;

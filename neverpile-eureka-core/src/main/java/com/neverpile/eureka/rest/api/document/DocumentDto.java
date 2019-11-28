@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.RepresentationModel;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -20,7 +20,7 @@ import springfox.documentation.annotations.ApiIgnore;
 @JsonPropertyOrder({
     "documentId", "versionTimestamp", "dateCreated", "dateModified", "contentElements"
 })
-public class DocumentDto extends ResourceSupport implements IDto {
+public class DocumentDto extends RepresentationModel<DocumentDto> implements IDto {
   private String documentId;
   
   private Instant versionTimestamp;

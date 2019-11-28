@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.hateoas.config.EnableEntityLinks;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,7 +50,6 @@ import io.swagger.annotations.Authorization;
 @RequestMapping(path = "/api/v1/documents", produces = {
     MediaType.APPLICATION_JSON_VALUE
 })
-@EnableEntityLinks
 @Api(tags = "Document", authorizations = {
     @Authorization(value = "oauth")
 })

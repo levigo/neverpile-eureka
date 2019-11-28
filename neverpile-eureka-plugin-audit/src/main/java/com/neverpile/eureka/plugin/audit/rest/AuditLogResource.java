@@ -1,6 +1,7 @@
 package com.neverpile.eureka.plugin.audit.rest;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 import java.security.Principal;
 import java.util.Comparator;

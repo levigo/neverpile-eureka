@@ -3,7 +3,7 @@ package com.neverpile.eureka.plugin.metadata.rest;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.RepresentationModel;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
@@ -13,7 +13,7 @@ import com.neverpile.eureka.rest.api.document.IDto;
 import io.swagger.annotations.ApiModel;
 
 @ApiModel(value = "Metadata", description = "A set of metadata elements associated with a document")
-public class MetadataDto extends ResourceSupport implements IDto {
+public class MetadataDto extends RepresentationModel<MetadataDto> implements IDto {
   public static MetadataDto with(final String name, final MetadataElementDto metadata) {
     return new MetadataDto().set(name, metadata);
   }

@@ -2,7 +2,7 @@ package com.neverpile.eureka.rest.configuration.springfox;
 
 import java.lang.reflect.Field;
 
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.introspect.AnnotatedField;
@@ -37,7 +37,7 @@ public class HideHATEOASLinks implements ModelPropertyBuilderPlugin {
   }
 
   private void hideLinksField(final ModelPropertyContext context, final Field field) {
-    if (ResourceSupport.class.equals(field.getDeclaringClass()) && field.getName().contains("links")) {
+    if (RepresentationModel.class.equals(field.getDeclaringClass()) && field.getName().contains("links")) {
       context.getBuilder().isHidden(true);
     }
   }

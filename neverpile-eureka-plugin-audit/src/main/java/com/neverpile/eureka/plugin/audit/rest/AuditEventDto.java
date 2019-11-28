@@ -2,7 +2,7 @@ package com.neverpile.eureka.plugin.audit.rest;
 
 import java.util.Date;
 
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.RepresentationModel;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.neverpile.eureka.rest.api.document.IDto;
@@ -12,7 +12,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @ApiModel(value = "AuditEvent", description = "An audit event associated with a document")
-public class AuditEventDto extends ResourceSupport implements IDto {
+public class AuditEventDto extends RepresentationModel<AuditEventDto> implements IDto {
   @ApiModel(description = "The type of an audit event")
   public enum Type {
     @ApiModelProperty(value = "A document created event")

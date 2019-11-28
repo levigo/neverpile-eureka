@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.hateoas.config.EnableEntityLinks;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,7 +38,6 @@ import io.swagger.annotations.Authorization;
 @RequestMapping(path = "/api/v1/documents/{documentID}/history", produces = {
     MediaType.APPLICATION_JSON_VALUE
 })
-@EnableEntityLinks
 @Api(tags = "Document", authorizations = {
     @Authorization(value = "oauth")
 })

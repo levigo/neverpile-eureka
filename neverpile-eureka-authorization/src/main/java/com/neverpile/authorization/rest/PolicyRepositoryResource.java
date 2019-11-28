@@ -1,7 +1,7 @@
 package com.neverpile.authorization.rest;
 
-import static java.util.Collections.*;
-import static java.util.stream.Collectors.*;
+import static java.util.Collections.singleton;
+import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,7 +14,6 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.hateoas.config.EnableEntityLinks;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,7 +54,6 @@ import io.swagger.annotations.Authorization;
 @RequestMapping(path = "/api/v1/authorization/policy", produces = {
     MediaType.APPLICATION_JSON_VALUE
 })
-@EnableEntityLinks
 @Api(tags = {
     "Authorization"
 }, authorizations = {

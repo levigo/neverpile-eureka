@@ -1,7 +1,7 @@
 package com.neverpile.eureka.rest.api.document.content;
 
-import static com.google.common.base.Objects.*;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
+import static com.google.common.base.Objects.equal;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 import java.util.Collections;
 import java.util.List;

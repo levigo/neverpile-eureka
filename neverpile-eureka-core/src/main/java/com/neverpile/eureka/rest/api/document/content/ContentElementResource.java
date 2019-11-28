@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -292,7 +293,8 @@ public class ContentElementResource {
     DocumentDto created = documentResource.create(doc, requestedFacets);
 
     return ResponseEntity//
-        .created(URI.create(created.getId().getHref())) //
+        .created(URI.create(created.getLink(IanaLinkRelations.SELF)
+            .orElseThrow(() -> new RuntimeException("self rel not populated")).getHref())) //
         .lastModified(created.getFacetData(mdFacet).orElse(new Date()).getTime()) //
         .body(created);
   }
