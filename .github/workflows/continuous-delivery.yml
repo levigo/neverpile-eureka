@@ -74,8 +74,7 @@ jobs:
       with:
         username: GitHub
         icon_emoji: octocat
-        text: Released new version `${{ steps.version.outputs.release_version }}` of *${{ github.repository }}* to ${{ REPOSITORY_URL }}
+        text: Released new version `${{ steps.version.outputs.release_version }}` of *${{ github.repository }}* to ${{ secrets.REPOSITORY_URL }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        REPOSITORY_URL: ${{ secrets.REPOSITORY_URL }}
