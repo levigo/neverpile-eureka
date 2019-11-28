@@ -47,6 +47,26 @@ public interface ObjectStoreService {
       return name;
     }
   }
+  
+  public class ObjectNotFoundException extends ObjectStoreException {
+    private static final long serialVersionUID = 1L;
+
+    private final ObjectName name;
+
+    public ObjectNotFoundException(final ObjectName name, final Throwable cause) {
+      super(name, "Object not found", cause);
+      this.name = name;
+    }
+
+    public ObjectNotFoundException(final ObjectName name) {
+      super(name, "Object not found");
+      this.name = name;
+    }
+
+    public ObjectName getName() {
+      return name;
+    }
+  }
 
   /**
    * Version String for new objects

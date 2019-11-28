@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.neverpile.eureka.api.DocumentAssociatedEntityStore;
 import com.neverpile.eureka.api.MultiVersioningDocumentService;
 import com.neverpile.eureka.api.ObjectStoreService;
+import com.neverpile.eureka.api.ObjectStoreService.ObjectNotFoundException;
 import com.neverpile.eureka.api.ObjectStoreService.ObjectStoreException;
 import com.neverpile.eureka.api.ObjectStoreService.StoreObject;
 import com.neverpile.eureka.api.exception.VersionMismatchException;
@@ -484,15 +486,19 @@ public class DefaultMultiVersioningDocumentService
   private List<Instant> doRetrieveVersionList(final String documentId) {
     ObjectName versionsPrefix = createDocumentDirectoryName(documentId);
 
-    // @formatter:off
-    return objectStore
-      .list(versionsPrefix)
-      .filter(s -> s.getObjectName().length() > versionsPrefix.length())
-      .map(s -> s.getObjectName().element(versionsPrefix.length()))
-      .map(n -> Instant.from(VERSION_FORMATTER.parse(n)))
-      .sorted()
-      .collect(Collectors.toList());
-    // @formatter:on
+    try {
+      // @formatter:off
+      return objectStore
+        .list(versionsPrefix)
+        .filter(s -> s.getObjectName().length() > versionsPrefix.length())
+        .map(s -> s.getObjectName().element(versionsPrefix.length()))
+        .map(n -> Instant.from(VERSION_FORMATTER.parse(n)))
+        .sorted()
+        .collect(Collectors.toList());
+      // @formatter:on
+    } catch (ObjectNotFoundException e) {
+      return Collections.emptyList();
+    }
   }
 
 }
