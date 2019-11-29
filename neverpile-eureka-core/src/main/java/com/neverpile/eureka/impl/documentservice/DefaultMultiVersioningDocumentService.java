@@ -331,7 +331,7 @@ public class DefaultMultiVersioningDocumentService
 
   @Override
   public boolean documentExists(final String documentId) {
-    return getVersions(documentId).isEmpty();
+    return !getVersions(documentId).isEmpty();
   }
 
   @Override
