@@ -1,5 +1,7 @@
 package com.neverpile.eureka.autoconfig;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -30,6 +32,7 @@ import com.neverpile.eureka.impl.documentservice.DefaultMultiVersioningDocumentS
 import com.neverpile.eureka.impl.documentservice.UuidContentElementIdGenerationStrategy;
 import com.neverpile.eureka.impl.documentservice.UuidDocumentIdGenerationStrategy;
 import com.neverpile.eureka.impl.index.SynchronousIndexMaintenanceBridge;
+import com.neverpile.eureka.impl.tx.lock.LocalLockFactory;
 import com.neverpile.eureka.rest.api.document.DocumentResource;
 import com.neverpile.eureka.rest.api.document.MultiVersioningDocumentResource;
 import com.neverpile.eureka.rest.api.document.content.ContentElementFacet;
@@ -39,6 +42,7 @@ import com.neverpile.eureka.rest.api.document.core.IdFacet;
 import com.neverpile.eureka.rest.api.document.core.ModificationDateFacet;
 import com.neverpile.eureka.rest.api.exception.ExceptionHandlers;
 import com.neverpile.eureka.rest.configuration.JacksonConfiguration;
+import com.neverpile.eureka.tx.lock.ClusterLockFactory;
 import com.neverpile.eureka.tx.wal.TransactionWAL;
 import com.neverpile.eureka.tx.wal.WriteAheadLog;
 import com.neverpile.eureka.tx.wal.local.DefaultTransactionWAL;
@@ -54,13 +58,13 @@ import com.neverpile.eureka.tx.wal.local.FileBasedWAL;
     JacksonConfiguration.class, EventPublisher.class, UpdateEventAggregator.class
 })
 public class NeverpileEurekaAutoConfiguration {
+  private static final Logger LOGGER = LoggerFactory.getLogger(NeverpileEurekaAutoConfiguration.class);
 
   @ConditionalOnWebApplication
   @ConditionalOnBean(value = DocumentService.class)
   @Import({
-      DocumentResource.class, CreationDateFacet.class, IdFacet.class,
-      ModificationDateFacet.class, ExceptionHandlers.class, ContentElementFacet.class, ContentElementResource.class,
-      IndexResource.class,
+      DocumentResource.class, CreationDateFacet.class, IdFacet.class, ModificationDateFacet.class,
+      ExceptionHandlers.class, ContentElementFacet.class, ContentElementResource.class, IndexResource.class,
   })
   public static class RestResourceConfiguration {
     @Bean
@@ -70,9 +74,11 @@ public class NeverpileEurekaAutoConfiguration {
     }
   }
 
-  
+
   @Configuration
-  @AutoConfigureBefore({RestResourceConfiguration.class})
+  @AutoConfigureBefore({
+      RestResourceConfiguration.class
+  })
   public static class CoreServiceConfiguration {
     /**
      * Provide an implementation of {@link DocumentService} which is based on a backing
@@ -211,7 +217,7 @@ public class NeverpileEurekaAutoConfiguration {
   public ContentElementService contentElementService() {
     return new SimpleContentElementService();
   }
-  
+
   /**
    * Provide a synchronous index maintenance bridge.
    * 
@@ -220,8 +226,23 @@ public class NeverpileEurekaAutoConfiguration {
    * @return a SynchronousIndexMaintenanceBridge
    */
   @Bean
-  @ConditionalOnBean(IndexMaintenanceService.class) 
+  @ConditionalOnBean(IndexMaintenanceService.class)
   public SynchronousIndexMaintenanceBridge synchronousIndexMaintenanceBridge() {
     return new SynchronousIndexMaintenanceBridge();
+  }
+
+  /**
+   * Provide a default implementation of {@link ClusterLockFactory} which is based on a purely local
+   * implementation.
+   * <p>
+   * Back off if any other implementation is present.
+   *
+   * @return a ClusterLockFactory implementation
+   */
+  @Bean
+  @ConditionalOnMissingBean
+  public ClusterLockFactory localLockFactory() {
+    LOGGER.warn("Using a purely local, non-clustered lock factory. Do not use in mult-instance setups!");
+    return new LocalLockFactory();
   }
 }

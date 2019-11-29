@@ -35,7 +35,7 @@ import com.neverpile.eureka.ignite.queue.IgniteTaskQueue;
 import com.neverpile.eureka.ignite.wal.IgniteWAL;
 import com.neverpile.eureka.tasks.DistributedPersistentQueueType;
 import com.neverpile.eureka.tasks.TaskQueue;
-import com.neverpile.eureka.tx.lock.DistributedLock;
+import com.neverpile.eureka.tx.lock.ClusterLockFactory;
 import com.neverpile.eureka.tx.wal.WriteAheadLog;
 
 @Configuration
@@ -142,7 +142,7 @@ public class NeverpileIgniteAutoConfiguration {
   
   @Bean
   @Lazy
-  DistributedLock igniteDistributedLock() {
+  ClusterLockFactory igniteDistributedLock() {
     return new IgniteReadWriteLock();
   }
   
