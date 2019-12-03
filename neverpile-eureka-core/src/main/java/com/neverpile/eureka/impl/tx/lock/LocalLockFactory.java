@@ -135,19 +135,11 @@ public class LocalLockFactory implements ClusterLockFactory {
   }
 
   private ReadWriteLockWeakReference getReadWriteLock(final String lockId) {
-    prune();
-    
-    while (true) {
-      // if the ref has already been enqueued discard it
-      locks.computeIfPresent(lockId, (k,v) -> v.isEnqueued() ? null : v);
-      
-      ReadWriteLockWeakReference ref = locks.computeIfAbsent(lockId,
-          k -> new ReadWriteLockWeakReference(k, new ReentrantReadWriteLock()));
-      
-      // if the ref has already been enqueued try again.
-      if(!ref.isEnqueued())
-        return ref;
+    while (locks.containsKey(lockId) && locks.get(lockId).get() == null) {
+      prune(); // poll until item gets removed. // TODO: timeout? / delay?
     }
+
+    return locks.computeIfAbsent(lockId, k -> new ReadWriteLockWeakReference(k, new ReentrantReadWriteLock()));
   }
 
   private void prune() {
