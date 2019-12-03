@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 
-import com.neverpile.eureka.ignite.lock.IgniteReadWriteLock;
+import com.neverpile.eureka.ignite.lock.IgniteLockFactory;
 import com.neverpile.eureka.ignite.queue.IgniteTaskQueue;
 import com.neverpile.eureka.ignite.wal.IgniteWAL;
 import com.neverpile.eureka.tasks.DistributedPersistentQueueType;
@@ -143,7 +143,7 @@ public class NeverpileIgniteAutoConfiguration {
   @Bean
   @Lazy
   ClusterLockFactory igniteDistributedLock() {
-    return new IgniteReadWriteLock();
+    return new IgniteLockFactory();
   }
   
   @Bean

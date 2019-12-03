@@ -12,7 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.neverpile.eureka.ignite.lock.IgniteReadWriteLock;
+import com.neverpile.eureka.ignite.lock.IgniteLockFactory;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = TestConfig.class, properties = {
@@ -21,7 +21,7 @@ import com.neverpile.eureka.ignite.lock.IgniteReadWriteLock;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class IgniteReadWriteLockTest {
   @Autowired
-  IgniteReadWriteLock irwl;
+  IgniteLockFactory irwl;
 
   AtomicInteger count;
 

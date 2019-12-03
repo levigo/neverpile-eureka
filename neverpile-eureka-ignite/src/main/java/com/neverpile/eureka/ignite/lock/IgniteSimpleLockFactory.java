@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.neverpile.eureka.tx.lock.ClusterLockFactory;
 
-public class IgniteSimpleLock implements ClusterLockFactory {
-  protected static final Logger logger = LoggerFactory.getLogger(IgniteSimpleLock.class);
+public class IgniteSimpleLockFactory implements ClusterLockFactory {
+  protected static final Logger logger = LoggerFactory.getLogger(IgniteSimpleLockFactory.class);
 
   @Autowired
   private Ignite ignite;

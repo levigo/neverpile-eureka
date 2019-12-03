@@ -15,8 +15,8 @@ import com.neverpile.eureka.tx.lock.ClusterLockFactory;
 
 @Component
 @Lazy
-public class HazelcastReadWriteLock implements ClusterLockFactory {
-  protected static final Logger logger = LoggerFactory.getLogger(HazelcastReadWriteLock.class);
+public class HazelcastLockFactory implements ClusterLockFactory {
+  protected static final Logger logger = LoggerFactory.getLogger(HazelcastLockFactory.class);
 
   @SuppressWarnings("unused")
   @Autowired
