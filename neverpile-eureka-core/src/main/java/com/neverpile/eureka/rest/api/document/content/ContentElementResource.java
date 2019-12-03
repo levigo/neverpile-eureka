@@ -295,9 +295,6 @@ public class ContentElementResource {
 
     doc.setFacet("contentElements", documentMapper.map(elements, CE_DTO_TYPE));
 
-    // delegate the rest of the document creation to the document resource
-    LOGGER.info("create Document with Content delegate");
-
     // create document and return as status 201 CREATED
     DocumentDto created = documentResource.create(doc, requestedFacets);
 
