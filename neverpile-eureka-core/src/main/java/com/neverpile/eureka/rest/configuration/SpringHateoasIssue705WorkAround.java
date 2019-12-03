@@ -18,7 +18,7 @@ import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
  */
 @Component
 public class SpringHateoasIssue705WorkAround implements BeanPostProcessor {
-  @Autowired
+  @Autowired(required = false)
   FacetedDocumentDtoModule m1;
   
   /*
