@@ -8,7 +8,7 @@ import java.util.concurrent.locks.Lock;
 
 import org.junit.Test;
 
-import com.neverpile.eureka.impl.tx.lock.LocalLockFactory.WeakReadWriteLock.LockWrapper;
+import com.neverpile.eureka.impl.tx.lock.LocalLockFactory.ReadWriteLockWeakReference.LockWrapper;
 
 public class LocalLockFactoryTest {
   @Test
@@ -25,6 +25,21 @@ public class LocalLockFactoryTest {
     assertThat(wl.delegate).isNotSameAs(((LockWrapper) f.writeLock("bar")).delegate);
   }
 
+  @Test
+  public void testThat_locksCanBeRetrievedAgainAfterCollection() throws InterruptedException {
+    LocalLockFactory f = new LocalLockFactory();
+    
+    // fetch lock but forget ref immediately
+    f.readLock("foo");
+    
+    // force gc and thus ref enqueueing
+    Thread.sleep(100);
+    System.gc();
+    
+    // new instance of lock must be retrieveable 
+    f.readLock("foo");
+  }
+  
   @Test
   public void testThat_lockCollectionWorks() throws InterruptedException {
     LocalLockFactory f = new LocalLockFactory();

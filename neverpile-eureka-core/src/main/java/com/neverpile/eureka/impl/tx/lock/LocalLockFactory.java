@@ -21,7 +21,7 @@ import com.neverpile.eureka.tx.lock.ClusterLockFactory;
  */
 public class LocalLockFactory implements ClusterLockFactory {
 
-  private final Map<String, WeakReadWriteLock> locks = new ConcurrentHashMap<>();
+  private final Map<String, ReadWriteLockWeakReference> locks = new ConcurrentHashMap<>();
 
   private final ReferenceQueue<ReadWriteLock> disusedLockQueue = new ReferenceQueue<>();
 
@@ -31,7 +31,7 @@ public class LocalLockFactory implements ClusterLockFactory {
    * use.
    */
   @VisibleForTesting
-  final class WeakReadWriteLock extends WeakReference<ReadWriteLock> implements ReadWriteLock {
+  final class ReadWriteLockWeakReference extends WeakReference<ReadWriteLock> implements ReadWriteLock {
     @VisibleForTesting
     class LockWrapper implements Lock {
       @VisibleForTesting
@@ -85,7 +85,7 @@ public class LocalLockFactory implements ClusterLockFactory {
 
     private final AtomicInteger holdCounter = new AtomicInteger();
 
-    public WeakReadWriteLock(final String key, final ReadWriteLock lock) {
+    public ReadWriteLockWeakReference(final String key, final ReadWriteLock lock) {
       super(lock, disusedLockQueue);
       this.hardRef = lock;
       this.key = key;
@@ -134,15 +134,26 @@ public class LocalLockFactory implements ClusterLockFactory {
     }
   }
 
-  private WeakReadWriteLock getReadWriteLock(final String lockId) {
+  private ReadWriteLockWeakReference getReadWriteLock(final String lockId) {
     prune();
-    return locks.computeIfAbsent(lockId, k -> new WeakReadWriteLock(k, new ReentrantReadWriteLock()));
+    
+    while (true) {
+      // if the ref has already been enqueued discard it
+      locks.computeIfPresent(lockId, (k,v) -> v.isEnqueued() ? null : v);
+      
+      ReadWriteLockWeakReference ref = locks.computeIfAbsent(lockId,
+          k -> new ReadWriteLockWeakReference(k, new ReentrantReadWriteLock()));
+      
+      // if the ref has already been enqueued try again.
+      if(!ref.isEnqueued())
+        return ref;
+    }
   }
 
   private void prune() {
     Reference<? extends ReadWriteLock> ref;
     while ((ref = disusedLockQueue.poll()) != null) {
-      locks.remove(((WeakReadWriteLock) ref).key);
+      locks.remove(((ReadWriteLockWeakReference) ref).key);
     }
   }
 
