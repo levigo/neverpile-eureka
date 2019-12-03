@@ -1,5 +1,6 @@
 package com.neverpile.eureka.rest.api.document.content;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.security.MessageDigest;
@@ -46,6 +47,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.neverpile.eureka.api.ContentElementService;
 import com.neverpile.eureka.api.DocumentIdGenerationStrategy;
@@ -95,6 +97,9 @@ public class ContentElementResource {
   @Autowired
   @Qualifier("document")
   private ModelMapper documentMapper;
+
+  @Autowired
+  private ObjectMapper mapper;
 
   @Autowired
   private DocumentResource documentResource;
@@ -262,7 +267,11 @@ public class ContentElementResource {
       final AllRequestParts files, // mapped using AllRequestPartsMethodArgumentResolver
       @ApiParam(value = "The list of facets to be included in the response; return all facets if empty") @RequestParam(name = "facets", required = false) final List<String> requestedFacets)
       throws Exception {
-    DocumentDto doc = requestDto.orElse(new DocumentDto());
+    DocumentDto doc = requestDto
+        // If the upstream mapper failed to map the __DOC part to a DocumentDto, try again manually.
+        .orElseGet(() -> docPartFromAllRequestParts(files)
+            // If that fails as well, generate an empty DocumentDto.
+            .orElse(new DocumentDto()));
 
     /*
      * We need to validate at this point lest we create content elements with an invalid id.
@@ -276,8 +285,9 @@ public class ContentElementResource {
     }
 
     List<ContentElement> elements = new ArrayList<>();
-    for (MultipartFile file : (Iterable<MultipartFile>) files.getAllParts().stream().filter(
-        f -> !f.getName().equals(DOCUMENT_FORM_ELEMENT_NAME))::iterator) {
+    for (MultipartFile file : (Iterable<MultipartFile>) files.getAllParts().stream()
+        // ignore __DOC-part(s)
+        .filter(f -> !f.getName().equals(DOCUMENT_FORM_ELEMENT_NAME))::iterator) {
       elements.add(//
           contentElementService.createContentElement(doc.getDocumentId(), null, file.getInputStream(), file.getName(),
               file.getOriginalFilename(), file.getContentType(), messageDigest, elements));
@@ -295,6 +305,26 @@ public class ContentElementResource {
         .created(URI.create(created.getId().getHref())) //
         .lastModified(created.getFacetData(mdFacet).orElse(new Date()).getTime()) //
         .body(created);
+  }
+
+  /**
+   * Try to find a part named {@value #DOCUMENT_FORM_ELEMENT_NAME} and try to map that to a
+   * {@link DocumentDto}. Return an empty {@link Optional} if there is no such part.
+   * 
+   * @param files all request parts
+   * @return an optional DocumentDto.
+   */
+  private Optional<DocumentDto> docPartFromAllRequestParts(final AllRequestParts files) {
+    return files.getAllParts().stream() //
+        .filter(f -> f.getName().equals(DOCUMENT_FORM_ELEMENT_NAME)) //
+        .findFirst() //
+        .map(f -> {
+          try {
+            return mapper.readValue(f.getInputStream(), DocumentDto.class);
+          } catch (IOException e) {
+            throw new NotAcceptableException("__DOC-part is not valid: " + e.getMessage());
+          }
+        });
   }
 
   @PostMapping(value = "{documentId}/content", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
