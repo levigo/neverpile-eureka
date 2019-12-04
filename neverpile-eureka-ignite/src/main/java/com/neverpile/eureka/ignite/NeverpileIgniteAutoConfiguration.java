@@ -27,7 +27,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 
 import com.neverpile.eureka.ignite.lock.IgniteLockFactory;
@@ -136,13 +135,12 @@ public class NeverpileIgniteAutoConfiguration {
 
   @Bean
   @ConditionalOnProperty(name = "neverpile-eureka.ignite.wal.enabled", havingValue = "true", matchIfMissing = true)
-  WriteAheadLog igniteWAL() {
+  public WriteAheadLog igniteWAL() {
     return new IgniteWAL();
   }
   
   @Bean
-  @Lazy
-  ClusterLockFactory igniteDistributedLock() {
+  public ClusterLockFactory igniteDistributedLock() {
     return new IgniteLockFactory();
   }
   
