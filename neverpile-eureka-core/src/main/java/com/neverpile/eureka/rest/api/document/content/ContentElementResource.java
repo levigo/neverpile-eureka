@@ -15,7 +15,6 @@ import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -42,7 +41,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -263,15 +261,11 @@ public class ContentElementResource {
   })
   @Transactional
   public ResponseEntity<DocumentDto> createDocumentFromMultipart(
-      @RequestPart(name = DOCUMENT_FORM_ELEMENT_NAME, required = false) @Valid final Optional<DocumentDto> requestDto, //
       final AllRequestParts files, // mapped using AllRequestPartsMethodArgumentResolver
       @ApiParam(value = "The list of facets to be included in the response; return all facets if empty") @RequestParam(name = "facets", required = false) final List<String> requestedFacets)
       throws Exception {
-    DocumentDto doc = requestDto
-        // If the upstream mapper failed to map the __DOC part to a DocumentDto, try again manually.
-        .orElseGet(() -> docPartFromAllRequestParts(files)
-            // If that fails as well, generate an empty DocumentDto.
-            .orElse(new DocumentDto()));
+    // try to find the metadata part named __DOC
+    DocumentDto doc = docPartFromAllRequestParts(files).orElse(new DocumentDto());
 
     /*
      * We need to validate at this point lest we create content elements with an invalid id.
