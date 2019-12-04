@@ -10,12 +10,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.neverpile.eureka.tx.lock.DistributedLock;
+import com.neverpile.eureka.tx.lock.ClusterLockFactory;
 
 // TODO: implement proper read write lock
 // https://issues.apache.org/jira/browse/IGNITE-9
-public class IgniteReadWriteLock implements DistributedLock {
-  protected static final Logger logger = LoggerFactory.getLogger(IgniteReadWriteLock.class);
+public class IgniteLockFactory implements ClusterLockFactory {
+  protected static final Logger logger = LoggerFactory.getLogger(IgniteLockFactory.class);
 
   @Autowired
   private Ignite ignite;

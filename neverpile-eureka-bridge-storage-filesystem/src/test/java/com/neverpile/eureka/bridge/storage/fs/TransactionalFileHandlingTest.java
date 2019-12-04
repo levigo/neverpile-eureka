@@ -28,9 +28,9 @@ import org.springframework.util.StreamUtils;
 import org.springframework.web.context.annotation.RequestScope;
 
 import com.neverpile.eureka.api.ObjectStoreService;
-import com.neverpile.eureka.impl.tx.lock.NoOpDistributedLock;
+import com.neverpile.eureka.impl.tx.lock.LocalLockFactory;
 import com.neverpile.eureka.model.ObjectName;
-import com.neverpile.eureka.tx.lock.DistributedLock;
+import com.neverpile.eureka.tx.lock.ClusterLockFactory;
 import com.neverpile.eureka.tx.wal.TransactionWAL;
 import com.neverpile.eureka.tx.wal.WriteAheadLog;
 import com.neverpile.eureka.tx.wal.local.DefaultTransactionWAL;
@@ -62,8 +62,8 @@ public class TransactionalFileHandlingTest {
     }
     
     @Bean
-    DistributedLock lock() {
-      return new NoOpDistributedLock();
+    ClusterLockFactory lock() {
+      return new LocalLockFactory();
     }
   }
 

@@ -115,6 +115,8 @@ public class SimpleContentElementService implements ContentElementService {
           objectStore.put(ObjectName.of("document", documentId, contentElementId), ObjectStoreService.NEW_VERSION, tmpIn, length);
         }
     
+        // Set fallback content-type
+        
         // Create ContentElementDto
         ContentElement newContentDto = new ContentElement();
     

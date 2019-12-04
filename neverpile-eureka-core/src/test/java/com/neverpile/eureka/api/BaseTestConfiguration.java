@@ -15,7 +15,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.neverpile.eureka.impl.tx.lock.NoOpDistributedLock;
+import com.neverpile.eureka.impl.tx.lock.LocalLockFactory;
 import com.neverpile.eureka.rest.api.document.DocumentResource;
 import com.neverpile.eureka.rest.api.document.content.ContentElementFacet;
 import com.neverpile.eureka.rest.api.document.content.ContentElementResource;
@@ -26,7 +26,7 @@ import com.neverpile.eureka.rest.configuration.FacetedDocumentDtoModule;
 import com.neverpile.eureka.rest.configuration.JacksonConfiguration;
 import com.neverpile.eureka.rest.configuration.ModelMapperConfiguration;
 import com.neverpile.eureka.rest.mocks.MockObjectStoreService;
-import com.neverpile.eureka.tx.lock.DistributedLock;
+import com.neverpile.eureka.tx.lock.ClusterLockFactory;
 
 @SpringBootConfiguration
 @EnableAutoConfiguration
@@ -63,7 +63,7 @@ public class BaseTestConfiguration {
   }
 
   @Bean
-  DistributedLock noOpLock() {
-    return new NoOpDistributedLock();
+  ClusterLockFactory noOpLock() {
+    return new LocalLockFactory();
   }
 }

@@ -1,6 +1,6 @@
 package com.neverpile.eureka.ignite.wal;
 
-import com.neverpile.eureka.ignite.lock.IgniteReadWriteLock;
+import com.neverpile.eureka.ignite.lock.IgniteLockFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,7 +31,7 @@ public class TestConfig {
   }
 
   @Bean
-  IgniteReadWriteLock igniteReadWriteLock() {
-    return new IgniteReadWriteLock();
+  IgniteLockFactory igniteReadWriteLock() {
+    return new IgniteLockFactory();
   }
 }
