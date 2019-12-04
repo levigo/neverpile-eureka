@@ -23,7 +23,7 @@ import com.neverpile.eureka.hazelcast.lock.HazelcastLockFactory;
 @Ignore
 public class HazelcastReadWriteLockTest {
   @Autowired
-  HazelcastLockFactory irwl;
+  HazelcastLockFactory rwlf;
 
   AtomicInteger count;
 
@@ -31,7 +31,7 @@ public class HazelcastReadWriteLockTest {
   public void testThat_writersBlockWriters() throws InterruptedException {
     count = new AtomicInteger(0);
     Thread t1 = new Thread(() -> {
-      Lock lock = irwl.writeLock("test1");
+      Lock lock = rwlf.writeLock("test1");
       lock.lock();
       try {
         count.incrementAndGet();
@@ -40,7 +40,7 @@ public class HazelcastReadWriteLockTest {
       }
     });
 
-    Lock lock = irwl.writeLock("test1");
+    Lock lock = rwlf.writeLock("test1");
     lock.lock();
     try {
       count.incrementAndGet();
@@ -59,7 +59,7 @@ public class HazelcastReadWriteLockTest {
   public void testThat_multipleReadersCanAccess() throws InterruptedException {
     count = new AtomicInteger(0);
     Thread t1 = new Thread(() -> {
-      Lock lock = irwl.readLock("test2");
+      Lock lock = rwlf.readLock("test2");
       lock.lock();
       try {
         count.incrementAndGet();
@@ -68,7 +68,7 @@ public class HazelcastReadWriteLockTest {
       }
     });
 
-    Lock lock1 = irwl.readLock("test2");
+    Lock lock1 = rwlf.readLock("test2");
     lock1.lock();
     try {
       count.incrementAndGet();
@@ -89,7 +89,7 @@ public class HazelcastReadWriteLockTest {
 
     count = new AtomicInteger(0);
     Thread t1 = new Thread(() -> {
-      Lock lock = irwl.writeLock("test3");
+      Lock lock = rwlf.writeLock("test3");
       lock.lock();
       try {
         count.incrementAndGet();
@@ -98,7 +98,7 @@ public class HazelcastReadWriteLockTest {
       }
     });
 
-    Lock lock1 = irwl.readLock("test3");
+    Lock lock1 = rwlf.readLock("test3");
     lock1.lock();
     try {
       count.incrementAndGet();
@@ -118,7 +118,7 @@ public class HazelcastReadWriteLockTest {
 
     count = new AtomicInteger(0);
     Thread t1 = new Thread(() -> {
-      Lock lock = irwl.readLock("test4");
+      Lock lock = rwlf.readLock("test4");
       lock.lock();
       try {
         count.incrementAndGet();
@@ -127,7 +127,7 @@ public class HazelcastReadWriteLockTest {
       }
     });
 
-    Lock lock1 = irwl.writeLock("test4");
+    Lock lock1 = rwlf.writeLock("test4");
     lock1.lock();
     try {
       count.incrementAndGet();
@@ -142,7 +142,7 @@ public class HazelcastReadWriteLockTest {
   }
 
   private void readerTryRun() {
-    Lock lock = irwl.readLock("test5");
+    Lock lock = rwlf.readLock("test5");
     if (lock.tryLock()) {
       try {
         count.incrementAndGet();
@@ -166,7 +166,7 @@ public class HazelcastReadWriteLockTest {
 
     t1 = new Thread(() -> readerTryRun());
 
-    Lock lock1 = irwl.writeLock("test5");
+    Lock lock1 = rwlf.writeLock("test5");
     lock1.lock();
     try {
       t1.start();
@@ -179,7 +179,7 @@ public class HazelcastReadWriteLockTest {
   }
 
   private void writersTryRun() {
-    Lock lock = irwl.writeLock("test6");
+    Lock lock = rwlf.writeLock("test6");
     if (lock.tryLock()) {
       try {
         count.incrementAndGet();
@@ -203,7 +203,7 @@ public class HazelcastReadWriteLockTest {
 
     t1 = new Thread(() -> writersTryRun());
 
-    Lock lock1 = irwl.writeLock("test6");
+    Lock lock1 = rwlf.writeLock("test6");
     lock1.lock();
     try {
       t1.start();
@@ -220,7 +220,7 @@ public class HazelcastReadWriteLockTest {
     count = new AtomicInteger(0);
 
     Thread t1 = new Thread(() -> {
-      Lock lock = irwl.readLock("test7");
+      Lock lock = rwlf.readLock("test7");
       try {
         if (lock.tryLock(10, TimeUnit.SECONDS)) {
           try {
@@ -236,7 +236,7 @@ public class HazelcastReadWriteLockTest {
       }
     });
 
-    Lock lock1 = irwl.writeLock("test7");
+    Lock lock1 = rwlf.writeLock("test7");
     lock1.lock();
     try {
       t1.start();
@@ -255,7 +255,7 @@ public class HazelcastReadWriteLockTest {
     count = new AtomicInteger(0);
 
     Thread t1 = new Thread(() -> {
-      Lock lock = irwl.writeLock("test8");
+      Lock lock = rwlf.writeLock("test8");
       try {
         if (lock.tryLock(10, TimeUnit.SECONDS)) {
           try {
@@ -271,7 +271,7 @@ public class HazelcastReadWriteLockTest {
       }
     });
 
-    Lock lock1 = irwl.writeLock("test8");
+    Lock lock1 = rwlf.writeLock("test8");
     lock1.lock();
     try {
       t1.start();
