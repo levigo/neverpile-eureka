@@ -11,12 +11,12 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import com.hazelcast.core.HazelcastInstance;
-import com.neverpile.eureka.tx.lock.DistributedLock;
+import com.neverpile.eureka.tx.lock.ClusterLockFactory;
 
 @Component
 @Lazy
-public class HazelcastReadWriteLock implements DistributedLock {
-  protected static final Logger logger = LoggerFactory.getLogger(HazelcastReadWriteLock.class);
+public class HazelcastLockFactory implements ClusterLockFactory {
+  protected static final Logger logger = LoggerFactory.getLogger(HazelcastLockFactory.class);
 
   @SuppressWarnings("unused")
   @Autowired

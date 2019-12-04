@@ -39,7 +39,7 @@ import com.neverpile.eureka.event.EventPublisher;
 import com.neverpile.eureka.model.Document;
 import com.neverpile.eureka.model.ObjectName;
 import com.neverpile.eureka.rest.api.exception.NotFoundException;
-import com.neverpile.eureka.tx.lock.DistributedLock;
+import com.neverpile.eureka.tx.lock.ClusterLockFactory;
 import com.neverpile.eureka.util.CompositeKey;
 
 /**
@@ -70,7 +70,7 @@ public class DefaultMultiVersioningDocumentService
   private ModelMapper modelMapper;
 
   @Autowired
-  private DistributedLock lock;
+  private ClusterLockFactory lock;
 
   @VisibleForTesting
   public static final String DOCUMENT_PREFIX = "document";

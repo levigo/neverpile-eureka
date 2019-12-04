@@ -2,7 +2,10 @@ package com.neverpile.eureka.tx.lock;
 
 import java.util.concurrent.locks.Lock;
 
-public interface DistributedLock {
+/**
+ * A factory interface for cluster-wide locks. Cluster-Lock instances are identified by a lock id.
+ */
+public interface ClusterLockFactory {
 
   Lock readLock(String lockId);
 

@@ -27,15 +27,14 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 
-import com.neverpile.eureka.ignite.lock.IgniteReadWriteLock;
+import com.neverpile.eureka.ignite.lock.IgniteLockFactory;
 import com.neverpile.eureka.ignite.queue.IgniteTaskQueue;
 import com.neverpile.eureka.ignite.wal.IgniteWAL;
 import com.neverpile.eureka.tasks.DistributedPersistentQueueType;
 import com.neverpile.eureka.tasks.TaskQueue;
-import com.neverpile.eureka.tx.lock.DistributedLock;
+import com.neverpile.eureka.tx.lock.ClusterLockFactory;
 import com.neverpile.eureka.tx.wal.WriteAheadLog;
 
 @Configuration
@@ -136,14 +135,13 @@ public class NeverpileIgniteAutoConfiguration {
 
   @Bean
   @ConditionalOnProperty(name = "neverpile-eureka.ignite.wal.enabled", havingValue = "true", matchIfMissing = true)
-  WriteAheadLog igniteWAL() {
+  public WriteAheadLog igniteWAL() {
     return new IgniteWAL();
   }
   
   @Bean
-  @Lazy
-  DistributedLock igniteDistributedLock() {
-    return new IgniteReadWriteLock();
+  public ClusterLockFactory igniteDistributedLock() {
+    return new IgniteLockFactory();
   }
   
   @Bean
