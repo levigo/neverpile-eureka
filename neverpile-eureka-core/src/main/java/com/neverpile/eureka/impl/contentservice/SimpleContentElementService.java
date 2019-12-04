@@ -9,6 +9,8 @@ import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.util.List;
 
+import javax.ws.rs.core.MediaType;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,22 +87,22 @@ public class SimpleContentElementService implements ContentElementService {
         // write source to temporary file, determining digest and length on the fly
         Digest digest;
         long length;
-    
+
         try (InputStream source = is) {
           try (FileOutputStream tmpOut = new FileOutputStream(tempFile)) {
             SizeTrackingOutputStream sizeTrackingOutputStream = new SizeTrackingOutputStream(tmpOut);
             DigestOutputStream digestOutputStream = new DigestOutputStream(sizeTrackingOutputStream, elementDigest);
-    
+
             StreamUtils.copy(source, digestOutputStream);
-    
+
             digest = new Digest();
             digest.setAlgorithm(HashAlgorithm.fromValue(elementDigest.getAlgorithm()));
             digest.setBytes(digestOutputStream.getMessageDigest().digest());
-    
+
             length = sizeTrackingOutputStream.getBytesWritten();
           }
         }
-    
+
         // Set Id
         String contentElementId = null;
         if (null != elementId) {
@@ -109,23 +111,25 @@ public class SimpleContentElementService implements ContentElementService {
         } else {
           contentElementId = idGenerationStrategy.createContentId(existingElements, digest);
         }
-    
+
         // save Content via ObjectStore
         try (InputStream tmpIn = new FileInputStream(tempFile)) {
           objectStore.put(ObjectName.of("document", documentId, contentElementId), ObjectStoreService.NEW_VERSION, tmpIn, length);
         }
-    
+
         // Create ContentElementDto
         ContentElement newContentDto = new ContentElement();
-    
+
         newContentDto.setContentElementId(contentElementId);
         newContentDto.setDigest(digest);
         newContentDto.setEncryption(EncryptionType.SHARED);
         newContentDto.setRole(role);
-        newContentDto.setType(javax.ws.rs.core.MediaType.valueOf(contentType));
+        newContentDto.setType(null != contentType
+            ? MediaType.valueOf(contentType)
+            : MediaType.APPLICATION_OCTET_STREAM_TYPE);
         newContentDto.setFileName(filename);
         newContentDto.setLength(length);
-    
+
         return newContentDto;
       } finally {
         tempFile.delete();
