@@ -113,7 +113,7 @@ public class NeverpileEurekaAutoConfiguration {
     @Bean
     @ConditionalOnBean(ObjectStoreService.class)
     @ConditionalOnMissingBean(DocumentService.class)
-    @ConditionalOnProperty(name = "neverpile-eureka.document-service.enable-multi-versioning", matchIfMissing = false)
+    @ConditionalOnProperty(name = "neverpile-eureka.document-service.enable-multi-versioning", matchIfMissing = false, havingValue = "false")
     public DefaultDocumentService defaultDocumentService() {
       return new DefaultDocumentService();
     }
