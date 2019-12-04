@@ -14,6 +14,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.neverpile.eureka.tx.lock.ClusterLockFactory;
+import com.neverpile.eureka.util.Threads;
 
 /**
  * A factory for creating local, non-cluster-wide locks. Only good for use in single-instance
@@ -91,7 +92,7 @@ public class LocalLockFactory implements ClusterLockFactory {
       this.key = key;
     }
 
-    public void incrementHoldCount() {
+    private void incrementHoldCount() {
       harden();
       holdCounter.incrementAndGet();
     }
@@ -135,9 +136,25 @@ public class LocalLockFactory implements ClusterLockFactory {
   }
 
   private ReadWriteLockWeakReference getReadWriteLock(final String lockId) {
-    while (locks.containsKey(lockId) && locks.get(lockId).get() == null) {
-      prune(); // poll until item gets removed. // TODO: timeout? / delay?
-    }
+    ReadWriteLock hardRef = null;
+    do {
+      prune();
+
+      // If there is an existing lock instance for this key, but it has already
+      // been collected, poll the reference queue until the situation has been cleared.
+      ReadWriteLockWeakReference ref = locks.get(lockId);
+      
+      // Hold an additional hard reference while we're doing our checks
+      if(null != ref)
+        hardRef = ref.get();
+      
+      // If there is no ref or there is one, but it hasn't been cleared, we're good to go
+      if (ref == null || hardRef != null)
+        break;
+
+      // Sleep 1ms before retrying to reduce churn
+      Threads.sleepSafely(1);
+    } while (true);
 
     return locks.computeIfAbsent(lockId, k -> new ReadWriteLockWeakReference(k, new ReentrantReadWriteLock()));
   }
