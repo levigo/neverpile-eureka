@@ -35,7 +35,9 @@ public class SpringHateoasIssue705WorkAround implements BeanPostProcessor {
     }
 
     ObjectMapper mapper = (ObjectMapper) bean;
-    mapper.registerModule(m1);
+    if(m1 != null) {
+      mapper.registerModule(m1);
+    }
     mapper.setAnnotationIntrospector(new AnnotationIntrospectorPair(new JacksonAnnotationIntrospector(),
         new JaxbAnnotationIntrospector(TypeFactory.defaultInstance())));
     mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
