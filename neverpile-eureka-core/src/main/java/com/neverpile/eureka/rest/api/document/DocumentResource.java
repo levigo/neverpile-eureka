@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -28,6 +30,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.neverpile.eureka.api.DocumentIdGenerationStrategy;
 import com.neverpile.eureka.api.DocumentService;
 import com.neverpile.eureka.model.Document;
@@ -66,6 +71,9 @@ public class DocumentResource {
   @Qualifier("document")
   ModelMapper documentMapper;
 
+  @Autowired
+  ObjectMapper mapper;
+  
   // GET - Returns a specific document by ID
   @PreSignedUrlEnabled
   @GetMapping(value = "{documentID}")
@@ -89,9 +97,9 @@ public class DocumentResource {
     return dto;
   }
 
-  @PostMapping(consumes = {
-      MediaType.APPLICATION_JSON_VALUE
-  })
+  private static final Logger LOGGER = LoggerFactory.getLogger(DocumentResource.class);
+
+  @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
   @Operation(summary = "Creates a new document", //
       description = "The ID of the newly created document is taken from the posted document if present, "
           + "otherwise generated automatically.")
@@ -102,10 +110,12 @@ public class DocumentResource {
       "operation", "create", "target", "document"
   }, value = "eureka.document.create")
   public DocumentDto create(@Parameter @RequestBody final DocumentDto requestDto,
-      @Parameter(description = "The list of facets to be included in the response; return all facets if empty") @RequestParam(name = "facets", required = false) final List<String> requestedFacets) {
+      @Parameter(description = "The list of facets to be included in the response; return all facets if empty") @RequestParam(name = "facets", required = false) final List<String> requestedFacets) throws JsonMappingException, JsonProcessingException {
 
     validate(f -> f.validateCreate(requestDto));
-
+    
+    LOGGER.info("Registered jackson modules: " + mapper.getRegisteredModuleIds());
+    
     Document newDocument = documentMapper.map(requestDto, Document.class);
     if (checkDocumentExist(newDocument.getDocumentId())) {
       throw new AlreadyExistsException("DocumentId already exists");
@@ -161,9 +171,7 @@ public class DocumentResource {
             .map(f -> f.getName()).collect(Collectors.toSet());
   }
 
-  @PutMapping(value = "{documentID}", consumes = {
-      MediaType.APPLICATION_JSON_VALUE
-  })
+  @PutMapping(value = "{documentID}", consumes = MediaType.APPLICATION_JSON_VALUE)
   @Operation(summary = "Update a document", description = "The document must already exist. It is not possible to create a new document with this method. ")
   @ApiResponses({
       @ApiResponse(responseCode = "202", description = "Document updated"),

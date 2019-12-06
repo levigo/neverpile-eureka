@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +25,8 @@ import com.neverpile.eureka.rest.api.document.DocumentFacet;
 
 @Component
 public class FacetedDocumentDtoModule extends SimpleModule {
+  private static final Logger LOGGER = LoggerFactory.getLogger(FacetedDocumentDtoModule.class);
+  
   private static final long serialVersionUID = 1L;
 
   @Autowired(required = false)
@@ -31,47 +35,10 @@ public class FacetedDocumentDtoModule extends SimpleModule {
   public FacetedDocumentDtoModule() {
     super(FacetedDocumentDtoModule.class.getSimpleName(), Version.unknownVersion());
 
-//    setSerializerModifier(new FacetedDocumentDtoSerializerModifier());
     setDeserializerModifier(new FacetedDocumentDtoDeserializerModifier());
+    
+    new Exception("Module created").printStackTrace();
   }
-
-//  public class FacetedDocumentDtoSerializerModifier extends BeanSerializerModifier {
-//    public class FacetSerializer extends BeanSerializer {
-//      private static final long serialVersionUID = 1L;
-//
-//      public FacetSerializer(final BeanSerializer serializer) {
-//        super(serializer);
-//      }
-//
-//      @Override
-//      protected void serializeFields(final Object bean, final JsonGenerator gen, final SerializerProvider provider)
-//          throws IOException {
-//        super.serializeFields(bean, gen, provider);
-//
-//        DocumentDto dto = (DocumentDto) bean;
-//        facets.forEach(f -> {
-//          Object value = dto.getFacets().get(f.getName());
-//          if (null != value) {
-//            try {
-//              gen.writeObjectField(f.getName(), value);
-//            } catch (Exception e) {
-//              // TODO Auto-generated catch block
-//              e.printStackTrace();
-//            }
-//          }
-//        });
-//      }
-//    }
-//
-//    @Override
-//    public JsonSerializer<?> modifySerializer(final SerializationConfig config, final BeanDescription beanDesc,
-//        final JsonSerializer<?> serializer) {
-//      if (beanDesc.getBeanClass() == DocumentDto.class) {
-//        return new FacetSerializer((BeanSerializer) serializer);
-//      }
-//      return serializer;
-//    }
-//  }
 
   public class FacetedDocumentDtoDeserializerModifier extends BeanDeserializerModifier {
     public class FacetDeserializer extends BeanDeserializer {
@@ -86,13 +53,13 @@ public class FacetedDocumentDtoModule extends SimpleModule {
       protected void handleUnknownProperty(final JsonParser p, final DeserializationContext ctxt,
           final Object beanOrClass, final String propName) throws IOException {
         facets.stream().filter(f -> f.getName().equals(propName)).forEach(f -> {
+          LOGGER.info("Handled unknown property " + propName);
           try {
             JavaType valueType = f.getValueType(ctxt.getTypeFactory());
             JsonDeserializer<Object> deserializer = ctxt.findRootValueDeserializer(valueType);
             Object value = deserializer.deserialize(p, ctxt);
             ((DocumentDto) beanOrClass).setFacet(f.getName(), value);
           } catch (Exception e) {
-            // e.printStackTrace();
             throw new RuntimeException(e);
           }
         });
@@ -104,6 +71,7 @@ public class FacetedDocumentDtoModule extends SimpleModule {
     public JsonDeserializer<?> modifyDeserializer(final DeserializationConfig config, final BeanDescription beanDesc,
         final JsonDeserializer<?> deserializer) {
       if (beanDesc.getBeanClass() == DocumentDto.class) {
+        LOGGER.info("Modified deserializer for DocumentDto");
         return new FacetDeserializer((BeanDeserializerBase) deserializer);
       }
       return deserializer;
