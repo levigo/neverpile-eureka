@@ -3,6 +3,7 @@ package com.neverpile.eureka.autoconfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -57,6 +58,7 @@ import com.neverpile.eureka.tx.wal.local.FileBasedWAL;
      */
     JacksonConfiguration.class, EventPublisher.class, UpdateEventAggregator.class
 })
+@AutoConfigureOrder(AutoConfigureOrder.DEFAULT_ORDER + 1)
 public class NeverpileEurekaAutoConfiguration {
   private static final Logger LOGGER = LoggerFactory.getLogger(NeverpileEurekaAutoConfiguration.class);
 
