@@ -19,19 +19,13 @@
       <artifactId>spring-boot-starter-json</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.springfox</groupId>
-      <artifactId>springfox-swagger2</artifactId>
-    </dependency>
-    <dependency>
       <groupId>com.neverpile.eureka</groupId>
       <artifactId>neverpile-common</artifactId>
-      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.neverpile.eureka</groupId>
       <artifactId>neverpile-common</artifactId>
-      <version>${project.version}</version>
     </dependency>
   </dependencies>
 </project>

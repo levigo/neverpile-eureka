@@ -5,8 +5,6 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import springfox.documentation.annotations.ApiIgnore;
-
 
 /**
  * An abstract condition which connects a set of sub-conditions using some connective operator.
@@ -24,7 +22,6 @@ public abstract class CompositeCondition<C extends CompositeCondition<C>> extend
    *
    * @param condition the condition
    */
-  @ApiIgnore
   @JsonIgnore
   public void addCondition(final Condition condition) {
     getConditions().add(condition);
@@ -35,7 +32,6 @@ public abstract class CompositeCondition<C extends CompositeCondition<C>> extend
    *
    * @return the list of sub-conditions
    */
-  @ApiIgnore
   @JsonIgnore
   public List<Condition> getConditions() {
     return conditions;

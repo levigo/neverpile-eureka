@@ -22,12 +22,12 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.annotations.VisibleForTesting;
 import com.neverpile.authorization.api.CoreActions;
 import com.neverpile.authorization.policy.AccessPolicy;
 import com.neverpile.authorization.policy.AccessRule;
 import com.neverpile.authorization.policy.Effect;
 import com.neverpile.authorization.policy.MutablePolicyRepository;
+import com.neverpile.common.util.VisibleForTesting;
 import com.neverpile.eureka.api.ObjectStoreService;
 import com.neverpile.eureka.api.ObjectStoreService.StoreObject;
 import com.neverpile.eureka.model.ObjectName;

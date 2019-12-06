@@ -20,12 +20,12 @@ public class ExceptionHandlers extends ResponseEntityExceptionHandler {
   @ExceptionHandler({
       ValidationError.class
   })
-  public ResponseEntity<Object> handleConstraintViolation(final ValidationError ex, final HttpHeaders headers,
-      final HttpStatus status, final WebRequest request) {
+  public ResponseEntity<Object> handleConstraintViolation(final ValidationError ex, final HttpStatus status,
+      final WebRequest request) {
     ArrayNode validationResults = objectMapper.createArrayNode();
     ex.violations.forEach(
         v -> validationResults.addObject().put("facet", v.getFacet().getName()).put("reason", v.getReason()));
 
-    return handleExceptionInternal(ex, validationResults, headers, status, request);
+    return handleExceptionInternal(ex, validationResults, new HttpHeaders(), status, request);
   }
 }

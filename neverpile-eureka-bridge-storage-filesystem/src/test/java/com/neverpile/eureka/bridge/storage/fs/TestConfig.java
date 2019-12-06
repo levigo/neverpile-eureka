@@ -5,8 +5,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.annotation.RequestScope;
 
 import com.neverpile.eureka.api.ObjectStoreService;
-import com.neverpile.eureka.impl.tx.lock.NoOpDistributedLock;
-import com.neverpile.eureka.tx.lock.DistributedLock;
+import com.neverpile.eureka.impl.tx.lock.LocalLockFactory;
+import com.neverpile.eureka.tx.lock.ClusterLockFactory;
 import com.neverpile.eureka.tx.wal.TransactionWAL;
 import com.neverpile.eureka.tx.wal.WriteAheadLog;
 import com.neverpile.eureka.tx.wal.local.DefaultTransactionWAL;
@@ -31,7 +31,7 @@ public class TestConfig {
   }
   
   @Bean
-  DistributedLock lock() {
-    return new NoOpDistributedLock();
+  ClusterLockFactory lock() {
+    return new LocalLockFactory();
   }
 }

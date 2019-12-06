@@ -7,21 +7,20 @@ import org.springframework.hateoas.RepresentationModel;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.neverpile.eureka.rest.api.document.IDto;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@ApiModel(value = "AuditEvent", description = "An audit event associated with a document")
+@Schema(name = "AuditEvent", description = "An audit event associated with a document")
 public class AuditEventDto extends RepresentationModel<AuditEventDto> implements IDto {
-  @ApiModel(description = "The type of an audit event")
+  @Schema(description = "The type of an audit event")
   public enum Type {
-    @ApiModelProperty(value = "A document created event")
+    @Schema(description = "A document created event")
     CREATE, 
-    @ApiModelProperty(value = "A document updated event")
+    @Schema(description = "A document updated event")
     UPDATE, 
-    @ApiModelProperty(value = "A document deleted event")
+    @Schema(description = "A document deleted event")
     DELETE,
-    @ApiModelProperty(value = "A user-defined event")
+    @Schema(description = "A user-defined event")
     CUSTOM
     ;
   }
@@ -32,7 +31,7 @@ public class AuditEventDto extends RepresentationModel<AuditEventDto> implements
   private Type type;
   private String description;
 
-  @ApiModelProperty(value = "The time at which the event occurred")
+  @Schema(description = "The time at which the event occurred")
   public Date getTimestamp() {
     return timestamp;
   }
@@ -41,7 +40,7 @@ public class AuditEventDto extends RepresentationModel<AuditEventDto> implements
     this.timestamp = timestamp;
   }
 
-  @ApiModelProperty(value = "The ID of the used which triggered the event; may be null if the event wasn't triggered by a user")
+  @Schema(description = "The ID of the used which triggered the event; may be null if the event wasn't triggered by a user")
   public String getUserID() {
     return userID;
   }
@@ -50,7 +49,7 @@ public class AuditEventDto extends RepresentationModel<AuditEventDto> implements
     this.userID = userID;
   }
 
-  @ApiModelProperty(value = "The type of event")
+  @Schema(description = "The type of event")
   public Type getType() {
     return type;
   }
@@ -59,7 +58,7 @@ public class AuditEventDto extends RepresentationModel<AuditEventDto> implements
     this.type = type;
   }
 
-  @ApiModelProperty(value = "A textual desription of the event")
+  @Schema(description = "A textual desription of the event")
   public String getDescription() {
     return description;
   }
@@ -69,7 +68,7 @@ public class AuditEventDto extends RepresentationModel<AuditEventDto> implements
   }
 
   // FIXME: do we really need this?
-  @ApiModelProperty(value = "The ID of this event")
+  @Schema(description = "The ID of this event")
   public String getAuditId() {
     return auditId;
   }

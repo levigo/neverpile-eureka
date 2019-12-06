@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,10 +27,11 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.annotations.VisibleForTesting;
+import com.neverpile.common.util.VisibleForTesting;
 import com.neverpile.eureka.api.DocumentAssociatedEntityStore;
 import com.neverpile.eureka.api.MultiVersioningDocumentService;
 import com.neverpile.eureka.api.ObjectStoreService;
+import com.neverpile.eureka.api.ObjectStoreService.ObjectNotFoundException;
 import com.neverpile.eureka.api.ObjectStoreService.ObjectStoreException;
 import com.neverpile.eureka.api.ObjectStoreService.StoreObject;
 import com.neverpile.eureka.api.exception.VersionMismatchException;
@@ -37,7 +39,7 @@ import com.neverpile.eureka.event.EventPublisher;
 import com.neverpile.eureka.model.Document;
 import com.neverpile.eureka.model.ObjectName;
 import com.neverpile.eureka.rest.api.exception.NotFoundException;
-import com.neverpile.eureka.tx.lock.DistributedLock;
+import com.neverpile.eureka.tx.lock.ClusterLockFactory;
 import com.neverpile.eureka.util.CompositeKey;
 
 /**
@@ -68,7 +70,7 @@ public class DefaultMultiVersioningDocumentService
   private ModelMapper modelMapper;
 
   @Autowired
-  private DistributedLock lock;
+  private ClusterLockFactory lock;
 
   @VisibleForTesting
   public static final String DOCUMENT_PREFIX = "document";
@@ -331,7 +333,7 @@ public class DefaultMultiVersioningDocumentService
 
   @Override
   public boolean documentExists(final String documentId) {
-    return getVersions(documentId).isEmpty();
+    return !getVersions(documentId).isEmpty();
   }
 
   @Override
@@ -484,15 +486,19 @@ public class DefaultMultiVersioningDocumentService
   private List<Instant> doRetrieveVersionList(final String documentId) {
     ObjectName versionsPrefix = createDocumentDirectoryName(documentId);
 
-    // @formatter:off
-    return objectStore
-      .list(versionsPrefix)
-      .filter(s -> s.getObjectName().length() > versionsPrefix.length())
-      .map(s -> s.getObjectName().element(versionsPrefix.length()))
-      .map(n -> Instant.from(VERSION_FORMATTER.parse(n)))
-      .sorted()
-      .collect(Collectors.toList());
-    // @formatter:on
+    try {
+      // @formatter:off
+      return objectStore
+        .list(versionsPrefix)
+        .filter(s -> s.getObjectName().length() > versionsPrefix.length())
+        .map(s -> s.getObjectName().element(versionsPrefix.length()))
+        .map(n -> Instant.from(VERSION_FORMATTER.parse(n)))
+        .sorted()
+        .collect(Collectors.toList());
+      // @formatter:on
+    } catch (ObjectNotFoundException e) {
+      return Collections.emptyList();
+    }
   }
 
 }

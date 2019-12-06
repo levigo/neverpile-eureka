@@ -6,7 +6,7 @@ import java.util.HashMap;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-import org.apache.tomcat.util.http.fileupload.FileUtils;
+import org.apache.cassandra.io.util.FileUtils;
 import org.cassandraunit.utils.EmbeddedCassandraServerHelper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,13 +15,12 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.data.cassandra.config.SchemaAction;
 import org.springframework.data.cassandra.core.cql.CqlIdentifier;
 import org.springframework.data.cassandra.repository.config.EnableCassandraRepositories;
-import org.springframework.web.context.annotation.RequestScope;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
 import com.neverpile.eureka.api.ObjectStoreService;
-import com.neverpile.eureka.impl.tx.lock.NoOpDistributedLock;
-import com.neverpile.eureka.tx.lock.DistributedLock;
+import com.neverpile.eureka.impl.tx.lock.LocalLockFactory;
+import com.neverpile.eureka.tx.lock.ClusterLockFactory;
 import com.neverpile.eureka.tx.wal.TransactionWAL;
 import com.neverpile.eureka.tx.wal.WriteAheadLog;
 import com.neverpile.eureka.tx.wal.local.DefaultTransactionWAL;
@@ -35,7 +34,7 @@ public class CassandraTestConfig extends AbstractNeverpileCassandraConfig {
   @PostConstruct
   public void startCassandraEmbedded() throws Exception {
     String tmpDir = "target/embeddedCassandra/tmp";
-    FileUtils.deleteDirectory(new File(tmpDir));
+    FileUtils.deleteRecursive(new File(tmpDir));
     File configFile = new File(getClass().getClassLoader().getResource("cassandra.yaml").getFile());
     if (configFile.exists()) {
       EmbeddedCassandraServerHelper.startEmbeddedCassandra(configFile, tmpDir, 10000);
@@ -106,13 +105,12 @@ public class CassandraTestConfig extends AbstractNeverpileCassandraConfig {
   }
 
   @Bean
-  @RequestScope
   TransactionWAL wal() {
     return new DefaultTransactionWAL();
   }
   
   @Bean
-  DistributedLock lock() {
-    return new NoOpDistributedLock();
+  ClusterLockFactory lock() {
+    return new LocalLockFactory();
   }
 }

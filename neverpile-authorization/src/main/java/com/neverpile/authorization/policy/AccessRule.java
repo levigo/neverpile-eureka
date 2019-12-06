@@ -1,6 +1,6 @@
 package com.neverpile.authorization.policy;
 
-import static java.util.Arrays.*;
+import static java.util.Arrays.asList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,7 @@ import com.neverpile.authorization.api.Action;
 import com.neverpile.common.condition.AndCondition;
 import com.neverpile.common.condition.Condition;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * Access rules for the basis for authorization decisions. The matching and evaluation process is
@@ -32,25 +32,25 @@ public class AccessRule {
   public static final String ROLE = "role:";
 
   @JsonProperty(required = false)
-  @ApiModelProperty("A name/description of a rule")
+  @Schema(description = "A name/description of a rule")
   private String name;
 
-  @ApiModelProperty("The effect to be caused if this rule matches")
+  @Schema(description = "The effect to be caused if this rule matches")
   private Effect effect;
 
-  @ApiModelProperty("The subjects matched by this rule. Either 'principal:'s or 'role:'s or 'anonymous'")
+  @Schema(description = "The subjects matched by this rule. Either 'principal:'s or 'role:'s or 'anonymous'")
   @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
   private List<String> subjects = new ArrayList<>();
 
-  @ApiModelProperty("The resources matched by this rule. (TBD: pointer to possible resources)")
+  @Schema(description = "The resources matched by this rule. (TBD: pointer to possible resources)")
   @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
   private List<String> resources = new ArrayList<>();
 
-  @ApiModelProperty("The actions matched by this rule. (TBD: pointer to possible actions)")
+  @Schema(description = "The actions matched by this rule. (TBD: pointer to possible actions)")
   @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
   private List<String> actions = new ArrayList<>();
 
-  @ApiModelProperty("Additional conditions to be satisfied for this rule to match")
+  @Schema(description = "Additional conditions to be satisfied for this rule to match")
   private AndCondition conditions = new AndCondition();
 
   /**

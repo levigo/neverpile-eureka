@@ -36,21 +36,19 @@ import com.neverpile.eureka.rest.api.exception.NotFoundException;
 import com.neverpile.urlcrypto.PreSignedUrlEnabled;
 
 import io.micrometer.core.annotation.Timed;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Authorization;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping(path = "/api/v1/documents/{documentId}/audit", produces = {
     MediaType.APPLICATION_JSON_VALUE
 })
 @ConditionalOnBean(AuditLogFacet.class)
-@Api(tags = "Audit", authorizations = {
-    @Authorization(value = "oauth")
-})
+@OpenAPIDefinition(tags = @Tag(name = "Audit"))
 public class AuditLogResource {
   private final ModelMapper modelMapper = new ModelMapper();
 
@@ -66,14 +64,14 @@ public class AuditLogResource {
 
   @PreSignedUrlEnabled
   @GetMapping()
-  @ApiOperation(value = "Fetches a document's audit log")
-  @ApiResponses({
-      @ApiResponse(code = 200, message = "Audit log found"),
-      @ApiResponse(code = 404, message = "Document not found")
-  })
-  @Timed(description = "get audit log", extraTags = {"operation", "retrieve", "target", "audit-log"}, value="eureka.audit.log.get")
+  @Operation(summary = "Fetches a document's audit log")
+  @ApiResponse(responseCode = "200", description = "Audit log found")
+  @ApiResponse(responseCode = "404", description = "Document not found")
+  @Timed(description = "get audit log", extraTags = {
+      "operation", "retrieve", "target", "audit-log"
+  }, value = "eureka.audit.log.get")
   public ResponseEntity<List<AuditEventDto>> get(
-      @ApiParam(value = "The ID of the document") @PathVariable("documentId") final String documentId) {
+      @Parameter(description = "The ID of the document") @PathVariable("documentId") final String documentId) {
 
     List<AuditEventDto> auditLog = auditLogService.getEventLog(documentId).stream().map(audit -> {
       AuditEventDto auditDto = documentMapper.map(audit, AuditEventDto.class);
@@ -96,15 +94,17 @@ public class AuditLogResource {
 
   @PreSignedUrlEnabled
   @GetMapping(value = "{auditId}")
-  @ApiOperation(value = "Fetches a single audit event")
+  @Operation(summary = "Fetches a single audit event")
   @ApiResponses({
-      @ApiResponse(code = 200, message = "Audit event found"),
-      @ApiResponse(code = 404, message = "AuditEvent not found")
+      @ApiResponse(responseCode = "200", description = "Audit event found"),
+      @ApiResponse(responseCode = "404", description = "AuditEvent not found")
   })
-  @Timed(description = "get audit event", extraTags = {"operation", "retrieve", "target", "audit-event"}, value="eureka.audit.event.get")
+  @Timed(description = "get audit event", extraTags = {
+      "operation", "retrieve", "target", "audit-event"
+  }, value = "eureka.audit.event.get")
   public ResponseEntity<AuditEventDto> get(
-      @ApiParam(value = "The ID of the document") @PathVariable("documentId") final String documentId,
-      @ApiParam(value = "The ID of the audit event to be fetched") @PathVariable("auditId") final String auditId) {
+      @Parameter(description = "The ID of the document") @PathVariable("documentId") final String documentId,
+      @Parameter(description = "The ID of the audit event to be fetched") @PathVariable("auditId") final String auditId) {
     List<AuditEvent> auditLog = auditLogService.getEventLog(documentId);
     if (null == auditLog)
       throw new NotFoundException("AuditEventLog not found");
@@ -125,16 +125,18 @@ public class AuditLogResource {
   }
 
   @PostMapping
-  @ApiOperation(value = "Appends an event to a document's audit log")
+  @Operation(summary = "Appends an event to a document's audit log")
   @ApiResponses({
-      @ApiResponse(code = 201, message = "Event logged"),
-      @ApiResponse(code = 404, message = "Document not found"),
-      @ApiResponse(code = 400, message = "Invalid input, object invalid")
+      @ApiResponse(responseCode = "201", description = "Event logged"),
+      @ApiResponse(responseCode = "404", description = "Document not found"),
+      @ApiResponse(responseCode = "400", description = "Invalid input, object invalid")
   })
   @Transactional
-  @Timed(description = "add audit event", extraTags = {"operation", "add", "target", "audit-event"}, value="eureka.audit.add")
+  @Timed(description = "add audit event", extraTags = {
+      "operation", "add", "target", "audit-event"
+  }, value = "eureka.audit.add")
   public AuditEventDto create(final Principal principal,
-      @ApiParam(value = "The ID of the document for which the event shall be logged") @PathVariable("documentId") final String documentId,
+      @Parameter(description = "The ID of the document for which the event shall be logged") @PathVariable("documentId") final String documentId,
       @RequestBody @Valid @NotNull @NotBlank final AuditEventDto event) throws Exception {
     documentService.getDocument(documentId).orElseThrow(() -> new NotFoundException("Document not found"));
 

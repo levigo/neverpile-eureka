@@ -17,11 +17,10 @@ import com.neverpile.eureka.model.MediaTypeDeserializer;
 import com.neverpile.eureka.model.MediaTypeSerializer;
 import com.neverpile.eureka.rest.api.document.IDto;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 
-@ApiModel(value = "ContentElement", description = "A content element associated with a document")
+@Schema(name = "ContentElement", description = "A content element associated with a document")
 public class ContentElementDto extends RepresentationModel<ContentElementDto> implements IDto {
   private String contentElementId;
   
@@ -40,7 +39,7 @@ public class ContentElementDto extends RepresentationModel<ContentElementDto> im
   private Digest digest;
 
   @JsonProperty("id")
-  @ApiModelProperty("The id of the content element - uniqueness is guaranteed only within the document")
+  @Schema(description = "The id of the content element - uniqueness is guaranteed only within the document")
   public String getContentElementId() {
     return contentElementId;
   }
@@ -49,7 +48,7 @@ public class ContentElementDto extends RepresentationModel<ContentElementDto> im
     this.contentElementId = id;
   }
 
-  @ApiModelProperty("The role of the content element")
+  @Schema(description = "The role of the content element")
   public String getRole() {
     return role;
   }
@@ -58,7 +57,7 @@ public class ContentElementDto extends RepresentationModel<ContentElementDto> im
     this.role = role;
   }
 
-  @ApiModelProperty(value = "The MIME-Type of the content element as specified in RFC 2045 without parameters", dataType = "string")
+  @Schema(description = "The MIME-Type of the content element as specified in RFC 2045 without parameters", type = "string")
   @Pattern(regexp = "[-\\w+]+/[-\\w+]+")
   public MediaType getType() {
     return type;
@@ -68,7 +67,7 @@ public class ContentElementDto extends RepresentationModel<ContentElementDto> im
     this.type = type;
   }
 
-  @ApiModelProperty("The type of encryption the content element is subject to")
+  @Schema(description = "The type of encryption the content element is subject to")
   public EncryptionType getEncryption() {
     return encryption;
   }
@@ -77,7 +76,7 @@ public class ContentElementDto extends RepresentationModel<ContentElementDto> im
     this.encryption = encryption;
   }
 
-  @ApiModelProperty("The length of the element in bytes")
+  @Schema(description = "The length of the element in bytes")
   @Min(-1)
   public long getLength() {
     return length;
@@ -87,7 +86,7 @@ public class ContentElementDto extends RepresentationModel<ContentElementDto> im
     this.length = length;
   }
 
-  @ApiModelProperty("The Digest of the payload object")
+  @Schema(description = "The Digest of the payload object")
   public Digest getDigest() {
     return digest;
   }
@@ -106,9 +105,9 @@ public class ContentElementDto extends RepresentationModel<ContentElementDto> im
       return false;
     }
     ContentElementDto contentElement = (ContentElementDto) o;
-    return Objects.equals(contentElementId, contentElement.contentElementId) && Objects.equals(role, contentElement.role)
-        && Objects.equals(type, contentElement.type) && Objects.equals(encryption, contentElement.encryption)
-        && Objects.equals(length, contentElement.length) 
+    return Objects.equals(contentElementId, contentElement.contentElementId)
+        && Objects.equals(role, contentElement.role) && Objects.equals(type, contentElement.type)
+        && Objects.equals(encryption, contentElement.encryption) && Objects.equals(length, contentElement.length)
         && Objects.equals(digest, contentElement.digest);
   }
 

@@ -6,6 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import com.amazonaws.ClientConfiguration;
+import com.amazonaws.SDKGlobalConfiguration;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -58,9 +59,13 @@ public class S3ConnectionConfiguration implements Serializable {
 
   private ClientConfiguration clientConfiguration = new ClientConfiguration();
 
+  private boolean disableCertificateChecking;
+  
   public AmazonS3 createClient() {
     AWSCredentials credentials = new BasicAWSCredentials(getAccessKeyId(), getSecretAccessKey());
 
+    System.setProperty(SDKGlobalConfiguration.DISABLE_CERT_CHECKING_SYSTEM_PROPERTY, Boolean.toString(disableCertificateChecking));
+    
     return AmazonS3ClientBuilder.standard() //
         .withCredentials(new AWSStaticCredentialsProvider(credentials)) //
         .withEndpointConfiguration(new EndpointConfiguration(this.getEndpoint(), Regions.US_EAST_1.name())) //
@@ -131,5 +136,13 @@ public class S3ConnectionConfiguration implements Serializable {
 
   public void setAccessStyle(final AccessStyle accessStyle) {
     this.accessStyle = accessStyle;
+  }
+
+  public boolean isDisableCertificateChecking() {
+    return disableCertificateChecking;
+  }
+
+  public void setDisableCertificateChecking(final boolean disableCertificateChecking) {
+    this.disableCertificateChecking = disableCertificateChecking;
   }
 }

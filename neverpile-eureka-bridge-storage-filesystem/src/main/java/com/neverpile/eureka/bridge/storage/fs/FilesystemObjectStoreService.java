@@ -1,7 +1,8 @@
 package com.neverpile.eureka.bridge.storage.fs;
 
-import static com.neverpile.eureka.util.ObjectNames.*;
-import static java.util.stream.Collectors.*;
+import static com.neverpile.eureka.util.ObjectNames.escape;
+import static com.neverpile.eureka.util.ObjectNames.unescape;
+import static java.util.stream.Collectors.joining;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -378,6 +379,8 @@ public class FilesystemObjectStoreService implements ObjectStoreService {
       return Files.walk(start, 1) //
           .filter(p -> !p.equals(start)) // exclude start directory
           .map(p -> p.toFile().isDirectory() ? toPrefix(p) : toStoreObject(p));
+    } catch (NoSuchFileException e) {
+      throw new ObjectNotFoundException(prefix, e);
     } catch (IOException e) {
       throw new ObjectStoreException(prefix, "Can't walk file tree", e);
     }

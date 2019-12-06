@@ -7,7 +7,7 @@ import java.util.HashMap;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-import org.apache.tomcat.util.http.fileupload.FileUtils;
+import org.apache.cassandra.io.util.FileUtils;
 import org.cassandraunit.utils.EmbeddedCassandraServerHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +54,7 @@ public class CassandraEmbeddedConfig extends AbstractNeverpileCassandraConfig {
     LOGGER.info("-----");
     
     String tmpDir = "target/embeddedCassandra/tmp";
-    FileUtils.deleteDirectory(new File(tmpDir));
+    FileUtils.deleteRecursive(new File(tmpDir));
     URL resource = getClass().getClassLoader().getResource("cassandra.yaml");
     File configFile = null;
     if(null != resource) {
