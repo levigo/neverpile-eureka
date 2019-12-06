@@ -1,7 +1,7 @@
 package com.neverpile.authorization.rest;
 
-import static java.util.Collections.*;
-import static java.util.stream.Collectors.*;
+import static java.util.Collections.singleton;
+import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,23 +44,20 @@ import com.neverpile.authorization.policy.impl.PolicyBasedAuthorizationService;
 import com.neverpile.authorization.rest.ValidationResult.Type;
 
 import io.micrometer.core.annotation.Timed;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Authorization;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping(path = "/api/v1/authorization/policy", produces = {
     MediaType.APPLICATION_JSON_VALUE
 })
 @EnableEntityLinks
-@Api(tags = {
-    "Authorization"
-}, authorizations = {
-    @Authorization(value = "oauth")
-})
+@OpenAPIDefinition(tags = @Tag(name = "Authorization"))
 @Import(PolicyRepositoryResourceHints.class)
 public class PolicyRepositoryResource {
   static final String POLICY_RESOURCE_SPECIFIER = "authorization.policy";
@@ -81,15 +78,15 @@ public class PolicyRepositoryResource {
   @Autowired(required = false)
   @SubjectHints
   private List<HintRegistrations> subjectHintRegistrations;
-  
+
   @Autowired(required = false)
   @ResourceHints
   private List<HintRegistrations> resourceHintRegistrations;
-  
+
   @GetMapping("/current")
-  @ApiOperation(value = "Fetch the currently valid authorization policy")
+  @Operation(summary = "Fetch the currently valid authorization policy")
   @ApiResponses({
-      @ApiResponse(code = 200, message = "Policy found")
+      @ApiResponse(responseCode = "200", description = "Policy found")
   })
   @Timed(description = "get current policy", extraTags = {
       "operation", "retrieve", "target", "policy"
@@ -103,17 +100,17 @@ public class PolicyRepositoryResource {
   }
 
   @GetMapping
-  @ApiOperation(value = "Query access policies by start-of-validity date range")
+  @Operation(summary = "Query access policies by start-of-validity date range")
   @ApiResponses({
-      @ApiResponse(code = 200, message = "Policy found")
+      @ApiResponse(responseCode = "200", description = "Policy found")
   })
   @Timed(description = "get current policy", extraTags = {
       "operation", "retrieve", "target", "policy"
   }, value = "eureka.authorization.policy.get-current")
   public List<AccessPolicy> query(
-      @ApiParam(value = "The start of the date range to query for", defaultValue = "any start date") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final Optional<Date> from,
-      @ApiParam(value = "The end of the date range to query for", defaultValue = "any end date") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final Optional<Date> to,
-      @ApiParam(value = "The maximum number if policies to return", defaultValue = "no limit") @RequestParam(required = false) final Optional<Integer> limit) {
+      @Parameter(description = "The start of the date range to query for") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final Optional<Date> from,
+      @Parameter(description = "The end of the date range to query for") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final Optional<Date> to,
+      @Parameter(description = "The maximum number if policies to return") @RequestParam(required = false) final Optional<Integer> limit) {
     if (!authService.isAccessAllowed(POLICY_RESOURCE_SPECIFIER, singleton(CoreActions.QUERY),
         createAuthorizationContext()))
       throw new AccessDeniedException("Retrieval of authorization policy denied");
@@ -127,15 +124,13 @@ public class PolicyRepositoryResource {
   }
 
   @GetMapping(value = "{startOfValidity}")
-  @ApiOperation(value = "Fetch the authorization policy with the given start-of-validity date")
-  @ApiResponses({
-      @ApiResponse(code = 200, message = "Policy found")
-  })
+  @Operation(summary = "Fetch the authorization policy with the given start-of-validity date")
+  @ApiResponse(responseCode = "200", description = "Policy found")
   @Timed(description = "get policy by start-of-validity date", extraTags = {
       "operation", "retrieve", "target", "policy"
   }, value = "eureka.authorization.policy.get")
   public AccessPolicy get(
-      @ApiParam(value = "The start-of-validity date of the policy to be fetched", format = "date-time") @PathVariable("startOfValidity") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final Date startOfValidity) {
+      @Parameter(description = "The start-of-validity date of the policy to be fetched", schema = @Schema(format = "date-time")) @PathVariable("startOfValidity") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final Date startOfValidity) {
     if (!authService.isAccessAllowed(POLICY_RESOURCE_SPECIFIER, Collections.singleton(CoreActions.GET),
         createAuthorizationContext()))
       throw new AccessDeniedException("Retrieval of authorization policy denied");
@@ -144,33 +139,29 @@ public class PolicyRepositoryResource {
   }
 
   @PutMapping(value = "{startOfValidity}")
-  @ApiOperation(value = "Create or update the authorization policy with the given start-of-validity date")
-  @ApiResponses({
-      @ApiResponse(code = 200, message = "Policy found")
-  })
+  @Operation(summary = "Create or update the authorization policy with the given start-of-validity date")
+  @ApiResponse(responseCode = "200", description = "Policy found")
   @Timed(description = "create or update policy by start-of-validity date", extraTags = {
       "operation", "create/update", "target", "policy"
   }, value = "eureka.authorization.policy.put")
   @Transactional
   public void put(
-      @ApiParam(value = "The start-of-validity date of the policy to be created/updated", format = "date-time") @PathVariable("startOfValidity") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final Date startOfValidity,
-      @ApiParam() @RequestBody final AccessPolicy policy) {
+      @Parameter(description = "The start-of-validity date of the policy to be created/updated", schema = @Schema(format = "date-time")) @PathVariable("startOfValidity") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final Date startOfValidity,
+      @Parameter @RequestBody final AccessPolicy policy) {
     policy.setValidFrom(startOfValidity);
 
     createOrUpdate(policy);
   }
 
   @DeleteMapping(value = "{startOfValidity}")
-  @ApiOperation(value = "Delete the authorization policy with the given start-of-validity date")
-  @ApiResponses({
-      @ApiResponse(code = 200, message = "Policy found")
-  })
+  @Operation(summary = "Delete the authorization policy with the given start-of-validity date")
+  @ApiResponse(responseCode = "200", description = "Policy found")
   @Timed(description = "delete policy by start-of-validity date", extraTags = {
       "operation", "delete", "target", "policy"
   }, value = "eureka.authorization.policy.delete")
   @Transactional
   public void delete(
-      @ApiParam(value = "The start-of-validity date of the policy to be deleted", format = "date-time") @PathVariable("startOfValidity") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final Date startOfValidity) {
+      @Parameter(description = "The start-of-validity date of the policy to be deleted", schema = @Schema(format = "date-time")) @PathVariable("startOfValidity") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final Date startOfValidity) {
     if (!authService.isAccessAllowed(POLICY_RESOURCE_SPECIFIER, Collections.singleton(CoreActions.DELETE),
         createAuthorizationContext()))
       throw new AccessDeniedException("Deletion of authorization policy denied");
@@ -179,24 +170,22 @@ public class PolicyRepositoryResource {
   }
 
   @PostMapping()
-  @ApiOperation(value = "Create or update an authorization policy with the start-of-validity date taken from the supplied policy")
+  @Operation(summary = "Create or update an authorization policy with the start-of-validity date taken from the supplied policy")
   @ApiResponses({
-      @ApiResponse(code = 200, message = "Policy found")
+      @ApiResponse(responseCode = "200", description = "Policy found")
   })
   @Timed(description = "create or update policy by start-of-validity date", extraTags = {
       "operation", "create/update", "target", "policy"
   }, value = "eureka.authorization.policy.post")
   @Transactional
-  public void post(@ApiParam() @RequestBody final AccessPolicy policy) {
+  public void post(@Parameter @RequestBody final AccessPolicy policy) {
     createOrUpdate(policy);
   }
 
   @PostMapping("/validate")
-  @ApiOperation(value = "Validate an authorization policy. Report problems as a list of errors and/or warnings")
-  @ApiResponses({
-      @ApiResponse(code = 200, message = "Policy validated")
-  })
-  public List<ValidationResult> validate(@ApiParam() @RequestBody final String policyJson) {
+  @Operation(summary = "Validate an authorization policy. Report problems as a list of errors and/or warnings")
+  @ApiResponse(responseCode = "200", description = "Policy validated")
+  public List<ValidationResult> validate(@Parameter @RequestBody final String policyJson) {
     authService.isAccessAllowed(POLICY_RESOURCE_SPECIFIER, Collections.singleton(CoreActions.VALIDATE),
         createAuthorizationContext());
 
@@ -234,26 +223,24 @@ public class PolicyRepositoryResource {
   }
 
   @GetMapping(value = "/hints")
-  @ApiOperation(value = "Fetch the authorization policy hints")
-  @ApiResponses({
-      @ApiResponse(code = 200, message = "Hints found")
-  })
+  @Operation(summary = "Fetch the authorization policy hints")
+  @ApiResponse(responseCode = "200", description = "Hints found")
   public HintResult getHints() {
     if (!authService.isAccessAllowed(POLICY_RESOURCE_SPECIFIER, Collections.singleton(CoreActions.GET),
         createAuthorizationContext()))
       throw new AccessDeniedException("Retrieval of authorization policy denied");
 
     HintResult result = new HintResult();
-    
-    if(null != actionHintRegistrations)
+
+    if (null != actionHintRegistrations)
       result.setActions(actionHintRegistrations.stream().flatMap(r -> r.getHints().stream()).collect(toList()));
-    
-    if(null != resourceHintRegistrations)
+
+    if (null != resourceHintRegistrations)
       result.setResources(resourceHintRegistrations.stream().flatMap(r -> r.getHints().stream()).collect(toList()));
-    
-    if(null != subjectHintRegistrations)
+
+    if (null != subjectHintRegistrations)
       result.setSubjects(subjectHintRegistrations.stream().flatMap(r -> r.getHints().stream()).collect(toList()));
-    
+
     return result;
   }
 }

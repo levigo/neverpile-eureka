@@ -10,9 +10,9 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.neverpile.eureka.rest.api.document.IDto;
 
-import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(value = "Metadata", description = "A set of metadata elements associated with a document")
+@Schema(name = "Metadata", description = "A set of metadata elements associated with a document")
 public class MetadataDto extends ResourceSupport implements IDto {
   public static MetadataDto with(final String name, final MetadataElementDto metadata) {
     return new MetadataDto().set(name, metadata);

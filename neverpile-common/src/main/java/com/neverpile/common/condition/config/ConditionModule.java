@@ -5,6 +5,7 @@ import static java.util.stream.Collectors.toMap;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,8 +34,6 @@ import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.BeanSerializer;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import com.neverpile.common.condition.CompositeCondition;
 import com.neverpile.common.condition.Condition;
 import com.neverpile.common.condition.CoreConditionRegistry;
@@ -56,8 +55,8 @@ public class ConditionModule extends SimpleModule {
   @Autowired(required = false)
   private final List<ConditionRegistry> conditionRegistries = Collections.emptyList();
 
-  private final BiMap<String, Class<? extends Condition>> conditionClassByName = HashBiMap.create();
-  private final Map<Class<? extends Condition>, String> conditionNameByClass = conditionClassByName.inverse();
+  private Map<String, Class<? extends Condition>> conditionClassByName = new HashMap<>();
+  private Map<Class<? extends Condition>, String> conditionNameByClass = new HashMap<>();
 
   public ConditionModule() {
     super(ConditionModule.class.getSimpleName(), Version.unknownVersion());
@@ -68,9 +67,12 @@ public class ConditionModule extends SimpleModule {
 
   @PostConstruct
   private void init() {
-    conditionClassByName.putAll(
-        conditionRegistries.stream().flatMap(r -> r.getConditions().entrySet().stream()).collect(
-            toMap(e -> e.getKey(), e -> e.getValue())));
+    conditionClassByName = conditionRegistries.stream() //
+        .flatMap(r -> r.getConditions().entrySet().stream()) //
+        .collect(toMap(e -> e.getKey(), e -> e.getValue()));
+
+    conditionNameByClass = conditionClassByName.entrySet().stream() //
+        .collect(toMap(e -> e.getValue(), e -> e.getKey())); // invert mapping
   }
 
   public class ConditionSerializerModifier extends BeanSerializerModifier {

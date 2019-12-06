@@ -12,11 +12,9 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-import springfox.documentation.annotations.ApiIgnore;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(value = "Document", description = "A neverpile document")
+@Schema(name = "Document", description = "A neverpile document")
 @JsonPropertyOrder({
     "documentId", "versionTimestamp", "dateCreated", "dateModified", "contentElements"
 })
@@ -30,7 +28,7 @@ public class DocumentDto extends ResourceSupport implements IDto {
   public DocumentDto() {
   }
 
-  @ApiModelProperty("The document's unique ID")
+  @Schema(description = "The document's unique ID")
   public String getDocumentId() {
     return documentId;
   }
@@ -47,26 +45,26 @@ public class DocumentDto extends ResourceSupport implements IDto {
     this.versionTimestamp = versionTimestamp;
   }
   
-  @ApiIgnore
+  @Schema(hidden = true)
   @JsonAnyGetter
   public Map<String, Object> getFacets() {
     return facets;
   }
 
-  @ApiIgnore
+  @Schema(hidden = true)
   @JsonIgnore // handled by custom deserializer
   public void setFacet(final String name, final Object value) {
     this.facets.put(name, value);
   }
   
-  @ApiIgnore
+  @Schema(hidden = true)
   @JsonIgnore
   @SuppressWarnings("unchecked")
   public <V> Optional<V> getFacetData(final DocumentFacet<V> facet) {
     return (Optional<V>) Optional.ofNullable(facets.get(facet.getName()));
   }
   
-  @ApiIgnore
+  @Schema(hidden = true)
   @JsonIgnore
   public <V> void putFacetData(final DocumentFacet<V> facet, final V value) {
     facets.put(facet.getName(), value);

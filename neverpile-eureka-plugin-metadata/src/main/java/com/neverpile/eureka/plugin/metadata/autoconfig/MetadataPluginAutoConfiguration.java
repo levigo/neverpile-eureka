@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-import com.fasterxml.classmate.TypeResolver;
 import com.neverpile.eureka.api.ObjectStoreService;
 import com.neverpile.eureka.model.Document;
 import com.neverpile.eureka.plugin.metadata.rest.MetadataFacet;
@@ -38,11 +37,4 @@ public class MetadataPluginAutoConfiguration {
   MetadataService simpleMetadataService() {
     return new SimpleMetadataService();
   }
-  
-  @Bean
-  @ConditionalOnBean(value = TypeResolver.class)
-  SpringfoxEnrichMetadataDtoModel springfoxEnrichMetadataDtoModel() {
-    return new SpringfoxEnrichMetadataDtoModel();
-  }
-
 }

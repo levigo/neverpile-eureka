@@ -9,9 +9,6 @@ import javax.ws.rs.core.MediaType;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import springfox.documentation.annotations.ApiIgnore;
-
-@ApiIgnore
 public class ContentElement extends EncryptableElement {
   private String id;
 

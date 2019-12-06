@@ -21,41 +21,38 @@ import com.neverpile.eureka.rest.api.exception.NotFoundException;
 import com.neverpile.urlcrypto.PreSignedUrlEnabled;
 
 import io.micrometer.core.annotation.Timed;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Authorization;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping(path = "/api/v1/documents/{documentID}/metadata", produces = {
     MediaType.APPLICATION_JSON_VALUE
 })
-@Api(tags = "Metadata", authorizations = {
-    @Authorization(value = "oauth")
-})
+@OpenAPIDefinition(tags = @Tag(name = "Metadata"))
 public class MetadataResource {
   @Autowired
   private DocumentService documentService;
 
   @Autowired
   MetadataFacet facet;
-  
+
   @Autowired
   @Qualifier("document")
   ModelMapper documentMapper;
 
   @PreSignedUrlEnabled
   @GetMapping
-  @ApiOperation("Fetches a document's metadata")
-  @ApiResponses({
-      @ApiResponse(code = 200, message = "Document metadata found"),
-      @ApiResponse(code = 404, message = "Document not found")
-  })
-  @Timed(description = "get document metadata", extraTags = {"operation", "retrieve", "target", "metadata"}, value="eureka.metadata.get")
+  @Operation(description = "Fetches a document's metadata")
+  @ApiResponse(responseCode = "200", description = "Document metadata found")
+  @ApiResponse(responseCode = "404", description = "Document not found")
+  @Timed(description = "get document metadata", extraTags = {
+      "operation", "retrieve", "target", "metadata"
+  }, value = "eureka.metadata.get")
   public MetadataDto get(
-      @ApiParam(value = "The ID of the document for which metadata shall be fetched") @PathVariable("documentID") final String documentId) {
+      @Parameter(description = "The ID of the document for which metadata shall be fetched") @PathVariable("documentID") final String documentId) {
     return facet.retrieve(fetchDocument(documentId)).orElseGet(MetadataDto::new);
   }
 
@@ -63,33 +60,33 @@ public class MetadataResource {
     return documentService.getDocument(documentId).orElseThrow(() -> new NotFoundException("Document not found"));
   }
 
-  @PutMapping(consumes = {
-      MediaType.APPLICATION_JSON_VALUE
-  })
-  @ApiOperation(value = "Updates a document's metadata")
-  @ApiResponses({
-      @ApiResponse(code = 202, message = "Metadata updated"), @ApiResponse(code = 404, message = "Document not found")
-  })
+  @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+  @Operation(summary = "Updates a document's metadata")
+  @ApiResponse(responseCode = "202", description = "Metadata updated")
+  @ApiResponse(responseCode = "404", description = "Document not found")
   @Transactional
-  @Timed(description = "update document metadata", extraTags = {"operation", "update", "target", "metadata"}, value="eureka.metadata.update")
+  @Timed(description = "update document metadata", extraTags = {
+      "operation", "update", "target", "metadata"
+  }, value = "eureka.metadata.update")
   public MetadataDto update(
-      @ApiParam(value = "The ID of the document to be updated") @PathVariable("documentID") final String documentId,
-      @ApiParam @RequestBody final MetadataDto requestDto) {
+      @Parameter(description = "The ID of the document to be updated") @PathVariable("documentID") final String documentId,
+      @Parameter @RequestBody final MetadataDto requestDto) {
     return facet.update(fetchDocument(documentId), requestDto);
   }
 
   @PreSignedUrlEnabled
   @GetMapping(value = "{name}")
-  @ApiOperation(value = "Fetches a document metadata element by ID and element name")
-  @ApiResponses({
-      @ApiResponse(code = 200, message = "Metadata element found"),
-      @ApiResponse(code = 404, message = "Document or element not found")
-  })
-  @Timed(description = "get document metadata element", extraTags = {"operation", "retrieve", "target", "metadata-element"}, value="eureka.metadata.element.get")
+  @Operation(summary = "Fetches a document metadata element by ID and element name")
+  @ApiResponse(responseCode = "200", description = "Metadata element found")
+  @ApiResponse(responseCode = "404", description = "Document or element not found")
+  @Timed(description = "get document metadata element", extraTags = {
+      "operation", "retrieve", "target", "metadata-element"
+  }, value = "eureka.metadata.element.get")
   public MetadataElementDto get(
-      @ApiParam(value = "The ID of the document's metadata to be fetched") @PathVariable("documentID") final String documentId,
-      @ApiParam(value = "The name of the metadata element to be fetched") @PathVariable("name") final String name) {
-    MetadataElementDto elementDto = facet.retrieve(fetchDocument(documentId)).orElseGet(MetadataDto::new).getElements().get(name);
+      @Parameter(description = "The ID of the document's metadata to be fetched") @PathVariable("documentID") final String documentId,
+      @Parameter(description = "The name of the metadata element to be fetched") @PathVariable("name") final String name) {
+    MetadataElementDto elementDto = facet.retrieve(fetchDocument(documentId)).orElseGet(
+        MetadataDto::new).getElements().get(name);
 
     if (null == elementDto)
       throw new NotFoundException("Element not found");
@@ -97,36 +94,30 @@ public class MetadataResource {
     return elementDto;
   }
 
-  @PutMapping(value = "{name}", consumes = {
-      MediaType.APPLICATION_JSON_VALUE
-  })
-  @ApiOperation(value = "Create or update a single metatadata element of a document")
-  @ApiResponses({
-      @ApiResponse(code = 202, message = "metadata updated"), @ApiResponse(code = 404, message = "Document not found")
-  })
+  @PutMapping(value = "{name}", consumes = MediaType.APPLICATION_JSON_VALUE)
   @Transactional
-  @Timed(description = "update document metadata element", extraTags = {"operation", "update", "target", "metadata-element"}, value="eureka.metadata.element.update")
+  @Timed(description = "update document metadata element", extraTags = {
+      "operation", "update", "target", "metadata-element"
+  }, value = "eureka.metadata.element.update")
   public MetadataElementDto update(
-      @ApiParam(value = "ID of the document to be updated") @PathVariable("documentID") final String documentId,
-      @ApiParam(value = "Name of the metadata element to be created/updated") @PathVariable("name") final String name,
-      @ApiParam @RequestBody final MetadataElementDto requestDto) {
+      @Parameter(description = "ID of the document to be updated") @PathVariable("documentID") final String documentId,
+      @Parameter(description = "Name of the metadata element to be created/updated") @PathVariable("name") final String name,
+      @Parameter @RequestBody final MetadataElementDto requestDto) {
     return facet.update(fetchDocument(documentId), name, requestDto);
   }
 
-  @DeleteMapping(value = "{name}", consumes = {
-      MediaType.APPLICATION_JSON_VALUE
-  })
-  @ApiOperation(value = "Delete a single metatadata element of a document")
-  @ApiResponses({
-      @ApiResponse(code = 204, message = "Metadata element deleted"),
-      @ApiResponse(code = 404, message = "Document or element not found")
-  })
+  @DeleteMapping(value = "{name}", consumes = MediaType.APPLICATION_JSON_VALUE)
+  @Operation(summary = "Delete a single metatadata element of a document")
+  @ApiResponse(responseCode = "204", description = "Metadata element deleted")
+  @ApiResponse(responseCode = "404", description = "Document or element not found")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   @Transactional
-  @Timed(description = "delete document metadata element", extraTags = {"operation", "delete", "target", "metadata-element"}, value="eureka.metadata.element.delete")
+  @Timed(description = "delete document metadata element", extraTags = {
+      "operation", "delete", "target", "metadata-element"
+  }, value = "eureka.metadata.element.delete")
   public void delete(
-      @ApiParam(value = "ID of the document to be updated") @PathVariable("documentID") final String documentId,
-      @ApiParam(value = "The name of the metadata element to be deleted") @PathVariable("name") final String name) {
+      @Parameter(description = "ID of the document to be updated") @PathVariable("documentID") final String documentId,
+      @Parameter(description = "The name of the metadata element to be deleted") @PathVariable("name") final String name) {
     facet.delete(fetchDocument(documentId), name);
   }
 }

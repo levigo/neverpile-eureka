@@ -24,12 +24,11 @@ import com.neverpile.eureka.rest.api.exception.NotFoundException;
 import com.neverpile.urlcrypto.PreSignedUrlEnabled;
 
 import io.micrometer.core.annotation.Timed;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Authorization;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
  * Provide access to a document's history given that a {@link MultiVersioningDocumentService} is
@@ -40,9 +39,7 @@ import io.swagger.annotations.Authorization;
     MediaType.APPLICATION_JSON_VALUE
 })
 @EnableEntityLinks
-@Api(tags = "Document", authorizations = {
-    @Authorization(value = "oauth")
-})
+@OpenAPIDefinition(tags = @Tag(name = "Document"))
 @ConditionalOnBean(MultiVersioningDocumentService.class)
 public class MultiVersioningDocumentResource {
 
@@ -59,17 +56,15 @@ public class MultiVersioningDocumentResource {
   // GET - Return the version history
   @PreSignedUrlEnabled
   @GetMapping
-  @ApiOperation(value = "Return the version history of a document as an array of version timestamps")
-  @ApiResponses({
-      @ApiResponse(code = 200, message = "Document found"),
-      @ApiResponse(code = 400, message = "Invalid documentID supplied"),
-      @ApiResponse(code = 404, message = "Document not found")
-  })
+  @Operation(summary = "Return the version history of a document as an array of version timestamps")
+  @ApiResponse(responseCode = "200", description = "Document found")
+  @ApiResponse(responseCode = "400", description = "Invalid documentID supplied")
+  @ApiResponse(responseCode = "404", description = "Document not found")
   @Timed(description = "get document history", extraTags = {
       "operation", "retrieve", "target", "history"
   }, value = "eureka.document.history.get")
   public List<Instant> get(
-      @ApiParam(value = "The ID of the document for which the history shall be fetched") @PathVariable("documentID") final String documentId) {
+      @Parameter(description = "The ID of the document for which the history shall be fetched") @PathVariable("documentID") final String documentId) {
     List<Instant> versions = documentService.getVersions(documentId);
 
     // "convert" empty version list to not found
@@ -82,19 +77,17 @@ public class MultiVersioningDocumentResource {
   // GET - Returns a specific document version by ID and time stamp
   @PreSignedUrlEnabled
   @GetMapping(value = "/{versionTimestamp}")
-  @ApiOperation(value = "Fetches an old document version by its ID and version time stamp")
-  @ApiResponses({
-      @ApiResponse(code = 200, message = "Document found"),
-      @ApiResponse(code = 400, message = "Invalid documentID supplied"),
-      @ApiResponse(code = 404, message = "Document not found")
-  })
+  @Operation(summary = "Fetches an old document version by its ID and version time stamp")
+  @ApiResponse(responseCode = "200", description = "Document found")
+  @ApiResponse(responseCode = "400", description = "Invalid documentID supplied")
+  @ApiResponse(responseCode = "404", description = "Document not found")
   @Timed(description = "get document", extraTags = {
       "operation", "retrieve", "target", "history"
   }, value = "eureka.document.history.get-version")
   public DocumentDto get(
-      @ApiParam(value = "The ID of the document to be fetched") @PathVariable("documentID") final String documentId,
-      @ApiParam(value = "The version time stamp of the old version to be fetched") @PathVariable("versionTimestamp") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final Instant versionTimestamp,
-      @ApiParam(value = "The list of facets to be included in the response; return all facets if empty") @RequestParam(name = "facets", required = false) final List<String> requestedFacets) {
+      @Parameter(description = "The ID of the document to be fetched") @PathVariable("documentID") final String documentId,
+      @Parameter(description = "The version time stamp of the old version to be fetched") @PathVariable("versionTimestamp") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final Instant versionTimestamp,
+      @Parameter(description = "The list of facets to be included in the response; return all facets if empty") @RequestParam(name = "facets", required = false) final List<String> requestedFacets) {
     // @formatter:on
     Document document = documentService.getDocumentVersion(documentId, versionTimestamp).orElseThrow(
         () -> new NotFoundException("Document or version not found"));

@@ -3,10 +3,10 @@ package com.neverpile.eureka.model;
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
 
-import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @XmlEnum
-@ApiModel(description = "A description of a hash-algorithm")
+@Schema(description = "A description of a hash-algorithm")
 public enum HashAlgorithm {
   @XmlEnumValue("SHA-1")
   SHA_1(String.valueOf("SHA-1")),
