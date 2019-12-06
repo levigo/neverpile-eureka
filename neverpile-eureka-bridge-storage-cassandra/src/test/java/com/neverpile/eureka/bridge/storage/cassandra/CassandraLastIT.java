@@ -2,6 +2,8 @@ package com.neverpile.eureka.bridge.storage.cassandra;
 
 import com.neverpile.eureka.api.ObjectStoreService;
 import com.neverpile.eureka.model.ObjectName;
+
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,7 @@ import static org.junit.Assert.assertEquals;
 @SpringBootTest
 @ContextConfiguration(classes = CassandraTestConfig.class)
 @EnableAutoConfiguration(exclude={CassandraDataAutoConfiguration.class})
+@Ignore
 public class CassandraLastIT {
 
   @Autowired
