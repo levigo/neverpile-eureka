@@ -1,9 +1,11 @@
 package com.neverpile.eureka.rest.configuration;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -15,7 +17,11 @@ import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 
 @Configuration
 @ComponentScan
+@Import(FacetedDocumentDtoModule.class)
 public class JacksonConfiguration {
+  @Autowired
+  FacetedDocumentDtoModule module;
+
   @Bean
   Jackson2ObjectMapperBuilderCustomizer jacksonCustomizer() {
     return new Jackson2ObjectMapperBuilderCustomizer() {

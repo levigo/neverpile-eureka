@@ -1,12 +1,12 @@
 package com.neverpile.eureka.rest.configuration;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
+import java.util.Collection;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonParser;
@@ -26,26 +26,38 @@ import com.neverpile.eureka.rest.api.document.DocumentFacet;
 @Component
 public class FacetedDocumentDtoModule extends SimpleModule {
   private static final Logger LOGGER = LoggerFactory.getLogger(FacetedDocumentDtoModule.class);
-  
+
   private static final long serialVersionUID = 1L;
 
-  @Autowired(required = false)
-  private final List<DocumentFacet<?>> facets = Collections.emptyList();
+  /*
+   * Cannot inject those at this time, because spring resolves this curcular depencency in a way
+   * that causes this jackson-module to be applied only after the creation of the relevant object
+   * mapper instances, making the module ineffective.
+   */
+  // @Autowired(required = false)
+  // private final List<DocumentFacet<?>> facets = Collections.emptyList();
+
+  @Autowired
+  ApplicationContext appContext;
 
   public FacetedDocumentDtoModule() {
     super(FacetedDocumentDtoModule.class.getSimpleName(), Version.unknownVersion());
 
     setDeserializerModifier(new FacetedDocumentDtoDeserializerModifier());
-    
+
     new Exception("Module created").printStackTrace();
   }
 
   public class FacetedDocumentDtoDeserializerModifier extends BeanDeserializerModifier {
+    @SuppressWarnings("rawtypes")
     public class FacetDeserializer extends BeanDeserializer {
       private static final long serialVersionUID = 1L;
 
-      public FacetDeserializer(final BeanDeserializerBase base) {
+      private final Collection<DocumentFacet> facets;
+
+      public FacetDeserializer(final BeanDeserializerBase base, final Collection<DocumentFacet> facets) {
         super(base);
+        this.facets = facets;
 
       }
 
@@ -72,7 +84,9 @@ public class FacetedDocumentDtoModule extends SimpleModule {
         final JsonDeserializer<?> deserializer) {
       if (beanDesc.getBeanClass() == DocumentDto.class) {
         LOGGER.info("Modified deserializer for DocumentDto");
-        return new FacetDeserializer((BeanDeserializerBase) deserializer);
+        @SuppressWarnings("rawtypes")
+        Collection<DocumentFacet> facets = appContext.getBeansOfType(DocumentFacet.class).values();
+        return new FacetDeserializer((BeanDeserializerBase) deserializer, facets);
       }
       return deserializer;
     }
