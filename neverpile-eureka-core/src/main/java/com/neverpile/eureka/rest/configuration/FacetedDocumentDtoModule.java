@@ -44,8 +44,6 @@ public class FacetedDocumentDtoModule extends SimpleModule {
     super(FacetedDocumentDtoModule.class.getSimpleName(), Version.unknownVersion());
 
     setDeserializerModifier(new FacetedDocumentDtoDeserializerModifier());
-
-    new Exception("Module created").printStackTrace();
   }
 
   public class FacetedDocumentDtoDeserializerModifier extends BeanDeserializerModifier {
@@ -65,7 +63,6 @@ public class FacetedDocumentDtoModule extends SimpleModule {
       protected void handleUnknownProperty(final JsonParser p, final DeserializationContext ctxt,
           final Object beanOrClass, final String propName) throws IOException {
         facets.stream().filter(f -> f.getName().equals(propName)).forEach(f -> {
-          LOGGER.info("Handled unknown property " + propName);
           try {
             JavaType valueType = f.getValueType(ctxt.getTypeFactory());
             JsonDeserializer<Object> deserializer = ctxt.findRootValueDeserializer(valueType);
@@ -83,7 +80,6 @@ public class FacetedDocumentDtoModule extends SimpleModule {
     public JsonDeserializer<?> modifyDeserializer(final DeserializationConfig config, final BeanDescription beanDesc,
         final JsonDeserializer<?> deserializer) {
       if (beanDesc.getBeanClass() == DocumentDto.class) {
-        LOGGER.info("Modified deserializer for DocumentDto");
         @SuppressWarnings("rawtypes")
         Collection<DocumentFacet> facets = appContext.getBeansOfType(DocumentFacet.class).values();
         return new FacetDeserializer((BeanDeserializerBase) deserializer, facets);
