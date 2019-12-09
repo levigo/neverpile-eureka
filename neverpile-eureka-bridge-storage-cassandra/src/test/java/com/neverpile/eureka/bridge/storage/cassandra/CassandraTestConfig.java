@@ -6,7 +6,6 @@ import java.util.HashMap;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-import org.apache.cassandra.io.util.FileUtils;
 import org.cassandraunit.utils.EmbeddedCassandraServerHelper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +14,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.data.cassandra.config.SchemaAction;
 import org.springframework.data.cassandra.core.cql.CqlIdentifier;
 import org.springframework.data.cassandra.repository.config.EnableCassandraRepositories;
+import org.springframework.util.FileSystemUtils;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
@@ -34,7 +34,7 @@ public class CassandraTestConfig extends AbstractNeverpileCassandraConfig {
   @PostConstruct
   public void startCassandraEmbedded() throws Exception {
     String tmpDir = "target/embeddedCassandra/tmp";
-    FileUtils.deleteRecursive(new File(tmpDir));
+    FileSystemUtils.deleteRecursively(new File(tmpDir));
     File configFile = new File(getClass().getClassLoader().getResource("cassandra.yaml").getFile());
     if (configFile.exists()) {
       EmbeddedCassandraServerHelper.startEmbeddedCassandra(configFile, tmpDir, 10000);
