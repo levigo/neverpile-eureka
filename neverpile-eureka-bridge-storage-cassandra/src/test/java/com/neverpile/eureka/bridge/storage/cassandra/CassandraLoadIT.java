@@ -1,9 +1,13 @@
 package com.neverpile.eureka.bridge.storage.cassandra;
 
-import com.neverpile.eureka.api.ObjectStoreService;
-import com.neverpile.eureka.model.ObjectName;
+import static org.junit.Assert.assertEquals;
 
-import org.junit.Ignore;
+import java.io.IOException;
+import java.io.InputStream;
+
+import javax.annotation.PostConstruct;
+import javax.transaction.Transactional;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,19 +17,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import javax.annotation.PostConstruct;
-import javax.transaction.Transactional;
-import java.io.IOException;
-import java.io.InputStream;
-
-import static org.junit.Assert.assertEquals;
+import com.neverpile.eureka.api.ObjectStoreService;
+import com.neverpile.eureka.model.ObjectName;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ContextConfiguration(classes = CassandraTestConfig.class)
 @EnableAutoConfiguration(exclude={CassandraDataAutoConfiguration.class})
-@Ignore
-public class CassandraLastIT {
+public class CassandraLoadIT {
 
   @Autowired
   private CassandraObjectStoreService objectStore;
