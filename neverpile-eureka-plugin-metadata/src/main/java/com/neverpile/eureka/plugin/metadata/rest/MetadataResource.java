@@ -96,6 +96,9 @@ public class MetadataResource {
 
   @PutMapping(value = "{name}", consumes = MediaType.APPLICATION_JSON_VALUE)
   @Transactional
+  @Operation(summary = "Create or update a single metatadata element of a document")
+  @ApiResponse(responseCode = "202", description = "Metadata updated")
+  @ApiResponse(responseCode = "404", description = "Document not found")
   @Timed(description = "update document metadata element", extraTags = {
       "operation", "update", "target", "metadata-element"
   }, value = "eureka.metadata.element.update")

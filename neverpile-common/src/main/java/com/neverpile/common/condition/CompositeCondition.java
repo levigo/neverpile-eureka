@@ -5,12 +5,15 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 
 /**
  * An abstract condition which connects a set of sub-conditions using some connective operator.
  *
  * @param <C> the type of condition implementation
  */
+@Schema(hidden = true)
 public abstract class CompositeCondition<C extends CompositeCondition<C>> extends Condition {
   /**
    * The list of sub-conditions.
