@@ -10,8 +10,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * An {@link AccessPolicy} describes the actions that are permitted within a system through
@@ -40,29 +39,29 @@ import io.swagger.annotations.ApiModelProperty;
  * A policy has an optional description ({@link #getDescription()}) which can be used in GUI
  * editors, log output etc. to describe the policy in human-readable form.
  */
-@ApiModel(description = "An access policy descibes access rights users can exercise within the system")
+@Schema(description = "An access policy descibes access rights users can exercise within the system")
 public class AccessPolicy {
   private static final String VERISON_1 = "2018-09-26";
 
-  @ApiModelProperty("The version of this policy's schema. There is currently only one valid version: '" + VERISON_1
+  @Schema(description = "The version of this policy's schema. There is currently only one valid version: '" + VERISON_1
       + "'. Policies using other versions may not be compatible.")
   private String _version = VERISON_1;
 
-  @ApiModelProperty("The timestamp specifying the date and time at which this policy becomes "
+  @Schema(description = "The timestamp specifying the date and time at which this policy becomes "
       + "valid (unless replaced by a policy with a later timestamp)")
-  @JsonProperty(value="valid_from", required = false)
+  @JsonProperty(value = "valid_from", required = false)
   @JsonAlias("validFrom")
   @JsonInclude(Include.NON_NULL)
   private Date validFrom;
 
-  @ApiModelProperty("A description of this access policy")
+  @Schema(description = "A description of this access policy")
   private String description;
 
   @JsonProperty("default_effect")
-  @ApiModelProperty("The default effect of this policy when no access rule matched")
+  @Schema(description = "The default effect of this policy when no access rule matched")
   private Effect defaultEffect = Effect.DENY;
 
-  @ApiModelProperty("The list of access rules ")
+  @Schema(description = "The list of access rules ")
   private List<AccessRule> rules = new ArrayList<>();
 
   /**

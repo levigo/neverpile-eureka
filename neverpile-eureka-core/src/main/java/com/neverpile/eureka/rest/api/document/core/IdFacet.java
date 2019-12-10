@@ -1,18 +1,18 @@
 package com.neverpile.eureka.rest.api.document.core;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 import java.util.Collections;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.google.common.base.Strings;
 import com.neverpile.authorization.api.AuthorizationContext;
 import com.neverpile.authorization.policy.impl.SingleValueAuthorizationContext;
 import com.neverpile.eureka.api.DocumentIdGenerationStrategy;
@@ -45,7 +45,7 @@ public class IdFacet implements DocumentFacet<String> {
   @Override
   public Set<ConstraintViolation> validateCreate(final DocumentDto requestDto) {
     String suppliedId = requestDto.getDocumentId();
-    if (Strings.isNullOrEmpty(suppliedId)) {
+    if (StringUtils.isEmpty(suppliedId)) {
       requestDto.setDocumentId(idGenerationStrategy.createDocumentId());
     } else if (!idGenerationStrategy.validateDocumentId(suppliedId)) {
       return Collections.singleton(

@@ -2,14 +2,13 @@ package com.neverpile.eureka.test;
 
 import java.lang.reflect.Type;
 import java.util.Date;
-import java.util.List;
 
 import org.junit.Before;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.Links;
+import org.springframework.hateoas.RepresentationModel;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -33,10 +32,10 @@ public abstract class AbstractRestAssuredTest {
    * FIXME: reconsider HATEOAS support...
    */
   @JsonIgnoreProperties("_links")
-  private static abstract class ResourceSupportMixin extends ResourceSupport {
+  private static abstract class ResourceSupportMixin extends RepresentationModel<ResourceSupportMixin> {
     @Override
     @JsonIgnore
-    public abstract List<Link> getLinks();
+    public abstract Links getLinks();
   }
 
   protected static final String D = "aTestDocument";
@@ -63,7 +62,7 @@ public abstract class AbstractRestAssuredTest {
         new ObjectMapperConfig().jackson2ObjectMapperFactory(new Jackson2ObjectMapperFactory() {
           @Override
           public ObjectMapper create(final Type cls, final String charset) {
-            return objectMapper.addMixIn(ResourceSupport.class, ResourceSupportMixin.class);
+            return objectMapper.addMixIn(RepresentationModel.class, ResourceSupportMixin.class);
           }
         }));
   }

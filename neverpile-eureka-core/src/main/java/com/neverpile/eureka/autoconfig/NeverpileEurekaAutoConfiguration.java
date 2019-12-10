@@ -42,6 +42,7 @@ import com.neverpile.eureka.rest.api.document.core.CreationDateFacet;
 import com.neverpile.eureka.rest.api.document.core.IdFacet;
 import com.neverpile.eureka.rest.api.document.core.ModificationDateFacet;
 import com.neverpile.eureka.rest.api.exception.ExceptionHandlers;
+import com.neverpile.eureka.rest.configuration.FacetedDocumentDtoModule;
 import com.neverpile.eureka.rest.configuration.JacksonConfiguration;
 import com.neverpile.eureka.tx.lock.ClusterLockFactory;
 import com.neverpile.eureka.tx.wal.TransactionWAL;
@@ -56,7 +57,7 @@ import com.neverpile.eureka.tx.wal.local.FileBasedWAL;
      * declare a @ComponentScan for the Jackson et. al. configuration. Instead we import
      * JacksonConfiguration as an anchor and let it do the dirty work of @ComponentScanning.
      */
-    JacksonConfiguration.class, EventPublisher.class, UpdateEventAggregator.class
+  FacetedDocumentDtoModule.class, JacksonConfiguration.class, EventPublisher.class, UpdateEventAggregator.class
 })
 @AutoConfigureOrder(AutoConfigureOrder.DEFAULT_ORDER + 1)
 public class NeverpileEurekaAutoConfiguration {

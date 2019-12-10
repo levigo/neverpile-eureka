@@ -6,7 +6,7 @@ import java.util.Date;
 import javax.validation.constraints.Pattern;
 import javax.ws.rs.core.MediaType;
 
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.RepresentationModel;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -15,14 +15,13 @@ import com.neverpile.eureka.model.MediaTypeDeserializer;
 import com.neverpile.eureka.model.MediaTypeSerializer;
 import com.neverpile.eureka.rest.api.document.IDto;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(value = "MetadataElement", description = "A metadata element associated with a document")
-public class MetadataElementDto extends ResourceSupport implements IDto {
+@Schema(name = "MetadataElement", description = "A metadata element associated with a document")
+public class MetadataElementDto extends RepresentationModel<MetadataDto> implements IDto {
   private String schema;
 
-  @ApiModelProperty(value = "The MIME-Type of the metadata element as specified in RFC 2045 without parameters", dataType = "string")
+  @Schema(description = "The MIME-Type of the metadata element as specified in RFC 2045 without parameters", type = "string")
   @Pattern(regexp = "[-\\w+]+/[-\\w+]+")
   @JsonSerialize(using = MediaTypeSerializer.class)
   @JsonDeserialize(using = MediaTypeDeserializer.class)
@@ -38,7 +37,7 @@ public class MetadataElementDto extends ResourceSupport implements IDto {
 
   private Date dateModified;
   
-  @ApiModelProperty("A reference to a schema which the element is supposed to conform to, "
+  @Schema(description = "A reference to a schema which the element is supposed to conform to, "
       + "e.g. an XML namespace definition, an XSD reference, a JSON schema reference etc.")
   public String getSchema() {
     return schema;
@@ -56,7 +55,7 @@ public class MetadataElementDto extends ResourceSupport implements IDto {
     this.contentType = format;
   }
 
-  @ApiModelProperty("The content (payload) of the metadata element")
+  @Schema(description = "The content (payload) of the metadata element")
   public byte[] getContent() {
     return content;
   }
@@ -65,7 +64,7 @@ public class MetadataElementDto extends ResourceSupport implements IDto {
     this.content = content;
   }
 
-  @ApiModelProperty("The type of encryption the content element is subject to")
+  @Schema(description = "The type of encryption the content element is subject to")
   public EncryptionType getEncryption() {
     return encryption;
   }
@@ -74,7 +73,7 @@ public class MetadataElementDto extends ResourceSupport implements IDto {
     this.encryption = encryption;
   }
 
-  @ApiModelProperty("A key hint may be used by a client to store information about which key was used to encrypt the element")
+  @Schema(description = "A key hint may be used by a client to store information about which key was used to encrypt the element")
   public String getKeyHint() {
     return keyHint;
   }
@@ -83,7 +82,7 @@ public class MetadataElementDto extends ResourceSupport implements IDto {
     this.keyHint = keyHint;
   }
 
-  @ApiModelProperty("The timestamp at which the element was created")
+  @Schema(description = "The timestamp at which the element was created")
   public Date getDateCreated() {
     return dateCreated;
   }
@@ -92,7 +91,7 @@ public class MetadataElementDto extends ResourceSupport implements IDto {
     this.dateCreated = dateCreated;
   }
 
-  @ApiModelProperty("The timestamp at which the element was last modified")
+  @Schema(description = "The timestamp at which the element was last modified")
   public Date getDateModified() {
     return dateModified;
   }

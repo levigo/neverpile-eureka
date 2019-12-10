@@ -2,9 +2,9 @@ package com.neverpile.eureka.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "A description of a hash-algorithm")
+@Schema(description = "A description of a hash-algorithm")
 public enum HashAlgorithm {
   @JsonProperty("SHA-1")
   SHA_1("SHA-1"),

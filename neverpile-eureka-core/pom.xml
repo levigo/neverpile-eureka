@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.neverpile.eureka</groupId>
     <artifactId>neverpile-eureka</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.2-SNAPSHOT</version>
   </parent>
 
   <artifactId>neverpile-eureka-core</artifactId>
@@ -48,6 +48,7 @@
       <groupId>org.springframework.hateoas</groupId>
       <artifactId>spring-hateoas</artifactId>
     </dependency>
+    
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-tx</artifactId>
@@ -71,17 +72,6 @@
     <dependency>
       <groupId>com.jayway.jsonpath</groupId>
       <artifactId>json-path</artifactId>
-    </dependency>
-    
-    <!-- API documentation -->
-    <dependency>
-      <groupId>io.springfox</groupId>
-      <artifactId>springfox-swagger2</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.springfox</groupId>
-      <artifactId>springfox-swagger-ui</artifactId>
-      <version>${springfox.version}</version>
     </dependency>
 
     <!-- FIXME: can we get rid of these dependencies? -->
