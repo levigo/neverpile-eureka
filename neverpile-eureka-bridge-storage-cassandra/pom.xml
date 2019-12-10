@@ -10,6 +10,10 @@
 
   <artifactId>neverpile-eureka-bridge-storage-cassandra</artifactId>
 
+  <properties>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>com.neverpile.eureka</groupId>
@@ -27,31 +31,6 @@
     <dependency>
       <groupId>com.datastax.cassandra</groupId>
       <artifactId>cassandra-driver-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.cassandraunit</groupId>
-      <artifactId>cassandra-unit-spring</artifactId>
-      <version>3.5.0.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.cassandraunit</groupId>
-      <artifactId>cassandra-unit-shaded</artifactId>
-      <version>3.5.0.1</version>
-      <exclusions>
-        <exclusion>
-          <groupId>com.carrotsearch</groupId>
-          <artifactId>hppc</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.hectorclient</groupId>
-      <artifactId>hector-core</artifactId>
-      <version>2.0-0</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -74,4 +53,87 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>io.fabric8</groupId>
+        <artifactId>docker-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>start-docker-image</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>start</goal>
+            </goals>
+            <configuration>
+              <autoCreateCustomNetworks>true</autoCreateCustomNetworks>
+              <images>
+                <!-- Docker Image to use -->
+                <image>
+                  <alias>cassandra</alias>
+                  <name>cassandra:3.11.5</name>
+                  <run>
+                    <namingStrategy>none</namingStrategy>
+                    <env>
+                      <discovery.type>single-node</discovery.type>
+                    </env>
+                    <ports>
+                      <port>${cassandra.host}:7000:7000</port>
+                      <port>${cassandra.host}:7001:7001</port>
+                      <port>${cassandra.host}:9042:9042</port>
+                      <port>${cassandra.host}:9160:9160</port>
+                    </ports>
+                    <wait>
+                      <time>30000</time>
+                    </wait>
+                    <log>
+                      <enabled>true</enabled>
+                      <color>red</color>
+                    </log>
+                    <tmpfs>
+                      <mount>/var/lib/temp:size=10m</mount>
+                    </tmpfs>
+                    <net>neverpile-net</net>
+                  </run>
+                  <watch>
+                    <mode>none</mode>
+                  </watch>
+                </image>
+              </images>
+            </configuration>
+          </execution>
+          <execution>
+            <id>stop-docker-image</id>
+            <phase>post-integration-test</phase>
+            <goals>
+              <goal>stop</goal>
+            </goals>
+          </execution>
+        </executions>
+        <version>0.31.0</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>2.19.1</version>
+        <configuration>
+          <skipITs>false</skipITs>
+          <forkMode>once</forkMode>
+          <systemPropertyVariables>
+            <cassandra.host>${cassandra.host}</cassandra.host>
+            <cassandra.port>${cassandra.port}</cassandra.port>
+          </systemPropertyVariables>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

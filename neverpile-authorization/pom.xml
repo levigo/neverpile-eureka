@@ -21,11 +21,6 @@
     <dependency>
       <groupId>com.neverpile.eureka</groupId>
       <artifactId>neverpile-common</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.neverpile.eureka</groupId>
-      <artifactId>neverpile-common</artifactId>
     </dependency>
   </dependencies>
 </project>

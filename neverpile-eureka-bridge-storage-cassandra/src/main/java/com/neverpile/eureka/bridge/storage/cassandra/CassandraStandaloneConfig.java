@@ -25,7 +25,7 @@ import com.datastax.driver.core.Session;
 @Configuration
 @AutoConfigureBefore(value = CassandraAutoConfiguration.class, name = "com.neverpile.eureka.server.configuration.SimpleServiceConfiguration")
 @ConditionalOnClass({Cluster.class})
-@ConditionalOnExpression("${neverpile-eureka.cassandra.enabled} && !${neverpile-eureka.cassandra.embedded}")
+@ConditionalOnExpression("${neverpile-eureka.cassandra.enabled}")
 @EnableCassandraRepositories(basePackages = "com.neverpile.eureka.bridge.storage.cassandra")
 @Import(CassandraTransactionConfiguration.class)
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
