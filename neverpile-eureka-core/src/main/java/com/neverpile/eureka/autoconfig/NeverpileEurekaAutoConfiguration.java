@@ -2,7 +2,6 @@ package com.neverpile.eureka.autoconfig;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -51,6 +50,9 @@ import com.neverpile.eureka.tx.wal.WriteAheadLog;
 import com.neverpile.eureka.tx.wal.local.DefaultTransactionWAL;
 import com.neverpile.eureka.tx.wal.local.FileBasedWAL;
 
+import io.opentracing.Tracer;
+import io.opentracing.noop.NoopTracerFactory;
+
 @Configuration
 @Import({
     /*
@@ -61,10 +63,6 @@ import com.neverpile.eureka.tx.wal.local.FileBasedWAL;
   FacetedDocumentDtoModule.class, JacksonConfiguration.class, EventPublisher.class, UpdateEventAggregator.class
 })
 @AutoConfigureOrder(AutoConfigureOrder.DEFAULT_ORDER + 1)
-@AutoConfigureAfter(name = {
-    "io.opentracing.contrib.spring.tracer.configuration.TracerAutoConfiguration",
-    "io.opentracing.contrib.java.spring.jaeger.starter.JaegerAutoConfiguration"
-})
 public class NeverpileEurekaAutoConfiguration {
   private static final Logger LOGGER = LoggerFactory.getLogger(NeverpileEurekaAutoConfiguration.class);
 
@@ -254,16 +252,16 @@ public class NeverpileEurekaAutoConfiguration {
     return new LocalLockFactory();
   }
   
-//  /**
-//   * Provide a default No-Op tracer as a fallback. Users are supposed to provide actual tracers by
-//   * including the opentracing-spring-web-starter or opentracing-spring-cloud-starter as
-//   * dependencies of their application.
-//   * 
-//   * @return a NoopTracer
-//   */
-//  @Bean
-//  @ConditionalOnMissingBean
-//  public Tracer noopTracer() {
-//    return NoopTracerFactory.create();
-//  }
+  /**
+   * Provide a default No-Op tracer as a fallback. Users are supposed to provide actual tracers by
+   * including the opentracing-spring-web-starter or opentracing-spring-cloud-starter as
+   * dependencies of their application.
+   * 
+   * @return a NoopTracer
+   */
+  @Bean
+  @ConditionalOnMissingBean
+  public Tracer noopTracer() {
+    return NoopTracerFactory.create();
+  }
 }
