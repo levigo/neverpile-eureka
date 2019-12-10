@@ -26,7 +26,7 @@ jobs:
 
     ## Build with maven
     - name: Perform build
-      run: mvn test
+      run: mvn verify
 
     ## Notify Slack
     - name: Notify slack
