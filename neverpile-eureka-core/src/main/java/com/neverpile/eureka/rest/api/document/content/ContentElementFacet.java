@@ -1,10 +1,10 @@
 package com.neverpile.eureka.rest.api.document.content;
 
-import static com.google.common.base.Objects.*;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MediaType;
@@ -134,7 +134,7 @@ public class ContentElementFacet implements DocumentFacet<List<ContentElementDto
 
             String role = key.suffix().head();
 
-            return contentElements.stream().filter(e -> equal(role, e.getRole())).count();
+            return contentElements.stream().filter(e -> Objects.equals(role, e.getRole())).count();
         }
 
         return null;

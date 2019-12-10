@@ -18,7 +18,7 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.annotations.VisibleForTesting;
+import com.neverpile.common.util.VisibleForTesting;
 import com.neverpile.eureka.api.DocumentService;
 import com.neverpile.eureka.api.index.DocumentQuery;
 import com.neverpile.eureka.api.index.QueryService;

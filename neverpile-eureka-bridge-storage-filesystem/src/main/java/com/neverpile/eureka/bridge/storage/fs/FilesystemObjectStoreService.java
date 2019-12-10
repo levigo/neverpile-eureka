@@ -376,6 +376,9 @@ public class FilesystemObjectStoreService implements ObjectStoreService {
     try {
       // return the object of the given name...
       Path start = toPathWithRoot(prefix);
+      if(!Files.exists(start)) {
+        Files.createDirectories(start);
+      }
       return Files.walk(start, 1) //
           .filter(p -> !p.equals(start)) // exclude start directory
           .map(p -> p.toFile().isDirectory() ? toPrefix(p) : toStoreObject(p));

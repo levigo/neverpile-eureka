@@ -1,14 +1,13 @@
 package com.neverpile.eureka.model;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@ApiModel(description = "An enum describing the type of encryption used on an object")
+@Schema(description = "An enum describing the type of encryption used on an object")
 public enum EncryptionType {
-  @ApiModelProperty("Objects are with this encryption type are `shared` with the server and thus not encrypted")
+  @Schema(description = "Objects are with this encryption type are `shared` with the server and thus not encrypted")
   SHARED(String.valueOf("shared")), 
 
-  @ApiModelProperty("Objects are with this encryption type are `private` to the client"
+  @Schema(description = "Objects are with this encryption type are `private` to the client"
       + " and thus encrypted so that the server does not have access to the content")
   PRIVATE(String.valueOf("private"));
 

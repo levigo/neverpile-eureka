@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import springfox.documentation.annotations.ApiIgnore;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 
 /**
@@ -13,6 +13,7 @@ import springfox.documentation.annotations.ApiIgnore;
  *
  * @param <C> the type of condition implementation
  */
+@Schema(hidden = true)
 public abstract class CompositeCondition<C extends CompositeCondition<C>> extends Condition {
   /**
    * The list of sub-conditions.
@@ -24,7 +25,6 @@ public abstract class CompositeCondition<C extends CompositeCondition<C>> extend
    *
    * @param condition the condition
    */
-  @ApiIgnore
   @JsonIgnore
   public void addCondition(final Condition condition) {
     getConditions().add(condition);
@@ -35,7 +35,6 @@ public abstract class CompositeCondition<C extends CompositeCondition<C>> extend
    *
    * @return the list of sub-conditions
    */
-  @ApiIgnore
   @JsonIgnore
   public List<Condition> getConditions() {
     return conditions;

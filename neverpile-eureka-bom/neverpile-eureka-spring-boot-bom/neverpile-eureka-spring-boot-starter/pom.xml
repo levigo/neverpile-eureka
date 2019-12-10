@@ -5,7 +5,7 @@
   <parent>
     <artifactId>neverpile-eureka-spring-boot-bom</artifactId>
     <groupId>com.neverpile.eureka</groupId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.2-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -21,10 +21,6 @@
     <dependency>
       <groupId>com.neverpile.eureka</groupId>
       <artifactId>neverpile-eureka-bridge-storage-filesystem</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.neverpile.eureka</groupId>
-      <artifactId>neverpile-eureka-security-oauth2</artifactId>
     </dependency>
     <dependency>
       <groupId>com.neverpile.eureka</groupId>

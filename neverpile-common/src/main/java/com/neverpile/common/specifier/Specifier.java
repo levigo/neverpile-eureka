@@ -1,14 +1,14 @@
 package com.neverpile.common.specifier;
 
-import static java.lang.System.*;
-import static java.util.Arrays.*;
+import static java.lang.System.arraycopy;
+import static java.util.Arrays.copyOfRange;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-import com.google.common.annotations.VisibleForTesting;
+import com.neverpile.common.util.VisibleForTesting;
 
 /**
  * Specifiers are a parsed form of the keys used to address authorization targets and context

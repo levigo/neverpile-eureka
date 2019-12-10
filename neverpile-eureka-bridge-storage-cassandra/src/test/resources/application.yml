@@ -1,5 +1,4 @@
 neverpile-eureka:
   cassandra:
     enabled: false
-    embedded: false
     host: localhost

@@ -13,7 +13,7 @@ public class Threads {
    * signature. If the sleep is interrupted, re-interrupt the thread and bail out with a
    * {@link RuntimeException}.
    * 
-   * @param interval
+   * @param interval time to sleep in ms.
    */
   public static void sleepSafely(final long interval) {
     try {

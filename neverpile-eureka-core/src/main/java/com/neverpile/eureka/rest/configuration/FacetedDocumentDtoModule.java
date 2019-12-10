@@ -1,10 +1,10 @@
 package com.neverpile.eureka.rest.configuration;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
+import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonParser;
@@ -25,60 +25,33 @@ import com.neverpile.eureka.rest.api.document.DocumentFacet;
 public class FacetedDocumentDtoModule extends SimpleModule {
   private static final long serialVersionUID = 1L;
 
-  @Autowired(required = false)
-  private final List<DocumentFacet<?>> facets = Collections.emptyList();
+  /*
+   * Cannot inject those at this time, because spring resolves this circular dependency in a way
+   * that causes this jackson-module to be applied only after the creation of the relevant object
+   * mapper instances, making the module ineffective.
+   */
+  // @Autowired(required = false)
+  // private final List<DocumentFacet<?>> facets = Collections.emptyList();
+
+  @Autowired
+  ApplicationContext appContext;
 
   public FacetedDocumentDtoModule() {
     super(FacetedDocumentDtoModule.class.getSimpleName(), Version.unknownVersion());
 
-//    setSerializerModifier(new FacetedDocumentDtoSerializerModifier());
     setDeserializerModifier(new FacetedDocumentDtoDeserializerModifier());
   }
 
-//  public class FacetedDocumentDtoSerializerModifier extends BeanSerializerModifier {
-//    public class FacetSerializer extends BeanSerializer {
-//      private static final long serialVersionUID = 1L;
-//
-//      public FacetSerializer(final BeanSerializer serializer) {
-//        super(serializer);
-//      }
-//
-//      @Override
-//      protected void serializeFields(final Object bean, final JsonGenerator gen, final SerializerProvider provider)
-//          throws IOException {
-//        super.serializeFields(bean, gen, provider);
-//
-//        DocumentDto dto = (DocumentDto) bean;
-//        facets.forEach(f -> {
-//          Object value = dto.getFacets().get(f.getName());
-//          if (null != value) {
-//            try {
-//              gen.writeObjectField(f.getName(), value);
-//            } catch (Exception e) {
-//              // TODO Auto-generated catch block
-//              e.printStackTrace();
-//            }
-//          }
-//        });
-//      }
-//    }
-//
-//    @Override
-//    public JsonSerializer<?> modifySerializer(final SerializationConfig config, final BeanDescription beanDesc,
-//        final JsonSerializer<?> serializer) {
-//      if (beanDesc.getBeanClass() == DocumentDto.class) {
-//        return new FacetSerializer((BeanSerializer) serializer);
-//      }
-//      return serializer;
-//    }
-//  }
-
   public class FacetedDocumentDtoDeserializerModifier extends BeanDeserializerModifier {
+    @SuppressWarnings("rawtypes")
     public class FacetDeserializer extends BeanDeserializer {
       private static final long serialVersionUID = 1L;
 
-      public FacetDeserializer(final BeanDeserializerBase base) {
+      private final Collection<DocumentFacet> facets;
+
+      public FacetDeserializer(final BeanDeserializerBase base, final Collection<DocumentFacet> facets) {
         super(base);
+        this.facets = facets;
 
       }
 
@@ -92,7 +65,6 @@ public class FacetedDocumentDtoModule extends SimpleModule {
             Object value = deserializer.deserialize(p, ctxt);
             ((DocumentDto) beanOrClass).setFacet(f.getName(), value);
           } catch (Exception e) {
-            // e.printStackTrace();
             throw new RuntimeException(e);
           }
         });
@@ -104,7 +76,9 @@ public class FacetedDocumentDtoModule extends SimpleModule {
     public JsonDeserializer<?> modifyDeserializer(final DeserializationConfig config, final BeanDescription beanDesc,
         final JsonDeserializer<?> deserializer) {
       if (beanDesc.getBeanClass() == DocumentDto.class) {
-        return new FacetDeserializer((BeanDeserializerBase) deserializer);
+        @SuppressWarnings("rawtypes")
+        Collection<DocumentFacet> facets = appContext.getBeansOfType(DocumentFacet.class).values();
+        return new FacetDeserializer((BeanDeserializerBase) deserializer, facets);
       }
       return deserializer;
     }
