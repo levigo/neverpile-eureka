@@ -72,7 +72,7 @@
       <groupId>com.jayway.jsonpath</groupId>
       <artifactId>json-path</artifactId>
     </dependency>
-    
+
     <!-- API documentation -->
     <dependency>
       <groupId>io.springfox</groupId>
@@ -84,6 +84,16 @@
       <version>${springfox.version}</version>
     </dependency>
 
+    <!-- Tracing -->
+    <dependency>
+      <groupId>io.opentracing</groupId>
+      <artifactId>opentracing-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.opentracing</groupId>
+      <artifactId>opentracing-noop</artifactId>
+    </dependency>
+    
     <!-- FIXME: can we get rid of these dependencies? -->
     <dependency>
       <groupId>org.glassfish.jersey.media</groupId>
@@ -94,7 +104,7 @@
       <artifactId>commons-codec</artifactId>
       <scope>compile</scope>
     </dependency>
-    
+
     <!-- Bean Validation API support -->
     <dependency>
       <groupId>javax.validation</groupId>

@@ -15,6 +15,10 @@ import com.neverpile.eureka.tx.wal.TransactionWAL;
 import com.neverpile.eureka.tx.wal.WriteAheadLog;
 import com.neverpile.eureka.tx.wal.WriteAheadLog.ActionType;
 
+import io.opentracing.Scope;
+import io.opentracing.Span;
+import io.opentracing.Tracer;
+
 @Component
 @RequestScope
 @ConditionalOnMissingBean(TransactionWAL.class)
@@ -26,10 +30,18 @@ public class DefaultTransactionWAL implements TransactionWAL {
   @Autowired
   WriteAheadLog wal;
 
+  @Autowired
+  Tracer tracer;
+
   private final TransactionSynchronizationAdapter synchronization = new TransactionSynchronizationAdapter() {
     @Override
     public void afterCompletion(final int status) {
-      try {
+      Span span = tracer //
+          .buildSpan("tx-wal.after-completion") //
+          .withTag("status", status == TransactionSynchronizationAdapter.STATUS_COMMITTED ? "committed" : "rollback") //
+          .withTag("wal-implementation", wal.getClass().getSimpleName()) //
+          .start();
+      try (Scope scope = tracer.activateSpan(span)) {
         if (status == TransactionSynchronizationAdapter.STATUS_COMMITTED)
           commit();
         else if (status == TransactionSynchronizationAdapter.STATUS_ROLLED_BACK)
@@ -41,6 +53,7 @@ public class DefaultTransactionWAL implements TransactionWAL {
       } finally {
         // we need to use a new ID after each TX completion
         id = UUID.randomUUID().toString();
+        span.finish();
       }
     }
 
@@ -71,9 +84,18 @@ public class DefaultTransactionWAL implements TransactionWAL {
   }
 
   protected void logAction(final String id, final ActionType type, final TransactionalAction action) {
-    wal.logAction(id, type, action);
+    Span span = tracer //
+        .buildSpan("tx-wal.log-action") //
+        .withTag("action", type.name()) //
+        .withTag("wal-implementation", wal.getClass().getSimpleName()) //
+        .start();
+    try (Scope scope = tracer.activateSpan(span)) {
+      wal.logAction(id, type, action);
+    } finally {
+      span.finish();
+    }
   }
-  
+
   protected void rollback() {
     wal.applyLoggedActions(id, ActionType.ROLLBACK, true);
 

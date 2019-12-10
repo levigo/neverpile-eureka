@@ -2,6 +2,7 @@ package com.neverpile.eureka.autoconfig;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -56,6 +57,10 @@ import com.neverpile.eureka.tx.wal.local.FileBasedWAL;
      * JacksonConfiguration as an anchor and let it do the dirty work of @ComponentScanning.
      */
     JacksonConfiguration.class, EventPublisher.class, UpdateEventAggregator.class
+})
+@AutoConfigureAfter(name = {
+    "io.opentracing.contrib.spring.tracer.configuration.TracerAutoConfiguration",
+    "io.opentracing.contrib.java.spring.jaeger.starter.JaegerAutoConfiguration"
 })
 public class NeverpileEurekaAutoConfiguration {
   private static final Logger LOGGER = LoggerFactory.getLogger(NeverpileEurekaAutoConfiguration.class);
@@ -245,4 +250,17 @@ public class NeverpileEurekaAutoConfiguration {
     LOGGER.warn("Using a purely local, non-clustered lock factory. Do not use in mult-instance setups!");
     return new LocalLockFactory();
   }
+  
+//  /**
+//   * Provide a default No-Op tracer as a fallback. Users are supposed to provide actual tracers by
+//   * including the opentracing-spring-web-starter or opentracing-spring-cloud-starter as
+//   * dependencies of their application.
+//   * 
+//   * @return a NoopTracer
+//   */
+//  @Bean
+//  @ConditionalOnMissingBean
+//  public Tracer noopTracer() {
+//    return NoopTracerFactory.create();
+//  }
 }
