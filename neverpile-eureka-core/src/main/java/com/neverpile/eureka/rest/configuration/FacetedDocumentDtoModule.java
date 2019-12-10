@@ -30,7 +30,7 @@ public class FacetedDocumentDtoModule extends SimpleModule {
   private static final long serialVersionUID = 1L;
 
   /*
-   * Cannot inject those at this time, because spring resolves this curcular depencency in a way
+   * Cannot inject those at this time, because spring resolves this circular dependency in a way
    * that causes this jackson-module to be applied only after the creation of the relevant object
    * mapper instances, making the module ineffective.
    */
