@@ -24,10 +24,6 @@
     </dependency>
     <dependency>
       <groupId>com.neverpile.eureka</groupId>
-      <artifactId>neverpile-eureka-security-oauth2</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.neverpile.eureka</groupId>
       <artifactId>neverpile-eureka-authorization</artifactId>
     </dependency>
     <dependency>

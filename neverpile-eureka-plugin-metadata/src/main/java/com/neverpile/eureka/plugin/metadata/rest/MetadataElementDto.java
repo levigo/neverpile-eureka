@@ -5,7 +5,6 @@ import java.util.Date;
 
 import javax.validation.constraints.Pattern;
 import javax.ws.rs.core.MediaType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.springframework.hateoas.RepresentationModel;
 
@@ -15,7 +14,6 @@ import com.neverpile.eureka.model.EncryptionType;
 import com.neverpile.eureka.model.MediaTypeDeserializer;
 import com.neverpile.eureka.model.MediaTypeSerializer;
 import com.neverpile.eureka.rest.api.document.IDto;
-import com.neverpile.eureka.util.JacksonObjectNodeAdapter;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -58,7 +56,6 @@ public class MetadataElementDto extends RepresentationModel<MetadataDto> impleme
   }
 
   @Schema(description = "The content (payload) of the metadata element")
-  @XmlJavaTypeAdapter(value = JacksonObjectNodeAdapter.class)
   public byte[] getContent() {
     return content;
   }

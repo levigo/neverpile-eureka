@@ -8,6 +8,6 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
  */
 //@Component
 public class SpringHateoasIssue705WorkAround implements BeanPostProcessor {
-  @Autowired
+  @Autowired(required = false)
   FacetedDocumentDtoModule m1;
 }

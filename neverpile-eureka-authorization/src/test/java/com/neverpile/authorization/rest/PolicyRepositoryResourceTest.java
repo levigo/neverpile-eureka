@@ -21,6 +21,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.verify;
 
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -124,6 +126,8 @@ public class PolicyRepositoryResourceTest extends AbstractRestAssuredTest {
 
   private Instant now;
 
+  DateTimeFormatter formatter =  DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").withZone(ZoneId.of("UTC"));
+
   @Before
   public void initMocks() {
     given(mockAuthService.isAccessAllowed(any(), any(), any())).willReturn(true);
@@ -194,8 +198,8 @@ public class PolicyRepositoryResourceTest extends AbstractRestAssuredTest {
       .given()
         .accept(ContentType.JSON)
         .contentType(ContentType.JSON)
-        .param("from", threeHoursAgo.toString())
-        .param("to", inOneHour.toString())
+        .param("from", formatter.format(threeHoursAgo))
+        .param("to", formatter.format(inOneHour))
         .param("limit", 4711)
         .auth().preemptive().basic("user", "password")
         .log().all()
@@ -258,7 +262,7 @@ public class PolicyRepositoryResourceTest extends AbstractRestAssuredTest {
         .log().all()
       .when()
         .log().all()
-        .put("/api/v1/authorization/policy/{date}", now.toString())
+        .put("/api/v1/authorization/policy/{date}", formatter.format(now))
       .then()
         .log().all()
         .statusCode(200)
@@ -322,7 +326,7 @@ public class PolicyRepositoryResourceTest extends AbstractRestAssuredTest {
         .log().all()
       .when()
         .log().all()
-        .delete("/api/v1/authorization/policy/{date}", now.toString())
+        .delete("/api/v1/authorization/policy/{date}", formatter.format(now))
       .then()
         .log().all()
         .statusCode(200)

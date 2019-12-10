@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAttribute;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -17,7 +15,7 @@ public class Document {
 
   @JsonInclude(Include.NON_NULL)
   private Instant versionTimestamp;
-  
+
   private Date dateCreated;
 
   private Date dateModified;
@@ -31,7 +29,6 @@ public class Document {
     this.documentId = documentId;
   }
 
-  @XmlAttribute
   public String getDocumentId() {
     return documentId;
   }
