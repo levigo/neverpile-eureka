@@ -1,13 +1,20 @@
 package com.neverpile.eureka.rest.api.document.content;
 
-import static io.restassured.RestAssured.*;
+import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.isIn;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
@@ -232,6 +239,43 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
     // @formatter:on
   }
 
+  /**
+   * This method tests the successful creation of a document without a __DOC part
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testThat_documentCanBeCreatedUsingMultipartWithMissingContentTypeOnDOCPart() throws Exception {
+    Date then = new Date();
+    
+    // @formatter:off
+    BDDMockito
+      .given(mockDocumentService.createDocument(any()))
+        .willAnswer(i -> i.getArgument(0));
+    
+    Document returnedDocument = 
+        ((Function<RequestSpecification, RequestSpecification>) r -> r).apply(RestAssured.given())
+        .accept(ContentType.JSON) 
+        .multiPart("__DOC", "{\"documentId\": \"myProvidedId\"}")
+        .multiPart("base", "foo.txt", "foo".getBytes(), ContentType.TEXT.toString())
+        .auth().preemptive().basic("user", "password")
+      .when()
+        .log().all()
+        .post("/api/v1/documents")
+      .then()
+        .log().all()
+        .statusCode(isIn(Arrays.asList(200, 201)))
+        .contentType(ContentType.JSON)
+        .body("documentId", equalTo("myProvidedId"))
+        .body("contentElements.size()", equalTo(1))
+        .extract().as(Document.class);
+    
+    // verify returned document
+    assertThat(returnedDocument.getDocumentId()).isEqualTo("myProvidedId");
+    
+    // @formatter:on
+  }
+  
   @Test
   public void testThat_contentElementsCanBeRetrievedById() throws Exception {
     Document doc = createTestDocumentWithContent();
