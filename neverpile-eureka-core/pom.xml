@@ -48,10 +48,13 @@
       <groupId>org.springframework.hateoas</groupId>
       <artifactId>spring-hateoas</artifactId>
     </dependency>
-    
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-tx</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-aop</artifactId>
     </dependency>
 
     <!-- Backend-frontend-Mapping and general JSON-Support -->
@@ -74,6 +77,12 @@
       <artifactId>json-path</artifactId>
     </dependency>
 
+    <!-- Tracing -->
+    <dependency>
+      <groupId>io.opentracing</groupId>
+      <artifactId>opentracing-api</artifactId>
+    </dependency>
+
     <!-- FIXME: can we get rid of these dependencies? -->
     <dependency>
       <groupId>org.glassfish.jersey.media</groupId>
@@ -84,7 +93,7 @@
       <artifactId>commons-codec</artifactId>
       <scope>compile</scope>
     </dependency>
-    
+
     <!-- Bean Validation API support -->
     <dependency>
       <groupId>javax.validation</groupId>

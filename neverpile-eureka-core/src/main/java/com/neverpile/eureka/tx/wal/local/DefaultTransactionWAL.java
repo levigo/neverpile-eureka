@@ -70,10 +70,11 @@ public class DefaultTransactionWAL implements TransactionWAL {
     logAction(id, ActionType.COMMIT, action);
   }
 
-  protected void logAction(final String id, final ActionType type, final TransactionalAction action) {
+  protected void logAction(final String id, final ActionType type,
+      final TransactionalAction action) {
     wal.logAction(id, type, action);
   }
-  
+
   protected void rollback() {
     wal.applyLoggedActions(id, ActionType.ROLLBACK, true);
 

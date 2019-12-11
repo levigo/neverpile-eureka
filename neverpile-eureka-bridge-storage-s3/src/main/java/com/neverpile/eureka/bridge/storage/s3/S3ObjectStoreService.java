@@ -1,13 +1,15 @@
 package com.neverpile.eureka.bridge.storage.s3;
 
-import static com.neverpile.eureka.util.ObjectNames.*;
-import static java.util.stream.Collectors.*;
+import static com.neverpile.eureka.util.ObjectNames.escape;
+import static com.neverpile.eureka.util.ObjectNames.unescape;
+import static java.util.stream.Collectors.joining;
 
 import java.io.InputStream;
 import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -27,12 +29,20 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.neverpile.eureka.api.ObjectStoreService;
 import com.neverpile.eureka.api.exception.VersionMismatchException;
 import com.neverpile.eureka.model.ObjectName;
+import com.neverpile.eureka.tracing.TraceInvocation;
+import com.neverpile.eureka.tracing.Tag;
 import com.neverpile.eureka.tx.wal.TransactionWAL;
 import com.neverpile.eureka.tx.wal.TransactionWAL.TransactionalAction;
 
 import io.micrometer.core.annotation.Timed;
 
 public class S3ObjectStoreService implements ObjectStoreService {
+  public static class ObjectNameMapper implements Function<ObjectName, String> {
+    @Override
+    public String apply(final ObjectName n) {
+      return n.stream().map(s -> escape(s)).collect(joining(NAME_DELIMITER));
+    }
+  }
 
   private static final String BACKUP_SUFFIX = ".%BACKUP%";
 
@@ -123,7 +133,9 @@ public class S3ObjectStoreService implements ObjectStoreService {
   @Timed(description = "put object store element", extraTags = {
       "subsystem", "s3.object-store"
   }, value = "eureka.s3.object-store.put")
-  public void put(final ObjectName objectName, final String version, final InputStream content, final long length) {
+  @TraceInvocation
+  public void put(@Tag(name = "key", valueAdapter = ObjectNameMapper.class) final ObjectName objectName,
+      final String version, final InputStream content, @Tag(name = "length") final long length) {
     String bucket = connectionConfiguration.getDefaultBucketName();
     String key = toKey(objectName);
 
@@ -186,7 +198,7 @@ public class S3ObjectStoreService implements ObjectStoreService {
         do {
           s = summaries.next();
         } while (s.getKey().endsWith(BACKUP_SUFFIX) && summaries.hasNext()); // hide backups
-        
+
         action.accept(toStoreObject(s));
         return true;
       }
@@ -249,7 +261,9 @@ public class S3ObjectStoreService implements ObjectStoreService {
   }
 
   @Override
-  public Stream<StoreObject> list(final ObjectName prefix) {
+  @TraceInvocation
+  public Stream<StoreObject> list(
+      @Tag(name = "prefix", valueAdapter = ObjectNameMapper.class) final ObjectName prefix) {
     String prefixKey = toKey(prefix);
 
     ListObjectsRequest lor = new ListObjectsRequest();
@@ -265,7 +279,8 @@ public class S3ObjectStoreService implements ObjectStoreService {
   @Timed(description = "get object store element", extraTags = {
       "subsystem", "s3.object-store"
   }, value = "eureka.s3.object-store.get")
-  public StoreObject get(final ObjectName objectName) {
+  @TraceInvocation
+  public StoreObject get(@Tag(name = "key", valueAdapter = ObjectNameMapper.class) final ObjectName objectName) {
     try {
       final S3Object object = s3client.getObject(connectionConfiguration.getDefaultBucketName(), toKey(objectName));
 
@@ -340,7 +355,9 @@ public class S3ObjectStoreService implements ObjectStoreService {
   @Timed(description = "verify object store element exists", extraTags = {
       "subsystem", "s3.object-store"
   }, value = "eureka.s3.object-store.check-exists")
-  public boolean checkObjectExists(final ObjectName objectName) {
+  @TraceInvocation
+  public boolean checkObjectExists(
+      @Tag(name = "key", valueAdapter = ObjectNameMapper.class) final ObjectName objectName) {
     String bucket = connectionConfiguration.getDefaultBucketName();
     String key = toKey(objectName);
 

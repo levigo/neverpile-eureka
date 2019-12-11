@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 
-import com.neverpile.eureka.api.ObjectStoreService;
 import com.neverpile.eureka.autoconfig.NeverpileEurekaAutoConfiguration;
 
 @Configuration
@@ -22,7 +21,7 @@ import com.neverpile.eureka.autoconfig.NeverpileEurekaAutoConfiguration;
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 public class S3ObjectStoreAutoConfiguration {
   @Bean
-  ObjectStoreService s3ObjectStoreService() {
+  S3ObjectStoreService s3ObjectStoreService() {
     return new S3ObjectStoreService();
   }
 }
