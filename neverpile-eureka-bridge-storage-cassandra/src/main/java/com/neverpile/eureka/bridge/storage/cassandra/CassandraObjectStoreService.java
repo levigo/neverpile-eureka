@@ -195,25 +195,28 @@ public class CassandraObjectStoreService implements ObjectStoreService {
     @Override
     public int read() {
       if (null == currentChunk || !currentChunk.hasRemaining())
-        if (!nextChunk())
+        if (!nextChunk() || !currentChunk.hasRemaining())
           return -1;
 
       return currentChunk.get() & 0xff;
     }
 
     private boolean nextChunk() {
-      boolean hasNextChunk = false;
       if (chunkIterator.hasNext()) {
         currentChunk = chunkIterator.next().getData();
         currentChunkCount++;
-        hasNextChunk = true;
-        ;
+        return true;
       } else if (totalChunkCount > currentChunkCount) {
         chunkIterator = objectDataRepository.findByObjectNameAndChunkNoGreaterThanEqual(objectName, version,
             currentChunkCount, maxResponseQueryBatchSize).iterator();
-        hasNextChunk = chunkIterator.hasNext();
-      }
-      return hasNextChunk;
+        if(!chunkIterator.hasNext())
+          return false;
+        
+        currentChunk = chunkIterator.next().getData();
+        currentChunkCount++;
+        return true;
+      } else
+        return false;
     }
 
     @Override

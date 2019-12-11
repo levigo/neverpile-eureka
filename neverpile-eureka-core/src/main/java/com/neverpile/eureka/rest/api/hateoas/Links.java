@@ -1,9 +1,7 @@
 package com.neverpile.eureka.rest.api.hateoas;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
-
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.mvc.ControllerLinkBuilder;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 
 import com.neverpile.eureka.model.Document;
 import com.neverpile.eureka.rest.api.document.DocumentFacet;
@@ -21,7 +19,7 @@ public class Links {
     return doc(document).slash(facet.getName()).slash(id).withRel(facet.getName());
   }
 
-  public static ControllerLinkBuilder doc(final Document document) {
-    return linkTo(ContentElementResource.class).slash(document.getDocumentId());
+  public static WebMvcLinkBuilder doc(final Document document) {
+    return WebMvcLinkBuilder.linkTo(ContentElementResource.class).slash(document.getDocumentId());
   }
 }

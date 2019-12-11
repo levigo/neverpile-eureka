@@ -32,7 +32,7 @@ import com.neverpile.eureka.tx.lock.ClusterLockFactory;
 @SpringBootConfiguration
 @EnableAutoConfiguration
 @EnableHypermediaSupport(type=HypermediaType.HAL)
-@Import({JacksonConfiguration.class, FacetedDocumentDtoModule.class, DocumentResource.class, ModelMapperConfiguration.class})
+@Import({FacetedDocumentDtoModule.class, JacksonConfiguration.class, DocumentResource.class, ModelMapperConfiguration.class})
 @EnableTransactionManagement
 public class BaseTestConfiguration {
   @EnableWebSecurity

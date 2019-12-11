@@ -5,14 +5,12 @@ import java.util.Date;
 import java.util.Objects;
 
 import javax.ws.rs.core.MediaType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.neverpile.eureka.model.EncryptableElement;
 import com.neverpile.eureka.model.MediaTypeDeserializer;
 import com.neverpile.eureka.model.MediaTypeSerializer;
-import com.neverpile.eureka.util.JacksonObjectNodeAdapter;
 
 public class MetadataElement extends EncryptableElement {
   private String schema;
@@ -43,7 +41,6 @@ public class MetadataElement extends EncryptableElement {
     this.contentType = format;
   }
 
-  @XmlJavaTypeAdapter(value = JacksonObjectNodeAdapter.class)
   public byte[] getContent() {
     return content;
   }

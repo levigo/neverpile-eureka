@@ -12,7 +12,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import com.google.common.annotations.VisibleForTesting;
+import com.neverpile.common.util.VisibleForTesting;
 import com.neverpile.eureka.tx.lock.ClusterLockFactory;
 import com.neverpile.eureka.util.Threads;
 

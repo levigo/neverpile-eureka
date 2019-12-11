@@ -1,0 +1,1083 @@
+swagger: '2.0'
+
+info:
+  title: Neverpile eureka API
+  version: 1.0.0
+  contact:
+    name: levigo solutions gmbh
+    url: 'https://levigo.de'
+    email: solutions@levigo.de
+
+host: 'localhost:8080'
+
+basePath: /
+
+tags:
+  - name: Document
+    description: Document related APIs
+  - name: Content
+    description: Document content element related APIs
+  - name: Metadata
+    description: Document metadata related APIs
+  - name: Audit
+    description: Audit-log related APIs
+  - name: Authorization
+    description: Policy Repository Resource
+  - name: Index
+    description: Index Resource
+
+security:
+  - oauth: []
+  
+paths:
+  /api/v1/authorization/policy:
+    get:
+      tags:
+        - Authorization
+      summary: Query access policies by start-of-validity date range
+      produces:
+        - application/json
+      parameters:
+        - name: from
+          in: query
+          description: The start of the date range to query for
+          required: false
+          type: string
+          default: any start date
+          allowEmptyValue: false
+          
+        - name: limit
+          in: query
+          description: The maximum number if policies to return
+          required: false
+          type: string
+          default: no limit
+          allowEmptyValue: false
+          
+        - name: to
+          in: query
+          description: The end of the date range to query for
+          required: false
+          type: string
+          default: any end date
+          allowEmptyValue: false
+          
+      responses:
+        '200':
+          description: Policy found
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/AccessPolicy'
+      
+    post:
+      tags:
+        - Authorization
+      summary: Create or update an authorization policy with the start-of-validity date taken from the supplied policy
+      
+      consumes:
+        - application/json
+      
+      produces:
+        - application/json
+      
+      parameters:
+        - in: body
+          name: policy
+          description: policy
+          required: false
+          schema:
+            $ref: '#/definitions/AccessPolicy'
+      
+      responses:
+        '200':
+          description: Policy found
+
+  /api/v1/authorization/policy/current:
+    get:
+      tags:
+        - Authorization
+      summary: Fetch the currently valid authorization policy
+      
+      produces:
+        - application/json
+      
+      responses:
+        '200':
+          description: Policy found
+          schema:
+            $ref: '#/definitions/AccessPolicy'
+
+  /api/v1/authorization/policy/hints:
+    get:
+      tags:
+        - Authorization
+      summary: Fetch the authorization policy hints
+
+      produces:
+        - application/json
+
+      responses:
+        '200':
+          description: Hints found
+          schema:
+            $ref: '#/definitions/HintResult'
+
+  /api/v1/authorization/policy/validate:
+    post:
+      tags:
+        - Authorization
+      summary: Validate an authorization policy. Report problems as a list of errors and/or warnings
+      
+      consumes:
+        - application/json
+      
+      produces:
+        - application/json
+      
+      parameters:
+        - in: body
+          name: policyJson
+          description: policyJson
+          required: false
+          schema:
+            type: string
+      
+      responses:
+        '200':
+          description: Policy validated
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ValidationResult'
+      
+  /api/v1/authorization/policy/{startOfValidity}:
+    parameters:
+      - name: startOfValidity
+        in: path
+        description: The start-of-validity date of the policy to be fetched
+        required: true
+        type: string
+        format: date-time
+        
+    get:
+      tags:
+        - Authorization
+      summary: Fetch the authorization policy with the given start-of-validity date
+      produces:
+        - application/json
+        
+      responses:
+        '200':
+          description: Policy found
+          schema:
+            $ref: '#/definitions/AccessPolicy'
+      
+    put:
+      tags:
+        - Authorization
+      summary: Create or update the authorization policy with the given start-of-validity date
+      consumes:
+        - application/json
+      produces:
+        - application/json
+        
+      parameters:
+        - in: body
+          name: policy
+          description: policy
+          required: false
+          schema:
+            $ref: '#/definitions/AccessPolicy'
+          
+      responses:
+        '200':
+          description: Policy found
+      
+    delete:
+      tags:
+        - Authorization
+      summary: Delete the authorization policy with the given start-of-validity date
+      produces:
+        - application/json
+      
+      responses:
+        '200':
+          description: Policy found
+      
+  /api/v1/documents:
+    post:
+      tags:
+        - Content
+      summary: Create a document along with content elements in a single multipart upload
+
+      consumes:
+        - multipart/form-data
+        - application/json
+      produces:
+        - application/json
+
+      parameters:
+        - name: facets
+          in: query
+          description: The list of facets to be included in the response; return all facets if empty
+          required: false
+          type: array
+          items:
+            type: string
+          collectionFormat: multi
+          allowEmptyValue: false
+        
+        - name: __DOC
+          in: formData
+          description: The document description and facets in the form '#/definitions/Document'
+          required: false
+          type: file
+# Unfortunately, this isn't supported in Swagger 2.0          
+#          schema:
+#            $ref: '#/definitions/Document'
+            
+        - in: formData
+          name: any name
+          description: Other content elements
+          type: file
+          required: false
+          
+      responses:
+        '200':
+          description: Content element(s) added
+          schema:
+            $ref: '#/definitions/Document'
+        '400':
+          description: Invalid documentID supplied
+        '404':
+          description: Document not found
+      
+  /api/v1/documents/{documentID}:
+    parameters: 
+      - name: documentID
+        in: path
+        description: The ID of the document to be fetched
+        required: true
+        type: string
+        
+    get:
+      tags:
+        - Document
+      summary: Fetches a document by ID
+      
+      produces:
+        - application/json
+        
+      parameters:
+        - name: facets
+          in: query
+          description: The list of facets to be included in the response; return all facets if empty
+          required: false
+          type: array
+          items:
+            type: string
+          collectionFormat: multi
+          allowEmptyValue: false
+          
+      responses:
+        '200':
+          description: Document found
+          schema:
+            $ref: '#/definitions/Document'
+        '400':
+          description: Invalid documentID supplied
+        '404':
+          description: Document not found
+
+    put:
+      tags:
+        - Document
+      summary: Update a document
+      description: 'The document must already exist. It is not possible to create a new document with this method. '
+
+      consumes:
+        - application/json
+
+      produces:
+        - application/json
+
+      parameters:
+        - name: facets
+          in: query
+          description: The list of facets to be included in the response; return all facets if empty
+          required: false
+          type: array
+          items:
+            type: string
+          collectionFormat: multi
+          allowEmptyValue: false
+          
+        - in: body
+          name: requestDto
+          description: requestDto
+          required: false
+          schema:
+            $ref: '#/definitions/Document'
+            
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Document'
+        '202':
+          description: Document updated
+          schema:
+            $ref: '#/definitions/Document'
+        '400':
+          description: Invalid documentID supplied
+        '404':
+          description: Document not found
+
+    delete:
+      tags:
+        - Document
+      summary: Delete a document identified by its ID
+
+      produces:
+        - application/json
+
+      responses:
+        '204':
+          description: Document successfully deleted
+        '400':
+          description: Invalid documentID supplied
+        '404':
+          description: Document not found
+        '409':
+          description: The request could not be completed due to a conflict with the current state of the target resource.
+          
+  /api/v1/documents/{documentID}/content:
+    parameters:
+      - name: documentID
+        in: path
+        description: ID of the document
+        required: true
+        type: string
+        
+    get:
+      tags:
+        - Content
+      summary: Queries content elements
+      
+      produces:
+        - application/json
+        - '*/*'
+        
+      parameters:
+        - name: return
+          in: query
+          description: How and what to return
+          required: false
+          type: string
+          default: first
+          allowEmptyValue: false
+          enum:
+            - only
+            - first
+            - all
+      
+        - name: role
+          in: query
+          description: Role(s) of the content elements to be fetched. Multiple roles can be specified separated by comma
+          required: false
+          type: array
+          items:
+            type: string
+          collectionFormat: multi
+          allowEmptyValue: false
+      
+      responses:
+        '200':
+          description: Content element found
+          schema:
+            type: string
+            format: byte
+        '404':
+          description: Document or content element not found
+
+    post:
+      tags:
+        - Content
+      summary: Add content elements to a document
+
+      consumes:
+        - multipart/form-data
+
+      produces:
+        - application/json
+
+      parameters:
+        - name: facets
+          in: query
+          description: The list of facets to be included in the response; return all facets if empty
+          required: false
+          type: array
+          items:
+            type: string
+          collectionFormat: multi
+          allowEmptyValue: false
+        
+        - name: __DOC
+          in: formData
+          description: The document description and facets in the form '#/definitions/Document'
+          required: false
+          type: file
+# Unfortunately, this isn't supported in Swagger 2.0          
+#          schema:
+#            $ref: '#/definitions/Document'
+            
+        - in: formData
+          name: any name
+          description: Other content elements
+          type: file
+          required: false
+          
+      responses:
+        '200':
+          description: Content element(s) added
+          schema:
+            $ref: '#/definitions/Document'
+        '400':
+          description: Invalid documentID supplied
+        '404':
+          description: Document not found
+          
+  /api/v1/documents/{documentID}/content/{contentElementId}:
+    parameters:
+      - name: documentID
+        in: path
+        description: ID of the document
+        required: true
+        type: string
+
+      - name: contentElementId
+        in: path
+        description: ID of the content element to be updated
+        required: true
+        type: string
+
+    put:
+      tags:
+        - Content
+      summary: Update a specific content element. The content element must be sent in the body of the request.
+      consumes:
+        - '*/*'
+
+      produces:
+        - application/json
+
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Document'
+        '202':
+          description: Content element updated
+          schema:
+            $ref: '#/definitions/Document'
+        '400':
+          description: Invalid documentID supplied
+        '404':
+          description: Content element not found
+      
+    get:
+      tags:
+        - Content
+      summary: Retrieve a single content element
+      
+      produces:
+        - application/json
+        - '*/*'
+      
+      responses:
+        '200':
+          description: Content element found
+          schema:
+            type: string
+            format: byte
+        '404':
+          description: Document or content element not found
+      
+    delete:
+      tags:
+        - Content
+      summary: Deletes a content element by ID
+      
+      produces:
+        - application/json
+      
+      parameters:
+        - name: facets
+          in: query
+          description: The list of facets to be included in the response; return all facets if empty
+          required: false
+          type: array
+          items:
+            type: string
+          collectionFormat: multi
+          allowEmptyValue: false
+      
+      responses:
+        '204':
+          description: Content element deleted
+        '400':
+          description: Invalid documentID supplied
+        '404':
+          description: Document/Content not found
+      
+  /api/v1/documents/{documentID}/metadata:
+    parameters:
+      - name: documentID
+        in: path
+        description: The ID of the document for which metadata shall be fetched
+        required: true
+        type: string
+        
+    get:
+      tags:
+        - Metadata
+      summary: Fetches a document's metadata
+      
+      produces:
+        - application/json
+      
+      responses:
+        '200':
+          description: Document metadata found
+          schema:
+            $ref: '#/definitions/Metadata'
+        '404':
+          description: Document not found
+    
+    put:
+      tags:
+        - Metadata
+      summary: Updates a document's metadata
+      
+      consumes:
+        - application/json
+      
+      produces:
+        - application/json
+        
+      parameters:
+        - in: body
+          name: metadata
+          description: The new document metadata
+          required: false
+          schema:
+            $ref: '#/definitions/Metadata'
+            
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Metadata'
+        '202':
+          description: Metadata updated
+          schema:
+            $ref: '#/definitions/Metadata'
+        '404':
+          description: Document not found
+      
+  /api/v1/documents/{documentID}/metadata/{name}:
+    parameters:
+      - name: documentID
+        in: path
+        description: The ID of the document's metadata to be fetched
+        required: true
+        type: string
+    
+      - name: name
+        in: path
+        description: The name of the metadata element to be fetched
+        required: true
+        type: string
+    
+    get:
+      tags:
+        - Metadata
+      summary: Fetches a document metadata element by ID and element name
+      
+      produces:
+        - application/json
+      
+      responses:
+        '200':
+          description: Metadata element found
+          schema:
+            $ref: '#/definitions/MetadataElement'
+        '404':
+          description: Document or element not found
+      
+    put:
+      tags:
+        - Metadata
+      summary: Create or update a single metatadata element of a document
+      
+      consumes:
+        - application/json
+      
+      produces:
+        - application/json
+      
+      parameters:
+        - in: body
+          name: metadata element
+          description: The new metadata element 
+          required: false
+          schema:
+            $ref: '#/definitions/MetadataElement'
+
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/MetadataElement'
+        '202':
+          description: metadata updated
+          schema:
+            $ref: '#/definitions/MetadataElement'
+        '404':
+          description: Document not found
+
+    delete:
+      tags:
+        - Metadata
+      summary: Delete a single metatadata element of a document
+
+      produces:
+        - application/json
+
+      responses:
+        '204':
+          description: Metadata element deleted
+        '404':
+          description: Document or element not found
+
+  /api/v1/documents/{documentId}/audit:
+    parameters:
+      - name: documentId
+        in: path
+        description: The ID of the document
+        required: true
+        type: string
+        
+    get:
+      tags:
+        - Audit
+      summary: Fetches a document's audit log
+
+      produces:
+        - application/json
+
+      responses:
+        '200':
+          description: Audit log found
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/AuditEvent'
+        '404':
+          description: Document not found
+    
+    post:
+      tags:
+        - Audit
+      summary: Appends an event to a document's audit log
+      
+      consumes:
+        - application/json
+
+      produces:
+        - application/json
+
+      parameters:
+        - in: body
+          name: event
+          description: the audit event to append
+          required: true
+          schema:
+            $ref: '#/definitions/AuditEvent'
+          
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/AuditEvent'
+        '201':
+          description: Event logged
+          schema:
+            $ref: '#/definitions/AuditEvent'
+        '400':
+          description: 'Invalid input, object invalid'
+        '404':
+          description: Document not found
+
+  /api/v1/documents/{documentId}/audit/{auditId}:
+    parameters:
+      - name: documentId
+        in: path
+        description: The ID of the document
+        required: true
+        type: string
+
+      - name: auditId
+        in: path
+        description: The ID of the audit event to be fetched
+        required: true
+        type: string
+    get:
+      tags:
+        - Audit
+      summary: Fetches a single audit event
+
+      produces:
+        - application/json
+
+      responses:
+        '200':
+          description: Audit event found
+          schema:
+            $ref: '#/definitions/AuditEvent'
+        '404':
+          description: AuditEvent not found
+      
+  /api/v1/index/hard-reset:
+    post:
+      tags:
+        - Index
+      summary: Hard resets index
+      description: All index data will be lost and index gets reinitialized.
+      
+      consumes:
+        - application/json
+      
+      produces:
+        - application/json
+
+      responses:
+        '200':
+          description: Index successfully resetted
+
+      security:
+        - oauth: []
+
+      deprecated: false
+
+  /api/v1/index/query/{query}:
+    parameters:
+      - name: query
+        in: path
+        description: The query of the documents to be fetched
+        required: true
+        type: string
+
+    get:
+      tags:
+        - Index
+      summary: Fetches documents by query
+      produces:
+        - application/json
+        
+      parameters:
+        - name: facets
+          in: query
+          description: The list of facets to be included in the response; return all facets if empty
+          required: false
+          type: array
+          items:
+            type: string
+          collectionFormat: multi
+          allowEmptyValue: false
+          
+      responses:
+        '200':
+          description: Query successful
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Document'
+        '400':
+          description: Invalid query supplied
+      
+  /api/v1/index/rebuild:
+    post:
+      tags:
+        - Index
+      summary: Rebuilds the index with current store information
+      description: Current index will remain unchanged for all incoming requests until process is complete.Incoming updates to the index will be included in the new index but wont be accessible until rebuild is complete.
+      
+      consumes:
+        - application/json
+      
+      produces:
+        - application/json
+      
+      responses:
+        '200':
+          description: Index rebuild successfully started.
+      
+securityDefinitions:
+  oauth:
+    type: oauth2
+    tokenUrl: http://$HOST/oauth/token
+    flow: application
+    scopes:
+      public: for public operations
+      document: for document operations
+      
+definitions:
+  AccessPolicy:
+    type: object
+    properties:
+      _version:
+        type: string
+        description: 'The version of this policy''s schema. There is currently only one valid version: ''2018-09-26''. Policies using other versions may not be compatible.'
+      default_effect:
+        type: string
+        description: The default effect of this policy when no access rule matched
+        enum:
+          - ALLOW
+          - DENY
+      description:
+        type: string
+        description: A description of this access policy
+      rules:
+        type: array
+        description: 'The list of access rules '
+        items:
+          title: AccessRule
+          type: object
+          properties:
+            actions:
+              type: array
+              description: 'The actions matched by this rule. (TBD: pointer to possible actions)'
+              items:
+                type: string
+            conditions:
+              description: Additional conditions to be satisfied for this rule to match
+              $ref: '#/definitions/AndCondition'
+            effect:
+              type: string
+              description: The effect to be caused if this rule matches
+              enum:
+                - ALLOW
+                - DENY
+            name:
+              type: string
+              description: A name/description of a rule
+            resources:
+              type: array
+              description: 'The resources matched by this rule. (TBD: pointer to possible resources)'
+              items:
+                type: string
+            subjects:
+              type: array
+              description: 'The subjects matched by this rule. Either ''principal:''s or ''role:''s or ''anonymous'''
+              items:
+                type: string
+          
+      valid_from:
+        type: string
+        format: date-time
+        description: The timestamp specifying the date and time at which this policy becomes valid (unless replaced by a policy with a later timestamp)
+    title: AccessPolicy
+    description: An access policy descibes access rights users can exercise within the system
+  
+  AndCondition:
+    type: object
+    properties:
+      name:
+        type: string
+        description: A name/description of a condition
+    title: AndCondition
+    
+  AuditEvent:
+    type: object
+    properties:
+      auditId:
+        type: string
+        description: The ID of this event
+      description:
+        type: string
+        description: A textual desription of the event
+      timestamp:
+        type: string
+        format: date-time
+        description: The time at which the event occurred
+      type:
+        type: string
+        description: The type of event
+        enum:
+          - CREATE
+          - UPDATE
+          - DELETE
+          - CUSTOM
+      userID:
+        type: string
+        description: The ID of the used which triggered the event; may be null if the event wasn't triggered by a user
+    title: AuditEvent
+    description: An audit event associated with a document
+    
+  ContentElement:
+    type: object
+    properties:
+      digest:
+        description: The Digest of the payload object
+        $ref: '#/definitions/Digest'
+      encryption:
+        type: string
+        description: The type of encryption the content element is subject to
+        enum:
+          - shared
+          - private
+      fileName:
+        type: string
+      id:
+        type: string
+        description: The id of the content element - uniqueness is guaranteed only within the document
+      length:
+        type: integer
+        format: int64
+        description: The length of the element in bytes
+      role:
+        type: string
+        description: The role of the content element
+      type:
+        type: string
+        description: The MIME-Type of the content element as specified in RFC 2045 without parameters
+    title: ContentElement
+    description: A content element associated with a document
+    
+  Digest:
+    type: object
+    properties:
+      algorithm:
+        type: string
+        description: The algorithm used to compute the digest
+        enum:
+          - SHA-1
+          - SHA-256
+          - SHA-384
+          - SHA-512
+          - MD5
+      bytes:
+        type: string
+        format: byte
+        description: The hash value as a byte string
+    title: Digest
+    description: A cryptographic digest used to verify the integrity of an object
+    
+  Document:
+    type: object
+    properties:
+      audit:
+        type: array
+        items:
+          $ref: '#/definitions/AuditEvent'
+      contentElements:
+        type: array
+        items:
+          $ref: '#/definitions/ContentElement'
+      dateCreated:
+        type: string
+        format: date-time
+      dateModified:
+        type: string
+        format: date-time
+      documentId:
+        type: string
+        description: The document's unique ID
+      metadata:
+        $ref: '#/definitions/Metadata'
+      versionTimestamp:
+        type: string
+        format: date-time
+    title: Document
+    description: A neverpile document
+    
+  Hint:
+    type: object
+    properties:
+      documentationKey:
+        type: string
+      prefix:
+        type: string
+    title: Hint
+    
+  HintResult:
+    type: object
+    properties:
+      actions:
+        type: array
+        items:
+          $ref: '#/definitions/Hint'
+      resources:
+        type: array
+        items:
+          $ref: '#/definitions/Hint'
+      subjects:
+        type: array
+        items:
+          $ref: '#/definitions/Hint'
+    title: HintResult
+    
+  Metadata:
+    type: object
+    title: Metadata
+    description: A set of metadata elements associated with a document
+    additionalProperties:
+      $ref: '#/definitions/MetadataElement'
+  
+  MetadataElement:
+    type: object
+    properties:
+      content:
+        type: string
+        format: byte
+        description: The content (payload) of the metadata element
+      contentType:
+        type: string
+        description: The MIME-Type of the metadata element as specified in RFC 2045 without parameters
+      dateCreated:
+        type: string
+        format: date-time
+        description: The timestamp at which the element was created
+      dateModified:
+        type: string
+        format: date-time
+        description: The timestamp at which the element was last modified
+      encryption:
+        type: string
+        description: The type of encryption the content element is subject to
+        enum:
+          - shared
+          - private
+      keyHint:
+        type: string
+        description: A key hint may be used by a client to store information about which key was used to encrypt the element
+      schema:
+        type: string
+        description: 'A reference to a schema which the element is supposed to conform to, e.g. an XML namespace definition, an XSD reference, a JSON schema reference etc.'
+    title: MetadataElement
+    description: A metadata element associated with a document
+    
+  ValidationResult:
+    type: object
+    properties:
+      message:
+        type: string
+      type:
+        type: string
+        enum:
+          - INFO
+          - WARNING
+          - ERROR
+    title: ValidationResult

@@ -27,7 +27,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.annotations.VisibleForTesting;
+import com.neverpile.common.util.VisibleForTesting;
 import com.neverpile.eureka.api.DocumentAssociatedEntityStore;
 import com.neverpile.eureka.api.MultiVersioningDocumentService;
 import com.neverpile.eureka.api.ObjectStoreService;
