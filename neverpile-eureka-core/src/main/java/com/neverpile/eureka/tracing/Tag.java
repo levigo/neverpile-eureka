@@ -7,14 +7,14 @@ import java.lang.annotation.Target;
 import java.util.function.Function;
 
 /**
- * Parameter annotation used on methods annotated with {@link NewSpan} used to indicate that the
+ * Parameter annotation used on methods annotated with {@link TraceInvocation} used to indicate that the
  * given method parameter should used as the value of a span tag.
  */
 @Target({
     ElementType.PARAMETER, ElementType.ANNOTATION_TYPE
 })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface SpanTag {
+public @interface Tag {
   public static class NoopMapper implements Function<Object, Object> {
     @Override
     public Object apply(final Object t) {

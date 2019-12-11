@@ -24,8 +24,8 @@ import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.ILock;
 import com.hazelcast.core.IMap;
 import com.hazelcast.core.MultiMap;
-import com.neverpile.eureka.tracing.NewSpan;
-import com.neverpile.eureka.tracing.SpanTag;
+import com.neverpile.eureka.tracing.TraceInvocation;
+import com.neverpile.eureka.tracing.Tag;
 import com.neverpile.eureka.tx.wal.TransactionWAL.TransactionalAction;
 import com.neverpile.eureka.tx.wal.WALException;
 import com.neverpile.eureka.tx.wal.WriteAheadLog;
@@ -180,8 +180,8 @@ public class HazelcastWAL implements WriteAheadLog {
    * com.neverpile.eureka.tx.wal.TransactionWAL.TransactionalAction)
    */
   @Override
-  @NewSpan
-  public void logAction(final String id, @SpanTag(name="action") final ActionType type, final TransactionalAction action) {
+  @TraceInvocation
+  public void logAction(final String id, @Tag(name="action") final ActionType type, final TransactionalAction action) {
     logger.debug("Logging {} action for tx {}: {}", type, id, action);
     ActionEntry entry = new ActionEntry(id, type, action);
     log(id, entry);
@@ -193,7 +193,7 @@ public class HazelcastWAL implements WriteAheadLog {
    * @see com.neverpile.eureka.tx.wal.local.WriteAheadLog#logCompletion(java.lang.String)
    */
   @Override
-  @NewSpan
+  @TraceInvocation
   public void logCompletion(final String id) {
     logEvent(id, EventType.COMPLETED);
 

@@ -39,7 +39,7 @@ import com.neverpile.eureka.event.EventPublisher;
 import com.neverpile.eureka.model.Document;
 import com.neverpile.eureka.model.ObjectName;
 import com.neverpile.eureka.rest.api.exception.NotFoundException;
-import com.neverpile.eureka.tracing.NewSpan;
+import com.neverpile.eureka.tracing.TraceInvocation;
 import com.neverpile.eureka.tx.lock.ClusterLockFactory;
 import com.neverpile.eureka.util.CompositeKey;
 
@@ -293,7 +293,7 @@ public class DefaultMultiVersioningDocumentService
   }
 
   @Override
-  @NewSpan
+  @TraceInvocation
   public Optional<Document> getDocument(final String documentId) {
     // Go through tx registry for current version
     DocumentPdo doc = txEntityRegistry().document(documentId, null).document;
@@ -308,7 +308,7 @@ public class DefaultMultiVersioningDocumentService
 
   @Override
   @CacheEvict(cacheNames = "documentVersions", key = "#document.documentId")
-  @NewSpan
+  @TraceInvocation
   public Document createDocument(final Document document) {
     if (!getVersions(document.getDocumentId()).isEmpty())
       throw new DocumentAlreadyExistsException(document);
@@ -323,7 +323,7 @@ public class DefaultMultiVersioningDocumentService
 
   @Override
   @CacheEvict(cacheNames = "documentVersions", key = "#documentId")
-  @NewSpan
+  @TraceInvocation
   public boolean deleteDocument(final String documentId) {
     txEntityRegistry().delete(documentId);
     return true;
@@ -331,19 +331,19 @@ public class DefaultMultiVersioningDocumentService
 
   @Override
   @CacheEvict(cacheNames = "documentVersions", key = "#document.documentId")
-  @NewSpan
+  @TraceInvocation
   public Optional<Document> update(final Document document) {
     return Optional.of(txEntityRegistry().update(modelMapper.map(document, DocumentPdo.class)));
   }
 
   @Override
-  @NewSpan
+  @TraceInvocation
   public boolean documentExists(final String documentId) {
     return !getVersions(documentId).isEmpty();
   }
 
   @Override
-  @NewSpan
+  @TraceInvocation
   public Stream<String> getAllDocumentIds() {
     // @formatter:off
     // Second part of ObjectName is documentId. See 'createDocumentDirectoryName()'.
@@ -355,7 +355,7 @@ public class DefaultMultiVersioningDocumentService
   }
 
   @Override
-  @NewSpan
+  @TraceInvocation
   public List<Document> getDocuments(final List<String> documentIds) {
     // @formatter:off
     return documentIds.stream()
@@ -367,20 +367,20 @@ public class DefaultMultiVersioningDocumentService
   }
 
   @Override
-  @NewSpan
+  @TraceInvocation
   public void store(final Document document, final String key, final JsonNode value) {
     txEntityRegistry().sidecar(document).put(key, value);
     txEntityRegistry().markAsModified(document);
   }
 
   @Override
-  @NewSpan
+  @TraceInvocation
   public Optional<JsonNode> retrieve(final Document document, final String key) {
     return Optional.ofNullable(txEntityRegistry().sidecar(document).get(key));
   }
 
   @Override
-  @NewSpan
+  @TraceInvocation
   public void delete(final Document document, final String key) {
     txEntityRegistry().sidecar(document).remove(key);
     txEntityRegistry().markAsModified(document);
@@ -471,7 +471,7 @@ public class DefaultMultiVersioningDocumentService
   }
 
   @Override
-  @NewSpan
+  @TraceInvocation
   public Optional<Document> getDocumentVersion(final String documentId, final Instant versionTimestamp) {
     return Optional.ofNullable(txEntityRegistry().document(documentId, versionTimestamp).document);
   }
@@ -485,7 +485,7 @@ public class DefaultMultiVersioningDocumentService
    */
   @Override
   @Cacheable("documentVersions")
-  @NewSpan
+  @TraceInvocation
   public List<Instant> getVersions(final String documentId) {
     return doRetrieveVersionList(documentId);
   }

@@ -32,8 +32,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 
-import com.neverpile.eureka.tracing.NewSpan;
-import com.neverpile.eureka.tracing.SpanTag;
+import com.neverpile.eureka.tracing.TraceInvocation;
+import com.neverpile.eureka.tracing.Tag;
 import com.neverpile.eureka.tx.wal.TransactionWAL.TransactionalAction;
 import com.neverpile.eureka.tx.wal.WALException;
 import com.neverpile.eureka.tx.wal.WriteAheadLog;
@@ -223,8 +223,8 @@ public class FileBasedWAL implements WriteAheadLog {
    * com.neverpile.eureka.tx.wal.TransactionWAL.TransactionalAction)
    */
   @Override
-  @NewSpan
-  public void logAction(final String id, @SpanTag(name = "action") final ActionType type,
+  @TraceInvocation
+  public void logAction(final String id, @Tag(name = "action") final ActionType type,
       final TransactionalAction action) {
     fileLock.writeLock().lock();
     try {
@@ -258,7 +258,7 @@ public class FileBasedWAL implements WriteAheadLog {
    * @see com.neverpile.eureka.tx.wal.local.WriteAheadLog#logCompletion(java.lang.String)
    */
   @Override
-  @NewSpan
+  @TraceInvocation
   public void logCompletion(final String id) {
     logEvent(id, EventType.COMPLETED);
     completedTxInLog.incrementAndGet();

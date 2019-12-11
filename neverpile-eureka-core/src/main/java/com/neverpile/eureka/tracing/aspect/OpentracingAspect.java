@@ -20,8 +20,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 
-import com.neverpile.eureka.tracing.NewSpan;
-import com.neverpile.eureka.tracing.SpanTag;
+import com.neverpile.eureka.tracing.TraceInvocation;
+import com.neverpile.eureka.tracing.Tag;
 
 import io.opentracing.Scope;
 import io.opentracing.Span;
@@ -30,7 +30,7 @@ import io.opentracing.log.Fields;
 import io.opentracing.tag.Tags;
 
 /**
- * An aspect used to create opentracing spans for calls to methods annotated with {@link NewSpan}.
+ * An aspect used to create opentracing spans for calls to methods annotated with {@link TraceInvocation}.
  */
 @Aspect
 @Configuration
@@ -79,7 +79,7 @@ public class OpentracingAspect {
     for (int i = 0; i < parameters.length; i++) {
       if (parameters[i].getType().isAssignableFrom(Span.class)) {
         args[i] = span;
-      } else if (parameters[i].getAnnotation(SpanTag.class) != null) {
+      } else if (parameters[i].getAnnotation(Tag.class) != null) {
         setupTag(parameters[i], args[i], span);
       }
     }
@@ -87,11 +87,11 @@ public class OpentracingAspect {
 
   @SuppressWarnings("unchecked")
   private void setupTag(final Parameter parameter, final Object arg, final Span span) throws Exception {
-    SpanTag annotation = parameter.getAnnotation(SpanTag.class);
+    Tag annotation = parameter.getAnnotation(Tag.class);
     String tagKey = annotation.name();
 
     Object value = arg;
-    if (!annotation.valueAdapter().equals(SpanTag.NoopMapper.class)) {
+    if (!annotation.valueAdapter().equals(Tag.NoopMapper.class)) {
       value = valueAdapterCache //
           .computeIfAbsent((Class<? extends Function<Object, Object>>) annotation.valueAdapter(),
               c -> (Function<Object, Object>) BeanUtils.instantiateClass(c)) //
@@ -121,7 +121,7 @@ public class OpentracingAspect {
 
   private String getOperationName(final MethodSignature signature) {
     String operationName;
-    NewSpan newSpanAnnotation = signature.getMethod().getAnnotation(NewSpan.class);
+    TraceInvocation newSpanAnnotation = signature.getMethod().getAnnotation(TraceInvocation.class);
     if (StringUtils.isEmpty(newSpanAnnotation.operationName())) {
       operationName = signature.getDeclaringType().getSimpleName() + "." + signature.getName();
     } else {

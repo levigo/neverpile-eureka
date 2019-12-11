@@ -29,8 +29,8 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.neverpile.eureka.api.ObjectStoreService;
 import com.neverpile.eureka.api.exception.VersionMismatchException;
 import com.neverpile.eureka.model.ObjectName;
-import com.neverpile.eureka.tracing.NewSpan;
-import com.neverpile.eureka.tracing.SpanTag;
+import com.neverpile.eureka.tracing.TraceInvocation;
+import com.neverpile.eureka.tracing.Tag;
 import com.neverpile.eureka.tx.wal.TransactionWAL;
 import com.neverpile.eureka.tx.wal.TransactionWAL.TransactionalAction;
 
@@ -133,9 +133,9 @@ public class S3ObjectStoreService implements ObjectStoreService {
   @Timed(description = "put object store element", extraTags = {
       "subsystem", "s3.object-store"
   }, value = "eureka.s3.object-store.put")
-  @NewSpan
-  public void put(@SpanTag(name = "key", valueAdapter = ObjectNameMapper.class) final ObjectName objectName,
-      final String version, final InputStream content, @SpanTag(name = "length") final long length) {
+  @TraceInvocation
+  public void put(@Tag(name = "key", valueAdapter = ObjectNameMapper.class) final ObjectName objectName,
+      final String version, final InputStream content, @Tag(name = "length") final long length) {
     String bucket = connectionConfiguration.getDefaultBucketName();
     String key = toKey(objectName);
 
@@ -261,9 +261,9 @@ public class S3ObjectStoreService implements ObjectStoreService {
   }
 
   @Override
-  @NewSpan
+  @TraceInvocation
   public Stream<StoreObject> list(
-      @SpanTag(name = "prefix", valueAdapter = ObjectNameMapper.class) final ObjectName prefix) {
+      @Tag(name = "prefix", valueAdapter = ObjectNameMapper.class) final ObjectName prefix) {
     String prefixKey = toKey(prefix);
 
     ListObjectsRequest lor = new ListObjectsRequest();
@@ -279,8 +279,8 @@ public class S3ObjectStoreService implements ObjectStoreService {
   @Timed(description = "get object store element", extraTags = {
       "subsystem", "s3.object-store"
   }, value = "eureka.s3.object-store.get")
-  @NewSpan
-  public StoreObject get(@SpanTag(name = "key", valueAdapter = ObjectNameMapper.class) final ObjectName objectName) {
+  @TraceInvocation
+  public StoreObject get(@Tag(name = "key", valueAdapter = ObjectNameMapper.class) final ObjectName objectName) {
     try {
       final S3Object object = s3client.getObject(connectionConfiguration.getDefaultBucketName(), toKey(objectName));
 
@@ -355,9 +355,9 @@ public class S3ObjectStoreService implements ObjectStoreService {
   @Timed(description = "verify object store element exists", extraTags = {
       "subsystem", "s3.object-store"
   }, value = "eureka.s3.object-store.check-exists")
-  @NewSpan
+  @TraceInvocation
   public boolean checkObjectExists(
-      @SpanTag(name = "key", valueAdapter = ObjectNameMapper.class) final ObjectName objectName) {
+      @Tag(name = "key", valueAdapter = ObjectNameMapper.class) final ObjectName objectName) {
     String bucket = connectionConfiguration.getDefaultBucketName();
     String key = toKey(objectName);
 
