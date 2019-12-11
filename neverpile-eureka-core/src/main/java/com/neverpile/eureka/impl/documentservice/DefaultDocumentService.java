@@ -33,6 +33,7 @@ import com.neverpile.eureka.event.EventPublisher;
 import com.neverpile.eureka.model.Document;
 import com.neverpile.eureka.model.ObjectName;
 import com.neverpile.eureka.rest.api.exception.NotFoundException;
+import com.neverpile.eureka.tracing.NewSpan;
 
 /**
  * An implementation of {@link DocumentService} which stores all document metadata within an object
@@ -221,11 +222,13 @@ public class DefaultDocumentService implements DocumentService, DocumentAssociat
   }
 
   @Override
+  @NewSpan
   public Optional<Document> getDocument(final String documentId) {
     return txEntityRegistry().document(documentId).document.map(d -> (Document) d);
   }
 
   @Override
+  @NewSpan
   public Document createDocument(final Document document) {
     if (null != objectStore.get(createDocumentObjectName(document.getDocumentId())))
       throw new DocumentAlreadyExistsException(document);
@@ -239,6 +242,7 @@ public class DefaultDocumentService implements DocumentService, DocumentAssociat
   }
 
   @Override
+  @NewSpan
   public boolean deleteDocument(final String documentId) {
     txEntityRegistry().delete(documentId);
     return true;
@@ -250,12 +254,14 @@ public class DefaultDocumentService implements DocumentService, DocumentAssociat
   }
 
   @Override
+  @NewSpan
   public boolean documentExists(final String documentId) {
     ObjectName metadataObjectName = createDocumentObjectName(documentId);
     return objectStore.checkObjectExists(metadataObjectName);
   }
 
   @Override
+  @NewSpan
   public Stream<String> getAllDocumentIds() {
     // @formatter:off
     // Second part of ObjectName is documentId. See 'createDocumentDirectoryName()'.
@@ -268,6 +274,7 @@ public class DefaultDocumentService implements DocumentService, DocumentAssociat
   }
 
   @Override
+  @NewSpan
   public List<Document> getDocuments(final List<String> documentIds) {
     // @formatter:off
     return documentIds.stream()
@@ -280,16 +287,19 @@ public class DefaultDocumentService implements DocumentService, DocumentAssociat
   }
 
   @Override
+  @NewSpan
   public void store(final Document document, final String key, final JsonNode value) {
     txEntityRegistry().putAssociatedEntity(document.getDocumentId(), key, value);
   }
 
   @Override
+  @NewSpan
   public Optional<JsonNode> retrieve(final Document document, final String key) {
     return Optional.ofNullable(txEntityRegistry().associatedEntityMap(document.getDocumentId()).get(key));
   }
 
   @Override
+  @NewSpan
   public void delete(final Document document, final String key) {
     txEntityRegistry().removeAssociatedEntity(document.getDocumentId(), key);
   }

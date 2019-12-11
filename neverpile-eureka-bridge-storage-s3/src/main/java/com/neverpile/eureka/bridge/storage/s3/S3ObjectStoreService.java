@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -28,14 +29,20 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.neverpile.eureka.api.ObjectStoreService;
 import com.neverpile.eureka.api.exception.VersionMismatchException;
 import com.neverpile.eureka.model.ObjectName;
+import com.neverpile.eureka.tracing.NewSpan;
+import com.neverpile.eureka.tracing.SpanTag;
 import com.neverpile.eureka.tx.wal.TransactionWAL;
 import com.neverpile.eureka.tx.wal.TransactionWAL.TransactionalAction;
 
 import io.micrometer.core.annotation.Timed;
-import io.opentracing.contrib.annotation.NewSpan;
-import io.opentracing.contrib.annotation.SpanTag;
 
 public class S3ObjectStoreService implements ObjectStoreService {
+  public static class ObjectNameMapper implements Function<ObjectName, String> {
+    @Override
+    public String apply(final ObjectName n) {
+      return n.stream().map(s -> escape(s)).collect(joining(NAME_DELIMITER));
+    }
+  }
 
   private static final String BACKUP_SUFFIX = ".%BACKUP%";
 
@@ -126,7 +133,9 @@ public class S3ObjectStoreService implements ObjectStoreService {
   @Timed(description = "put object store element", extraTags = {
       "subsystem", "s3.object-store"
   }, value = "eureka.s3.object-store.put")
-  public void put(final ObjectName objectName, final String version, final InputStream content, final long length) {
+  @NewSpan
+  public void put(@SpanTag(name = "key", valueAdapter = ObjectNameMapper.class) final ObjectName objectName,
+      final String version, final InputStream content, @SpanTag(name = "length") final long length) {
     String bucket = connectionConfiguration.getDefaultBucketName();
     String key = toKey(objectName);
 
@@ -149,12 +158,6 @@ public class S3ObjectStoreService implements ObjectStoreService {
     if (length >= 0)
       metadata.setContentLength(length);
 
-    putObject(content, bucket, key, metadata);
-  }
-
-  @NewSpan
-  private void putObject(final InputStream content, @SpanTag("bucket") final String bucket,
-      @SpanTag("key") final String key, final ObjectMetadata metadata) {
     s3client.putObject(bucket, key, content, metadata);
   }
 
@@ -258,20 +261,15 @@ public class S3ObjectStoreService implements ObjectStoreService {
   }
 
   @Override
-  public Stream<StoreObject> list(final ObjectName prefix) {
+  @NewSpan
+  public Stream<StoreObject> list(
+      @SpanTag(name = "prefix", valueAdapter = ObjectNameMapper.class) final ObjectName prefix) {
     String prefixKey = toKey(prefix);
 
-    String bucketName = connectionConfiguration.getDefaultBucketName();
-    return listObjects(prefixKey, bucketName);
-  }
-
-  @NewSpan
-  private Stream<StoreObject> listObjects(@SpanTag("prefix") final String prefix,
-      @SpanTag("bucket") final String bucketName) {
     ListObjectsRequest lor = new ListObjectsRequest();
-    lor.setBucketName(bucketName);
+    lor.setBucketName(connectionConfiguration.getDefaultBucketName());
 
-    lor.setPrefix(prefix.isEmpty() ? prefix : prefix + NAME_DELIMITER);
+    lor.setPrefix(prefixKey.isEmpty() ? prefixKey : prefixKey + NAME_DELIMITER);
     lor.setDelimiter(NAME_DELIMITER);
 
     return StreamSupport.stream(new ObjectListingSpliterator(s3client.listObjects(lor)), false);
@@ -281,15 +279,10 @@ public class S3ObjectStoreService implements ObjectStoreService {
   @Timed(description = "get object store element", extraTags = {
       "subsystem", "s3.object-store"
   }, value = "eureka.s3.object-store.get")
-  public StoreObject get(final ObjectName objectName) {
-    return getObject(objectName, toKey(objectName), connectionConfiguration.getDefaultBucketName());
-  }
-
   @NewSpan
-  public StoreObject getObject(final ObjectName objectName, @SpanTag("key") final String key,
-      @SpanTag("bu final cket") final String bucketName) {
+  public StoreObject get(@SpanTag(name = "key", valueAdapter = ObjectNameMapper.class) final ObjectName objectName) {
     try {
-      final S3Object object = s3client.getObject(bucketName, key);
+      final S3Object object = s3client.getObject(connectionConfiguration.getDefaultBucketName(), toKey(objectName));
 
       // FIXME: eagerly fetch the data into a buffered stream?
       return new StoreObject() {
@@ -337,14 +330,9 @@ public class S3ObjectStoreService implements ObjectStoreService {
     if (alreadyExists) {
       createBackup(bucket, key);
 
-      deleteObject(bucket, key);
+      // delete object
+      s3client.deleteObject(bucket, key);
     }
-  }
-
-  @NewSpan
-  private void deleteObject(@SpanTag("bucket") final String bucket, @SpanTag("key") final String key) {
-    // delete object
-    s3client.deleteObject(bucket, key);
   }
 
   /**
@@ -354,8 +342,7 @@ public class S3ObjectStoreService implements ObjectStoreService {
    * @param bucket the destination bucket
    * @param key the S3 object key
    */
-  @NewSpan
-  private void createBackup(@SpanTag("bucket") final String bucket, @SpanTag("key") final String key) {
+  private void createBackup(final String bucket, final String key) {
     String backupKey = key + BACKUP_SUFFIX;
 
     writeAheadLog.appendCommitAction(new PurgeObjectAction(bucket, backupKey));
@@ -368,7 +355,9 @@ public class S3ObjectStoreService implements ObjectStoreService {
   @Timed(description = "verify object store element exists", extraTags = {
       "subsystem", "s3.object-store"
   }, value = "eureka.s3.object-store.check-exists")
-  public boolean checkObjectExists(final ObjectName objectName) {
+  @NewSpan
+  public boolean checkObjectExists(
+      @SpanTag(name = "key", valueAdapter = ObjectNameMapper.class) final ObjectName objectName) {
     String bucket = connectionConfiguration.getDefaultBucketName();
     String key = toKey(objectName);
 

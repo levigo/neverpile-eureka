@@ -31,6 +31,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import com.neverpile.eureka.ignite.IgniteConfigurationProperties;
+import com.neverpile.eureka.tracing.NewSpan;
+import com.neverpile.eureka.tracing.SpanTag;
 import com.neverpile.eureka.tx.wal.TransactionWAL.TransactionalAction;
 import com.neverpile.eureka.tx.wal.WALException;
 import com.neverpile.eureka.tx.wal.WriteAheadLog;
@@ -248,7 +250,8 @@ public class IgniteWAL implements WriteAheadLog {
   @Timed(description = "log wal action", extraTags = {
       "subsystem", "ignite.wal"
   }, value = "eureka.ignite.wal.log")
-  public void logAction(final String id, final ActionType type, final TransactionalAction action) {
+  @NewSpan
+  public void logAction(final String id,  @SpanTag(name="action") final ActionType type, final TransactionalAction action) {
     logger.debug("Logging {} action for tx {}: {}", type, id, action);
     ActionEntry entry = new ActionEntry(id, type, action);
     log(id, entry);
@@ -263,6 +266,7 @@ public class IgniteWAL implements WriteAheadLog {
   @Timed(description = "log wal completion", extraTags = {
       "subsystem", "ignite.wal"
   }, value = "eureka.ignite.wal.completion")
+  @NewSpan
   public void logCompletion(final String id) {
     logEvent(id, EventType.COMPLETED);
 

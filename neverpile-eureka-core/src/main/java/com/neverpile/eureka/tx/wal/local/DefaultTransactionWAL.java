@@ -15,9 +15,6 @@ import com.neverpile.eureka.tx.wal.TransactionWAL;
 import com.neverpile.eureka.tx.wal.WriteAheadLog;
 import com.neverpile.eureka.tx.wal.WriteAheadLog.ActionType;
 
-import io.opentracing.contrib.annotation.NewSpan;
-import io.opentracing.contrib.annotation.SpanTag;
-
 @Component
 @RequestScope
 @ConditionalOnMissingBean(TransactionWAL.class)
@@ -73,20 +70,17 @@ public class DefaultTransactionWAL implements TransactionWAL {
     logAction(id, ActionType.COMMIT, action);
   }
 
-  @NewSpan
-  protected void logAction(final String id, @SpanTag("action") final ActionType type,
+  protected void logAction(final String id, final ActionType type,
       final TransactionalAction action) {
     wal.logAction(id, type, action);
   }
 
-  @NewSpan
   protected void rollback() {
     wal.applyLoggedActions(id, ActionType.ROLLBACK, true);
 
     wal.logCompletion(id);
   }
 
-  @NewSpan
   protected void commit() {
     wal.applyLoggedActions(id, ActionType.COMMIT, false);
 

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.neverpile.eureka.api.index.IndexMaintenanceService;
 import com.neverpile.eureka.model.Document;
+import com.neverpile.eureka.tracing.NewSpan;
 
 @Service
 public class ElasticsearchIndexMaintenanceService implements IndexMaintenanceService {
@@ -20,16 +21,19 @@ public class ElasticsearchIndexMaintenanceService implements IndexMaintenanceSer
   }
 
   @Override
+  @NewSpan
   public void indexDocument(final Document doc) {
     index.addDocument(doc, ElasticsearchDocumentIndex.INDEX_ALIAS_WRITE);
   }
 
   @Override
+  @NewSpan
   public void updateDocument(final Document doc) {
     index.updateDocument(doc, ElasticsearchDocumentIndex.INDEX_ALIAS_WRITE);
   }
 
   @Override
+  @NewSpan
   public void deleteDocument(final String documentId) {
     index.deleteDocument(documentId, ElasticsearchDocumentIndex.INDEX_ALIAS_WRITE);
   }

@@ -32,6 +32,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 
+import com.neverpile.eureka.tracing.NewSpan;
+import com.neverpile.eureka.tracing.SpanTag;
 import com.neverpile.eureka.tx.wal.TransactionWAL.TransactionalAction;
 import com.neverpile.eureka.tx.wal.WALException;
 import com.neverpile.eureka.tx.wal.WriteAheadLog;
@@ -59,44 +61,44 @@ public class FileBasedWAL implements WriteAheadLog {
 
   private static class PositionMaintainingInputStream extends InputStream {
     private final FileInputStream fis;
-    
+
     private long position;
-    
+
     private final ByteBuffer buffer;
 
     public PositionMaintainingInputStream(final FileInputStream fis) {
       this.fis = fis;
-      
+
       buffer = ByteBuffer.allocate(8192);
       buffer.flip();
     }
 
     @Override
     public int read() throws IOException {
-      if(buffer.remaining() < 1)
-        if(!fill())
+      if (buffer.remaining() < 1)
+        if (!fill())
           return -1;
-      
+
       return buffer.get();
     }
-    
+
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {
-      if(buffer.remaining() < 1)
-        if(!fill())
+      if (buffer.remaining() < 1)
+        if (!fill())
           return -1;
-      
+
       int toFetch = Math.min(len, buffer.remaining());
-      
+
       buffer.get(b, off, toFetch);
-      
+
       return toFetch;
     }
 
     private boolean fill() throws IOException {
       buffer.clear();
       int read = fis.getChannel().read(buffer, position);
-      if(read > 0) {
+      if (read > 0) {
         position += read;
         buffer.flip();
       }
@@ -183,7 +185,7 @@ public class FileBasedWAL implements WriteAheadLog {
   private void foreachLogEntry(final Consumer<Entry> c) throws IOException {
     fileLock.readLock().lock();
     try {
-      try(ObjectInputStream ois = new ObjectInputStream(new PositionMaintainingInputStream(inputStream))) {
+      try (ObjectInputStream ois = new ObjectInputStream(new PositionMaintainingInputStream(inputStream))) {
         while (true) {
           c.accept((Entry) ois.readObject());
         }
@@ -221,7 +223,9 @@ public class FileBasedWAL implements WriteAheadLog {
    * com.neverpile.eureka.tx.wal.TransactionWAL.TransactionalAction)
    */
   @Override
-  public void logAction(final String id, final ActionType type, final TransactionalAction action) {
+  @NewSpan
+  public void logAction(final String id, @SpanTag(name = "action") final ActionType type,
+      final TransactionalAction action) {
     fileLock.writeLock().lock();
     try {
       seekToEndOfFile();
@@ -254,6 +258,7 @@ public class FileBasedWAL implements WriteAheadLog {
    * @see com.neverpile.eureka.tx.wal.local.WriteAheadLog#logCompletion(java.lang.String)
    */
   @Override
+  @NewSpan
   public void logCompletion(final String id) {
     logEvent(id, EventType.COMPLETED);
     completedTxInLog.incrementAndGet();
