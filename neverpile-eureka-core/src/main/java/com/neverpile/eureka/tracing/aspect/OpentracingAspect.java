@@ -20,8 +20,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 
-import com.neverpile.eureka.tracing.TraceInvocation;
 import com.neverpile.eureka.tracing.Tag;
+import com.neverpile.eureka.tracing.TraceInvocation;
 
 import io.opentracing.Scope;
 import io.opentracing.Span;
@@ -48,7 +48,7 @@ public class OpentracingAspect {
     LOGGER.info("Opentracing Tracer found - tracing of methods annotated with @NewSpan enabled");
   }
   
-  @Around("execution (@com.neverpile.eureka.tracing.NewSpan * *.*(..))")
+  @Around("execution (@com.neverpile.eureka.tracing.TraceInvocation * *.*(..))")
   public Object newSpanAround(final ProceedingJoinPoint joinPoint) throws Throwable {
     MethodSignature signature = (MethodSignature) joinPoint.getSignature();
     Object[] args = joinPoint.getArgs();
@@ -77,9 +77,7 @@ public class OpentracingAspect {
       throws Exception {
     Parameter[] parameters = signature.getMethod().getParameters();
     for (int i = 0; i < parameters.length; i++) {
-      if (parameters[i].getType().isAssignableFrom(Span.class)) {
-        args[i] = span;
-      } else if (parameters[i].getAnnotation(Tag.class) != null) {
+      if (parameters[i].getAnnotation(Tag.class) != null) {
         setupTag(parameters[i], args[i], span);
       }
     }
