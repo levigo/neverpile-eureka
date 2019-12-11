@@ -32,9 +32,8 @@ import com.neverpile.eureka.tx.wal.TransactionWAL;
 import com.neverpile.eureka.tx.wal.TransactionWAL.TransactionalAction;
 
 import io.micrometer.core.annotation.Timed;
-import io.opentracing.Scope;
-import io.opentracing.Span;
-import io.opentracing.Tracer;
+import io.opentracing.contrib.annotation.NewSpan;
+import io.opentracing.contrib.annotation.SpanTag;
 
 public class S3ObjectStoreService implements ObjectStoreService {
 
@@ -117,9 +116,6 @@ public class S3ObjectStoreService implements ObjectStoreService {
 
   private AmazonS3 s3client;
 
-  @Autowired
-  private Tracer tracer;
-
   @PostConstruct
   private void init() {
     s3client = connectionConfiguration.createClient();
@@ -153,16 +149,13 @@ public class S3ObjectStoreService implements ObjectStoreService {
     if (length >= 0)
       metadata.setContentLength(length);
 
-    Span span = tracer //
-        .buildSpan("s3-object-store.put") //
-        .withTag("bucket", connectionConfiguration.getDefaultBucketName()) //
-        .withTag("key", key) //
-        .start();
-    try (Scope scope = tracer.activateSpan(span)) {
-      s3client.putObject(bucket, key, content, metadata);
-    } finally {
-      span.finish();
-    }
+    putObject(content, bucket, key, metadata);
+  }
+
+  @NewSpan
+  private void putObject(final InputStream content, @SpanTag("bucket") final String bucket,
+      @SpanTag("key") final String key, final ObjectMetadata metadata) {
+    s3client.putObject(bucket, key, content, metadata);
   }
 
   private String getCurrentVersion(final String bucket, final String key) {
@@ -268,22 +261,20 @@ public class S3ObjectStoreService implements ObjectStoreService {
   public Stream<StoreObject> list(final ObjectName prefix) {
     String prefixKey = toKey(prefix);
 
-    ListObjectsRequest lor = new ListObjectsRequest();
-    lor.setBucketName(connectionConfiguration.getDefaultBucketName());
+    String bucketName = connectionConfiguration.getDefaultBucketName();
+    return listObjects(prefixKey, bucketName);
+  }
 
-    lor.setPrefix(prefixKey.isEmpty() ? prefixKey : prefixKey + NAME_DELIMITER);
+  @NewSpan
+  private Stream<StoreObject> listObjects(@SpanTag("prefix") final String prefix,
+      @SpanTag("bucket") final String bucketName) {
+    ListObjectsRequest lor = new ListObjectsRequest();
+    lor.setBucketName(bucketName);
+
+    lor.setPrefix(prefix.isEmpty() ? prefix : prefix + NAME_DELIMITER);
     lor.setDelimiter(NAME_DELIMITER);
 
-    Span span = tracer //
-        .buildSpan("s3-object-store.list") //
-        .withTag("bucket", connectionConfiguration.getDefaultBucketName()) //
-        .withTag("prefix", prefixKey) //
-        .start();
-    try (Scope scope = tracer.activateSpan(span)) {
-      return StreamSupport.stream(new ObjectListingSpliterator(s3client.listObjects(lor)), false);
-    } finally {
-      span.finish();
-    }
+    return StreamSupport.stream(new ObjectListingSpliterator(s3client.listObjects(lor)), false);
   }
 
   @Override
@@ -291,37 +282,32 @@ public class S3ObjectStoreService implements ObjectStoreService {
       "subsystem", "s3.object-store"
   }, value = "eureka.s3.object-store.get")
   public StoreObject get(final ObjectName objectName) {
+    return getObject(objectName, toKey(objectName), connectionConfiguration.getDefaultBucketName());
+  }
+
+  @NewSpan
+  public StoreObject getObject(final ObjectName objectName, @SpanTag("key") final String key,
+      @SpanTag("bu final cket") final String bucketName) {
     try {
-      String key = toKey(objectName);
+      final S3Object object = s3client.getObject(bucketName, key);
 
-      Span span = tracer //
-          .buildSpan("s3-object-store.get") //
-          .withTag("bucket", connectionConfiguration.getDefaultBucketName()) //
-          .withTag("key", key) //
-          .start();
-      try (Scope scope = tracer.scopeManager().activate(span)) {
-        final S3Object object = s3client.getObject(connectionConfiguration.getDefaultBucketName(), key);
+      // FIXME: eagerly fetch the data into a buffered stream?
+      return new StoreObject() {
+        @Override
+        public String getVersion() {
+          return object.getObjectMetadata().getETag();
+        }
 
-        // FIXME: eagerly fetch the data into a buffered stream?
-        return new StoreObject() {
-          @Override
-          public String getVersion() {
-            return object.getObjectMetadata().getETag();
-          }
+        @Override
+        public ObjectName getObjectName() {
+          return objectName;
+        }
 
-          @Override
-          public ObjectName getObjectName() {
-            return objectName;
-          }
-
-          @Override
-          public InputStream getInputStream() {
-            return object.getObjectContent();
-          }
-        };
-      } finally {
-        span.finish();
-      }
+        @Override
+        public InputStream getInputStream() {
+          return object.getObjectContent();
+        }
+      };
     } catch (AmazonS3Exception e) {
       if (e.getStatusCode() != HttpStatus.NOT_FOUND.value())
         throw e;
@@ -351,18 +337,14 @@ public class S3ObjectStoreService implements ObjectStoreService {
     if (alreadyExists) {
       createBackup(bucket, key);
 
-      Span span = tracer //
-          .buildSpan("s3-object-store.delete") //
-          .withTag("bucket", connectionConfiguration.getDefaultBucketName()) //
-          .withTag("key", key) //
-          .start();
-      try (Scope scope = tracer.activateSpan(span)) {
-        // delete object
-        s3client.deleteObject(bucket, key);
-      } finally {
-        span.finish();
-      }
+      deleteObject(bucket, key);
     }
+  }
+
+  @NewSpan
+  private void deleteObject(@SpanTag("bucket") final String bucket, @SpanTag("key") final String key) {
+    // delete object
+    s3client.deleteObject(bucket, key);
   }
 
   /**
@@ -372,22 +354,14 @@ public class S3ObjectStoreService implements ObjectStoreService {
    * @param bucket the destination bucket
    * @param key the S3 object key
    */
-  private void createBackup(final String bucket, final String key) {
+  @NewSpan
+  private void createBackup(@SpanTag("bucket") final String bucket, @SpanTag("key") final String key) {
     String backupKey = key + BACKUP_SUFFIX;
 
     writeAheadLog.appendCommitAction(new PurgeObjectAction(bucket, backupKey));
     writeAheadLog.appendUndoAction(new MoveObjectAction(bucket, key + BACKUP_SUFFIX, key));
 
-    Span span = tracer //
-        .buildSpan("s3-object-store.backup") //
-        .withTag("bucket", connectionConfiguration.getDefaultBucketName()) //
-        .withTag("key", key) //
-        .start();
-    try (Scope scope = tracer.activateSpan(span)) {
-      s3client.copyObject(bucket, key, bucket, backupKey);
-    } finally {
-      span.finish();
-    }
+    s3client.copyObject(bucket, key, bucket, backupKey);
   }
 
   @Override

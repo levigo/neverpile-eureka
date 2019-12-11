@@ -15,9 +15,8 @@ import com.neverpile.eureka.tx.wal.TransactionWAL;
 import com.neverpile.eureka.tx.wal.WriteAheadLog;
 import com.neverpile.eureka.tx.wal.WriteAheadLog.ActionType;
 
-import io.opentracing.Scope;
-import io.opentracing.Span;
-import io.opentracing.Tracer;
+import io.opentracing.contrib.annotation.NewSpan;
+import io.opentracing.contrib.annotation.SpanTag;
 
 @Component
 @RequestScope
@@ -30,18 +29,10 @@ public class DefaultTransactionWAL implements TransactionWAL {
   @Autowired
   WriteAheadLog wal;
 
-  @Autowired
-  Tracer tracer;
-
   private final TransactionSynchronizationAdapter synchronization = new TransactionSynchronizationAdapter() {
     @Override
     public void afterCompletion(final int status) {
-      Span span = tracer //
-          .buildSpan("tx-wal.after-completion") //
-          .withTag("status", status == TransactionSynchronizationAdapter.STATUS_COMMITTED ? "committed" : "rollback") //
-          .withTag("wal-implementation", wal.getClass().getSimpleName()) //
-          .start();
-      try (Scope scope = tracer.activateSpan(span)) {
+      try {
         if (status == TransactionSynchronizationAdapter.STATUS_COMMITTED)
           commit();
         else if (status == TransactionSynchronizationAdapter.STATUS_ROLLED_BACK)
@@ -53,7 +44,6 @@ public class DefaultTransactionWAL implements TransactionWAL {
       } finally {
         // we need to use a new ID after each TX completion
         id = UUID.randomUUID().toString();
-        span.finish();
       }
     }
 
@@ -83,25 +73,20 @@ public class DefaultTransactionWAL implements TransactionWAL {
     logAction(id, ActionType.COMMIT, action);
   }
 
-  protected void logAction(final String id, final ActionType type, final TransactionalAction action) {
-    Span span = tracer //
-        .buildSpan("tx-wal.log-action") //
-        .withTag("action", type.name()) //
-        .withTag("wal-implementation", wal.getClass().getSimpleName()) //
-        .start();
-    try (Scope scope = tracer.activateSpan(span)) {
-      wal.logAction(id, type, action);
-    } finally {
-      span.finish();
-    }
+  @NewSpan
+  protected void logAction(final String id, @SpanTag("action") final ActionType type,
+      final TransactionalAction action) {
+    wal.logAction(id, type, action);
   }
 
+  @NewSpan
   protected void rollback() {
     wal.applyLoggedActions(id, ActionType.ROLLBACK, true);
 
     wal.logCompletion(id);
   }
 
+  @NewSpan
   protected void commit() {
     wal.applyLoggedActions(id, ActionType.COMMIT, false);
 
