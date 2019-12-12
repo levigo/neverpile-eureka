@@ -231,37 +231,47 @@ public class IgniteConfigurationProperties {
     }
   }
 
-  public enum DiscoveryMethod {
-    /**
-     * No cluster node discovery. Only suitable for single-node setups.
-     */
-    NONE,
-    /**
-     * Discovery using multicast.
-     */
-    MULTICAST,
+  public static class Discovery {
+    public enum DiscoveryMethod {
+      /**
+       * No cluster node discovery. Only suitable for single-node setups.
+       */
+      NONE,
+      /**
+       * Discovery using multicast.
+       */
+      MULTICAST,
+
+      /**
+       * Discovery using a statically configured list of initial peer nodes.
+       */
+      STATIC,
+
+      /**
+       * Discovery using a shared filesystem directory.
+       */
+      FILESYSTEM
+    }
 
     /**
-     * Discovery using a statically configured list of initial peer nodes.
+     * The discovery method to use for cluster node discovery.
      */
-    STATIC,
+    private DiscoveryMethod method = DiscoveryMethod.NONE;
 
-    /**
-     * Discovery using a shared filesystem directory.
-     */
-    FILESYSTEM
+    public DiscoveryMethod getMethod() {
+      return method;
+    }
+
+    public void setMethod(final DiscoveryMethod method) {
+      this.method = method;
+    }
   }
 
   /**
    * Whether to enable the ignite cluster subsystem.
    */
   private boolean enabled;
-
-  /**
-   * The discovery method to use for cluster node discovery.
-   */
-  private DiscoveryMethod discovery = DiscoveryMethod.NONE;
-
+  
   /**
    * Persistence-related settings.
    */
@@ -277,6 +287,8 @@ public class IgniteConfigurationProperties {
    */
   private Finder finder = new Finder();
 
+  private Discovery discovery = new Discovery();
+  
   public boolean isEnabled() {
     return enabled;
   }
@@ -293,14 +305,6 @@ public class IgniteConfigurationProperties {
     this.persistence = persistence;
   }
 
-  public DiscoveryMethod getDiscovery() {
-    return discovery;
-  }
-
-  public void setDiscovery(final DiscoveryMethod discovery) {
-    this.discovery = discovery;
-  }
-
   public WAL getWal() {
     return wal;
   }
@@ -315,5 +319,13 @@ public class IgniteConfigurationProperties {
 
   public void setFinder(final Finder finder) {
     this.finder = finder;
+  }
+
+  public Discovery getDiscovery() {
+    return discovery;
+  }
+
+  public void setDiscovery(final Discovery discovery) {
+    this.discovery = discovery;
   }
 }
