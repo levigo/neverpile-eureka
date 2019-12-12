@@ -20,11 +20,23 @@
       <artifactId>ignite-core</artifactId>
       <version>${ignite.version}</version>
     </dependency>
+    
     <dependency>
       <groupId>org.apache.ignite</groupId>
       <artifactId>ignite-spring</artifactId>
       <version>${ignite.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.h2database</groupId>
+          <artifactId>h2</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-jdbc</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
+    
     <dependency>
       <groupId>com.neverpile.eureka</groupId>
       <artifactId>neverpile-eureka-core</artifactId>
