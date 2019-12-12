@@ -67,7 +67,6 @@ public class NeverpileIgniteAutoConfiguration {
   IgniteConfigurationProperties config;
   
   @Bean
-  @ConfigurationProperties(prefix = "neverpile-eureka.ignite")
   Ignite igniteInstance() {
     IgniteSpringBean i = new IgniteInstanceConfiguration();
 
@@ -95,15 +94,15 @@ public class NeverpileIgniteAutoConfiguration {
         break;
 
       case MULTICAST :
-        finder = new TcpDiscoveryMulticastIpFinder();
+        finder = multicastIpFinder();
         break;
 
       case STATIC :
-        finder = new TcpDiscoveryVmIpFinder();
+        finder = staticIpFinder();
         break;
 
       case FILESYSTEM :
-        finder = new TcpDiscoverySharedFsIpFinder();
+        finder = filesystemDiscoveryFinder();
         break;
     }
 
@@ -131,6 +130,21 @@ public class NeverpileIgniteAutoConfiguration {
     i.configuration().setIncludeEventTypes(EventType.EVT_CACHE_OBJECT_PUT, EventType.EVT_CACHE_OBJECT_REMOVED);
 
     return i;
+  }
+
+  @ConfigurationProperties(prefix = "neverpile-eureka.ignite.finder.filesystem")
+  private TcpDiscoverySharedFsIpFinder filesystemDiscoveryFinder() {
+    return new TcpDiscoverySharedFsIpFinder();
+  }
+
+  @ConfigurationProperties(prefix = "neverpile-eureka.ignite.finder.staticIp")
+  private TcpDiscoveryVmIpFinder staticIpFinder() {
+    return new TcpDiscoveryVmIpFinder();
+  }
+
+  @ConfigurationProperties(prefix = "neverpile-eureka.ignite.finder.multicast")
+  public TcpDiscoveryMulticastIpFinder multicastIpFinder() {
+    return new TcpDiscoveryMulticastIpFinder();
   }
 
   @Bean
