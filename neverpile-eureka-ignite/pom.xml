@@ -20,7 +20,7 @@
       <artifactId>ignite-core</artifactId>
       <version>${ignite.version}</version>
     </dependency>
-    
+
     <dependency>
       <groupId>org.apache.ignite</groupId>
       <artifactId>ignite-spring</artifactId>
@@ -34,9 +34,13 @@
           <groupId>org.springframework</groupId>
           <artifactId>spring-jdbc</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.apache.ignite</groupId>
+          <artifactId>ignite-indexing</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
-    
+
     <dependency>
       <groupId>com.neverpile.eureka</groupId>
       <artifactId>neverpile-eureka-core</artifactId>
@@ -49,6 +53,11 @@
       <version>${project.version}</version>
       <classifier>tests</classifier>
       <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-jta-atomikos</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
