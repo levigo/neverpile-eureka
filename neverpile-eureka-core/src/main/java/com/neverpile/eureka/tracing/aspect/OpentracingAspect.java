@@ -45,7 +45,7 @@ public class OpentracingAspect {
 
   @PostConstruct
   public void logActivation() {
-    LOGGER.info("Opentracing Tracer found - tracing of methods annotated with @NewSpan enabled");
+    LOGGER.info("Opentracing Tracer found - tracing of methods annotated with @TraceInvocation enabled");
   }
   
   @Around("execution (@com.neverpile.eureka.tracing.TraceInvocation * *.*(..))")
