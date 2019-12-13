@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import com.amazonaws.ClientConfiguration;
+
 /**
  * Configuration properties for the neverpile ignite support.
  * 
@@ -13,7 +15,7 @@ import org.springframework.stereotype.Component;
  * {@code @Value} and {@code @ConditionalOnProperty} constructs.
  */
 @Component
-@ConfigurationProperties(prefix = "neverpile-eureka.ignite", ignoreUnknownFields = true)
+@ConfigurationProperties(prefix = "neverpile-eureka.ignite")
 public class IgniteConfigurationProperties {
   public static class Persistence {
     /**
@@ -47,8 +49,20 @@ public class IgniteConfigurationProperties {
 
   // This class hierarchy is mainly for configuration documentation purposes. The actual
   // Values are directly injected into the respective finder classes.
-  public static class Finder {
-    public static class Multicast {
+  public static class Finders {
+    public static class Finder {
+      private boolean enabled;
+
+      public boolean isEnabled() {
+        return enabled;
+      }
+
+      public void setEnabled(final boolean enabled) {
+        this.enabled = enabled;
+      }
+    }
+
+    public static class Multicast extends Finder {
       /**
        * Sets local host address used by the IP finder. If provided address is non-loopback then
        * multicast socket is bound to this interface. If local address is not set or is any local
@@ -146,7 +160,7 @@ public class IgniteConfigurationProperties {
       }
     }
 
-    public static class StaticIp {
+    public static class StaticIp extends Finder {
       /**
        * The list of addresses used entrypoints for discovery.
        * <p>
@@ -181,7 +195,7 @@ public class IgniteConfigurationProperties {
       }
     }
 
-    public static class Filesystem {
+    public static class Filesystem extends Finder {
       /**
        * The path to the shared file system directory. If the path is not provided, then a default
        * path will be used and only local nodes will discover each other. To enable discovery over
@@ -200,11 +214,142 @@ public class IgniteConfigurationProperties {
       }
     }
 
+    public static class Cloud extends Finder {
+      private String credential;
+      private String credentialPath;
+      private String provider;
+      private List<String> regions = new ArrayList<>();
+      private List<String> zones = new ArrayList<>();
+
+      public String getCredential() {
+        return credential;
+      }
+      public void setCredential(final String credential) {
+        this.credential = credential;
+      }
+      public String getCredentialPath() {
+        return credentialPath;
+      }
+      public void setCredentialPath(final String credentialPath) {
+        this.credentialPath = credentialPath;
+      }
+      public String getProvider() {
+        return provider;
+      }
+      public void setProvider(final String provider) {
+        this.provider = provider;
+      }
+      public List<String> getRegions() {
+        return regions;
+      }
+      public void setRegions(final List<String> regions) {
+        this.regions = regions;
+      }
+      public List<String> getZones() {
+        return zones;
+      }
+      public void setZones(final List<String> zones) {
+        this.zones = zones;
+      }
+    }
+
+    public static class S3 extends Finder {
+      public static class MutableAWSCredentials {
+        private String accessKey;
+        private String secretKey;
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see com.amazonaws.auth.AWSCredentials#getAWSAccessKeyId()
+         */
+        public String getAWSAccessKeyId() {
+          return accessKey;
+        }
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see com.amazonaws.auth.AWSCredentials#getAWSSecretKey()
+         */
+        public String getAWSSecretKey() {
+          return secretKey;
+        }
+
+        public String getAccessKey() {
+          return accessKey;
+        }
+
+        public void setAccessKey(final String accessKey) {
+          this.accessKey = accessKey;
+        }
+
+        public String getSecretKey() {
+          return secretKey;
+        }
+
+        public void setSecretKey(final String secretKey) {
+          this.secretKey = secretKey;
+        }
+      }
+
+      private MutableAWSCredentials awsCredentials;
+
+      private String bucketEndpoint;
+      private String bucketName;
+      private ClientConfiguration clientConfiguration = new ClientConfiguration();
+      private String keyPrefix = "ignite-finder/";
+
+      public MutableAWSCredentials getAwsCredentials() {
+        return awsCredentials;
+      }
+
+      public void setAwsCredentials(final MutableAWSCredentials awsCredentials) {
+        this.awsCredentials = awsCredentials;
+      }
+
+      public String getBucketEndpoint() {
+        return bucketEndpoint;
+      }
+
+      public void setBucketEndpoint(final String bucketEndpoint) {
+        this.bucketEndpoint = bucketEndpoint;
+      }
+
+      public String getBucketName() {
+        return bucketName;
+      }
+
+      public void setBucketName(final String bucketName) {
+        this.bucketName = bucketName;
+      }
+
+      public ClientConfiguration getClientConfiguration() {
+        return clientConfiguration;
+      }
+
+      public void setClientConfiguration(final ClientConfiguration clientConfiguration) {
+        this.clientConfiguration = clientConfiguration;
+      }
+
+      public String getKeyPrefix() {
+        return keyPrefix;
+      }
+
+      public void setKeyPrefix(final String keyPrefix) {
+        this.keyPrefix = keyPrefix;
+      }
+    }
+
     private Multicast multicast = new Multicast();
 
     private StaticIp staticIp = new StaticIp();
 
     private Filesystem filesystem = new Filesystem();
+
+    private Cloud cloud = new Cloud();
+
+    private S3 s3 = new S3();
 
     public Multicast getMulticast() {
       return multicast;
@@ -229,41 +374,21 @@ public class IgniteConfigurationProperties {
     public void setFilesystem(final Filesystem filesystem) {
       this.filesystem = filesystem;
     }
-  }
 
-  public static class Discovery {
-    public enum DiscoveryMethod {
-      /**
-       * No cluster node discovery. Only suitable for single-node setups.
-       */
-      NONE,
-      /**
-       * Discovery using multicast.
-       */
-      MULTICAST,
-
-      /**
-       * Discovery using a statically configured list of initial peer nodes.
-       */
-      STATIC,
-
-      /**
-       * Discovery using a shared filesystem directory.
-       */
-      FILESYSTEM
+    public Cloud getCloud() {
+      return cloud;
     }
 
-    /**
-     * The discovery method to use for cluster node discovery.
-     */
-    private DiscoveryMethod method = DiscoveryMethod.NONE;
-
-    public DiscoveryMethod getMethod() {
-      return method;
+    public void setCloud(final Cloud cloud) {
+      this.cloud = cloud;
     }
 
-    public void setMethod(final DiscoveryMethod method) {
-      this.method = method;
+    public S3 getS3() {
+      return s3;
+    }
+
+    public void setS3(final S3 s3) {
+      this.s3 = s3;
     }
   }
 
@@ -271,7 +396,7 @@ public class IgniteConfigurationProperties {
    * Whether to enable the ignite cluster subsystem.
    */
   private boolean enabled;
-  
+
   /**
    * Persistence-related settings.
    */
@@ -285,10 +410,8 @@ public class IgniteConfigurationProperties {
   /**
    * Discovery-related settings.
    */
-  private Finder finder = new Finder();
+  private Finders finder = new Finders();
 
-  private Discovery discovery = new Discovery();
-  
   public boolean isEnabled() {
     return enabled;
   }
@@ -313,19 +436,11 @@ public class IgniteConfigurationProperties {
     this.wal = wal;
   }
 
-  public Finder getFinder() {
+  public Finders getFinder() {
     return finder;
   }
 
-  public void setFinder(final Finder finder) {
+  public void setFinder(final Finders finder) {
     this.finder = finder;
-  }
-
-  public Discovery getDiscovery() {
-    return discovery;
-  }
-
-  public void setDiscovery(final Discovery discovery) {
-    this.discovery = discovery;
   }
 }

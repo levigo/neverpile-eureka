@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
     <artifactId>neverpile-eureka</artifactId>
     <groupId>com.neverpile.eureka</groupId>
@@ -50,11 +49,6 @@
       </dependency>
       <dependency>
         <groupId>com.neverpile.eureka</groupId>
-        <artifactId>neverpile-eureka-ignite</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.neverpile.eureka</groupId>
         <artifactId>neverpile-eureka-plugin-audit</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -72,6 +66,51 @@
         <groupId>com.neverpile.eureka</groupId>
         <artifactId>neverpile-eureka-security-oauth2</artifactId>
         <version>${project.version}</version>
+      </dependency>
+
+      <!-- neverpile-eureka-ignite has optional (provided) depenencies which we list here so that the correct versions are 
+        managed automatically. -->
+      <dependency>
+        <groupId>com.neverpile.eureka</groupId>
+        <artifactId>neverpile-eureka-ignite</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.ignite</groupId>
+        <artifactId>ignite-cloud</artifactId>
+        <version>${ignite.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.ignite</groupId>
+        <artifactId>ignite-aws</artifactId>
+        <version>${ignite.version}</version>
+      </dependency>
+
+      <!-- Manage AWS client version to a common, sane one -->
+      <dependency>
+        <groupId>com.amazonaws</groupId>
+        <artifactId>aws-java-sdk-s3</artifactId>
+        <version>${aws-s3.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.amazonaws</groupId>
+        <artifactId>aws-java-sdk-core</artifactId>
+        <version>${aws-s3.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.amazonaws</groupId>
+        <artifactId>aws-java-sdk-ec2</artifactId>
+        <version>${aws-s3.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.amazonaws</groupId>
+        <artifactId>aws-java-sdk-elasticloadbalancing</artifactId>
+        <version>${aws-s3.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.amazonaws</groupId>
+        <artifactId>aws-java-sdk-kms</artifactId>
+        <version>${aws-s3.version}</version>
       </dependency>
 
       <!-- neverpile misc -->
