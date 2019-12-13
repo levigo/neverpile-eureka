@@ -24,7 +24,8 @@ import com.neverpile.eureka.plugin.audit.service.AuditIdGenerationStrategy;
 import com.neverpile.eureka.plugin.audit.service.AuditLogService;
 import com.neverpile.eureka.plugin.audit.verification.VerificationService;
 
-public class SimpleAuditLogService implements AuditLogService {
+// TODO: revert 0f3eb99d1061501b2d62c68c67fbb79385c8b3d5 and make this an optional, advanced implementation.
+public class DefaultAuditLogService implements AuditLogService {
   private static final Logger LOGGER = LoggerFactory.getLogger(DefaultDocumentService.class);
 
   @Autowired
@@ -51,6 +52,7 @@ public class SimpleAuditLogService implements AuditLogService {
     StoreObject storedDocumentAuditLog = objectStore.get(auditLogObjectName);
 
     if (null == storedDocumentAuditLog) {
+      // Audit Log not found.
       return Optional.empty();
     }
 
@@ -65,6 +67,7 @@ public class SimpleAuditLogService implements AuditLogService {
     }
 
     if (null == eventPointerList) {
+      // No audit Log entries found.
       return Optional.empty();
     }
 
@@ -166,7 +169,7 @@ public class SimpleAuditLogService implements AuditLogService {
 
   @Override
   public AuditEvent getEvent(String auditId) {
-    return findAuditEvent(auditId).orElse(null);
+    return findAuditEvent(auditId).orElse(null); //TODO: Don't return null.
   }
 
   private Optional<AuditEvent> findAuditEvent(final String auditId) {
@@ -184,7 +187,7 @@ public class SimpleAuditLogService implements AuditLogService {
 
   @Override
   public boolean completeVerification() {
-    return false;
+    return false; // TODO: implement
   }
 
   private List<AuditEvent> getAuditEventsFromBlock(ObjectName auditBlockObjectName) {

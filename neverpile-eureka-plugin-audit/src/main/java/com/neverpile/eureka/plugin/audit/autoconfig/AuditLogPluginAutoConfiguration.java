@@ -12,11 +12,10 @@ import com.neverpile.eureka.model.Document;
 import com.neverpile.eureka.plugin.audit.rest.AuditLogFacet;
 import com.neverpile.eureka.plugin.audit.service.AuditLogService;
 import com.neverpile.eureka.plugin.audit.service.TimeBasedAuditIdGenerationStrategy;
-import com.neverpile.eureka.plugin.audit.service.impl.SimpleAuditIdGenerationStrategy;
-import com.neverpile.eureka.plugin.audit.service.impl.SimpleAuditLogService;
+import com.neverpile.eureka.plugin.audit.service.impl.DefaultAuditIdGenerationStrategy;
+import com.neverpile.eureka.plugin.audit.service.impl.DefaultAuditLogService;
 import com.neverpile.eureka.plugin.audit.verification.HashStrategyService;
 import com.neverpile.eureka.plugin.audit.verification.hashchain.HashChainService;
-import com.neverpile.eureka.plugin.audit.verification.impl.AggregationService;
 import com.neverpile.eureka.plugin.audit.verification.VerificationService;
 import com.neverpile.eureka.plugin.audit.verification.impl.DirectVerificationService;
 
@@ -56,13 +55,13 @@ public class AuditLogPluginAutoConfiguration {
   @ConditionalOnBean(value = ObjectStoreService.class)
   @ConditionalOnMissingBean
   AuditLogService simpleAuditLogService() {
-    return new SimpleAuditLogService();
+    return new DefaultAuditLogService();
   }
 
   @Bean
   @ConditionalOnMissingBean
   TimeBasedAuditIdGenerationStrategy timeBasedAuditIdGenerationStrategy() {
-    return new SimpleAuditIdGenerationStrategy();
+    return new DefaultAuditIdGenerationStrategy();
   }
 
 }

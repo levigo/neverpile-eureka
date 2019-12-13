@@ -4,10 +4,13 @@ import java.util.Date;
 
 import com.neverpile.eureka.plugin.audit.service.TimeBasedAuditIdGenerationStrategy;
 
-public class SimpleAuditIdGenerationStrategy implements TimeBasedAuditIdGenerationStrategy {
+public class DefaultAuditIdGenerationStrategy implements TimeBasedAuditIdGenerationStrategy {
+
+  private String delimiter = "$";
+
   @Override
   public String createAuditId(Date timestamp, String documentId) {
-    return Long.toString(timestamp.getTime())+ '$' + documentId;
+    return Long.toString(timestamp.getTime())+ delimiter + documentId;
   }
   @Override
   public String createAuditId(String documentId){
@@ -15,16 +18,15 @@ public class SimpleAuditIdGenerationStrategy implements TimeBasedAuditIdGenerati
   }
   @Override
   public boolean validateDocumentId(String id){
-    return id.matches("^\\d+\\$.+");
+    return id.matches("^\\d+\\" + delimiter + ".+");
   }
   @Override
   public String getDocumentId(String id){
-    return id.split("$")[1];
+    return id.split(delimiter)[1];
   }
   @Override
   public String getBlockId(String id){
-    return Long.toString((Long.parseLong(id.split("\\$")[0])/1000000L) * 1000000L);
+    return Long.toString((Long.parseLong(id.split("\\" +delimiter)[0])/1000000L) * 1000000L);
   }
-
 
 }

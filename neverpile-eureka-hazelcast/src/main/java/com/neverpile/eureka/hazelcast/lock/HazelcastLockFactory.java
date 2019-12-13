@@ -24,12 +24,16 @@ public class HazelcastLockFactory implements ClusterLockFactory {
 
   @Override
   public Lock readLock(final String lockId) {
-    return new NeverpileHazelcastLock(lockId, true);
+    // TODO: implement propper read write Lock
+    // return new NeverpileHazelcastLock(lockId, true);
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public Lock writeLock(final String lockId) {
-    return new NeverpileHazelcastLock(lockId, false);
+    // TODO: implement propper read write Lock
+    // return new NeverpileHazelcastLock(lockId, false);
+    throw new UnsupportedOperationException();
   }
 
   private class NeverpileHazelcastLock implements Lock {

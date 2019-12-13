@@ -70,7 +70,7 @@ public class AuditLogResource {
   @Timed(description = "get audit log", extraTags = {
       "operation", "retrieve", "target", "audit-log"
   }, value = "eureka.audit.log.get")
-  public ResponseEntity<List<AuditEventDto>> get(
+  public ResponseEntity<List<AuditEventDto>> getDocumentLog(
       @Parameter(description = "The ID of the document") @PathVariable("documentId") final String documentId) {
 
     List<AuditEventDto> auditLog = auditLogService.getEventLog(documentId).stream().map(audit -> {
@@ -102,25 +102,17 @@ public class AuditLogResource {
   @Timed(description = "get audit event", extraTags = {
       "operation", "retrieve", "target", "audit-event"
   }, value = "eureka.audit.event.get")
-  public ResponseEntity<AuditEventDto> get(
-      @Parameter(description = "The ID of the document") @PathVariable("documentId") final String documentId,
+  public ResponseEntity<AuditEventDto> getEvent(
       @Parameter(description = "The ID of the audit event to be fetched") @PathVariable("auditId") final String auditId) {
-    List<AuditEvent> auditLog = auditLogService.getEventLog(documentId);
-    if (null == auditLog)
+    AuditEvent auditEvent = auditLogService.getEvent(auditId);
+    if (null == auditEvent)
       throw new NotFoundException("AuditEventLog not found");
 
-    for (AuditEvent auditEvent : auditLog) {
-      if (auditEvent.getAuditId().equals(auditId)) {
-        AuditEventDto res = documentMapper.map(auditEvent, AuditEventDto.class);
-        res.add(linkTo(ContentElementResource.class).slash(documentId) //
-            .slash("audit").slash(auditId).withSelfRel());
+    AuditEventDto res = documentMapper.map(auditEvent, AuditEventDto.class);
 
-        return ResponseEntity.ok() //
-            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE) //
-            .body(res);
-      }
-    }
-    throw new NotFoundException("Audit event not found");
+    return ResponseEntity.ok() //
+        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE) //
+        .body(res);
   }
 
   @PreSignedUrlEnabled
@@ -133,7 +125,6 @@ public class AuditLogResource {
   @Timed(description = "verify audit event", extraTags = {"operation", "verify", "target", "audit-event"},
       value = "eureka.audit.event.verify")
   public ResponseEntity<String> verifyEvent(
-      @Parameter(description = "The ID of the document") @PathVariable("documentId") final String documentId,
       @Parameter(description = "The ID of the audit event to be verified") @PathVariable("auditId") final String auditId) {
     AuditEvent auditEvent = auditLogService.getEvent(auditId);
     if (null == auditEvent) {
@@ -154,7 +145,7 @@ public class AuditLogResource {
   })
   @Timed(description = "verify document audit events", extraTags = {"operation", "verify", "target", "audit-event"},
       value = "eureka.audit.document.events.verify")
-  public ResponseEntity<String> verifyDocumentEvents(
+  public ResponseEntity<String> verifyDocumentLog(
       @Parameter(description = "The ID of the document") @PathVariable("documentId") final String documentId) {
     List<AuditEvent> auditLog = auditLogService.getEventLog(documentId);
     if (null == auditLog) {
