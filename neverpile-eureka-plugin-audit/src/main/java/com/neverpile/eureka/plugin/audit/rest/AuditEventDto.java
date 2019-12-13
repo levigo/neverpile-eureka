@@ -30,6 +30,7 @@ public class AuditEventDto extends RepresentationModel<AuditEventDto> implements
   private String userID;
   private Type type;
   private String description;
+  private String documentId;
 
   @Schema(description = "The time at which the event occurred")
   public Date getTimestamp() {
@@ -77,4 +78,12 @@ public class AuditEventDto extends RepresentationModel<AuditEventDto> implements
     this.auditId = id;
   }
 
+  @Schema(description = "The document ID associated with this event")
+  public String getDocumentId() {
+    return documentId;
+  }
+
+  public void setDocumentId(String documentId) {
+    this.documentId = documentId;
+  }
 }

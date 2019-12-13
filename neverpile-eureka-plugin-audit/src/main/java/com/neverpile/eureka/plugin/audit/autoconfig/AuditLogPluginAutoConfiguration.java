@@ -11,7 +11,14 @@ import com.neverpile.eureka.api.ObjectStoreService;
 import com.neverpile.eureka.model.Document;
 import com.neverpile.eureka.plugin.audit.rest.AuditLogFacet;
 import com.neverpile.eureka.plugin.audit.service.AuditLogService;
+import com.neverpile.eureka.plugin.audit.service.TimeBasedAuditIdGenerationStrategy;
+import com.neverpile.eureka.plugin.audit.service.impl.SimpleAuditIdGenerationStrategy;
 import com.neverpile.eureka.plugin.audit.service.impl.SimpleAuditLogService;
+import com.neverpile.eureka.plugin.audit.verification.HashStrategyService;
+import com.neverpile.eureka.plugin.audit.verification.hashchain.HashChainService;
+import com.neverpile.eureka.plugin.audit.verification.impl.AggregationService;
+import com.neverpile.eureka.plugin.audit.verification.VerificationService;
+import com.neverpile.eureka.plugin.audit.verification.impl.DirectVerificationService;
 
 /**
  * Spring-Boot Auto-configuration for the neverpile eureka audit log plugin.
@@ -25,6 +32,20 @@ import com.neverpile.eureka.plugin.audit.service.impl.SimpleAuditLogService;
 })
 public class AuditLogPluginAutoConfiguration {
 
+  @Bean
+  @ConditionalOnBean(value = ObjectStoreService.class)
+  @ConditionalOnMissingBean
+  VerificationService simpleVerificationService() {
+    return new DirectVerificationService();
+  }
+
+  @Bean
+  @ConditionalOnBean(value = ObjectStoreService.class)
+  @ConditionalOnMissingBean
+  HashStrategyService simpleHashStrategyService(){
+    return new HashChainService();
+  }
+
   /**
    * Provide an implementation of {@link AuditLogService} which is based on a backing
    * {@link ObjectStoreService}. Back off if any other implementation is present.
@@ -36,6 +57,12 @@ public class AuditLogPluginAutoConfiguration {
   @ConditionalOnMissingBean
   AuditLogService simpleAuditLogService() {
     return new SimpleAuditLogService();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  TimeBasedAuditIdGenerationStrategy timeBasedAuditIdGenerationStrategy() {
+    return new SimpleAuditIdGenerationStrategy();
   }
 
 }

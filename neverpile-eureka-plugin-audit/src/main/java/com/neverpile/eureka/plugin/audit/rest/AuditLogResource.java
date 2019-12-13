@@ -120,8 +120,56 @@ public class AuditLogResource {
             .body(res);
       }
     }
-
     throw new NotFoundException("Audit event not found");
+  }
+
+  @PreSignedUrlEnabled
+  @GetMapping(value = "{auditId}/verify")
+  @Operation(summary = "Verifies a single audit event")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Audit event found"),
+      @ApiResponse(responseCode = "404", description = "Audit event not found")
+  })
+  @Timed(description = "verify audit event", extraTags = {"operation", "verify", "target", "audit-event"},
+      value = "eureka.audit.event.verify")
+  public ResponseEntity<String> verifyEvent(
+      @Parameter(description = "The ID of the document") @PathVariable("documentId") final String documentId,
+      @Parameter(description = "The ID of the audit event to be verified") @PathVariable("auditId") final String auditId) {
+    AuditEvent auditEvent = auditLogService.getEvent(auditId);
+    if (null == auditEvent) {
+      throw new NotFoundException("AuditEvent not found");
+    }
+    boolean res = auditLogService.verifyEvent(auditEvent);
+    return ResponseEntity.ok() //
+        .header(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE) //
+        .body(Boolean.toString(res));
+  }
+
+  @PreSignedUrlEnabled
+  @GetMapping(value = "verify")
+  @Operation(summary = "Verifies all audit events from specified document")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Audit events found"),
+      @ApiResponse(responseCode = "404", description = "Audit events not found")
+  })
+  @Timed(description = "verify document audit events", extraTags = {"operation", "verify", "target", "audit-event"},
+      value = "eureka.audit.document.events.verify")
+  public ResponseEntity<String> verifyDocumentEvents(
+      @Parameter(description = "The ID of the document") @PathVariable("documentId") final String documentId) {
+    List<AuditEvent> auditLog = auditLogService.getEventLog(documentId);
+    if (null == auditLog) {
+      throw new NotFoundException("AuditEventLog not found");
+    }
+    boolean res = auditLog.size() > 0;
+    for (AuditEvent auditEvent : auditLog) {
+      res = auditLogService.verifyEvent(auditEvent);
+      if (!res) {
+        break;
+      }
+    }
+    return ResponseEntity.ok() //
+        .header(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE) //
+        .body(Boolean.toString(res));
   }
 
   @PostMapping
@@ -141,7 +189,7 @@ public class AuditLogResource {
     documentService.getDocument(documentId).orElseThrow(() -> new NotFoundException("Document not found"));
 
     event.setUserID(principal.getName());
-    auditLogService.logEvent(documentId, modelMapper.map(event, AuditEvent.class));
+    auditLogService.logEvent(modelMapper.map(event, AuditEvent.class));
 
     return event;
   }

@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.neverpile.eureka.api.DocumentIdGenerationStrategy;
 import com.neverpile.eureka.plugin.audit.service.AuditEvent;
+import com.neverpile.eureka.plugin.audit.service.TimeBasedAuditIdGenerationStrategy;
 import com.neverpile.eureka.plugin.audit.service.AuditLogService;
 import com.neverpile.eureka.plugin.audit.service.AuditEvent.Type;
 import com.neverpile.eureka.model.Document;
@@ -32,7 +32,7 @@ public class AuditLogFacet implements DocumentFacet<List<AuditEventDto>> {
   private AuditLogService auditLogService;
 
   @Autowired
-  private DocumentIdGenerationStrategy idGenerationStrategy;
+  private TimeBasedAuditIdGenerationStrategy idGenerationStrategy;
 
   @Override
   public String getName() {
@@ -58,25 +58,27 @@ public class AuditLogFacet implements DocumentFacet<List<AuditEventDto>> {
 
   @Override
   public void beforeCreate(final Document newDocument, final DocumentDto requestDto) {
-    auditLogService.logEvent(newDocument.getDocumentId(), createAuditEvent(Type.CREATE));
+    auditLogService.logEvent(createAuditEvent(Type.CREATE, newDocument.getDocumentId()));
   }
 
   @Override
   public void beforeUpdate(final Document currentDocument, final Document updatedDocument,
       final DocumentDto updateDto) {
-    auditLogService.logEvent(currentDocument.getDocumentId(), createAuditEvent(Type.UPDATE));
+    auditLogService.logEvent(createAuditEvent(Type.UPDATE, currentDocument.getDocumentId()));
   }
 
   @Override
   public void onDelete(final Document currentDocument) {
-    auditLogService.logEvent(currentDocument.getDocumentId(), createAuditEvent(Type.DELETE));
+    auditLogService.logEvent(createAuditEvent(Type.DELETE, currentDocument.getDocumentId()));
   }
 
-  private AuditEvent createAuditEvent(final Type type) {
+  private AuditEvent createAuditEvent(final Type type, String documentId) {
     AuditEvent eventDto = new AuditEvent();
-    eventDto.setTimestamp(new Date());
+    Date timestamp = new Date();
+    eventDto.setTimestamp(timestamp);
     eventDto.setType(type);
-    eventDto.setAuditId(idGenerationStrategy.createDocumentId());
+    eventDto.setAuditId(idGenerationStrategy.createAuditId(timestamp, documentId));
+    eventDto.setDocumentId(documentId);
 
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     if (auth.isAuthenticated()) {
@@ -99,9 +101,5 @@ public class AuditLogFacet implements DocumentFacet<List<AuditEventDto>> {
     );
   }
 
-  @Override
-  public String toString() {
-    return "DocumentFacet{" + "name=" + getName() + '}';
-  }
 }
 

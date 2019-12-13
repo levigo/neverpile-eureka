@@ -1,11 +1,13 @@
 package com.neverpile.eureka.plugin.audit.service;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
 import com.neverpile.eureka.model.EncryptableElement;
 
-public class AuditEvent extends EncryptableElement {
+public class AuditEvent extends EncryptableElement implements Serializable {
+
   public enum Type {
     CREATE, UPDATE, DELETE;
   }
@@ -16,6 +18,7 @@ public class AuditEvent extends EncryptableElement {
   private Type type;
   private String description;
   private String requestPath;
+  private String documentId;
 
   public Date getTimestamp() {
     return timestamp;
@@ -57,6 +60,13 @@ public class AuditEvent extends EncryptableElement {
     this.auditId = id;
   }
 
+  public String getDocumentId() {
+    return documentId;
+  }
+
+  public void setDocumentId(String documentId) {
+    this.documentId = documentId;
+  }
 
   @Override
   public int hashCode() {
