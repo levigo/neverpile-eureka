@@ -22,7 +22,6 @@ import com.neverpile.eureka.api.DocumentIdGenerationStrategy;
 import com.neverpile.eureka.api.DocumentService;
 import com.neverpile.eureka.api.MultiVersioningDocumentService;
 import com.neverpile.eureka.api.ObjectStoreService;
-import com.neverpile.eureka.api.index.IndexMaintenanceService;
 import com.neverpile.eureka.api.index.IndexResource;
 import com.neverpile.eureka.event.EventPublisher;
 import com.neverpile.eureka.event.UpdateEventAggregator;
@@ -32,7 +31,6 @@ import com.neverpile.eureka.impl.documentservice.DefaultDocumentService;
 import com.neverpile.eureka.impl.documentservice.DefaultMultiVersioningDocumentService;
 import com.neverpile.eureka.impl.documentservice.UuidContentElementIdGenerationStrategy;
 import com.neverpile.eureka.impl.documentservice.UuidDocumentIdGenerationStrategy;
-import com.neverpile.eureka.impl.index.SynchronousIndexMaintenanceBridge;
 import com.neverpile.eureka.impl.tx.lock.LocalLockFactory;
 import com.neverpile.eureka.rest.api.document.DocumentResource;
 import com.neverpile.eureka.rest.api.document.MultiVersioningDocumentResource;
@@ -221,19 +219,6 @@ public class NeverpileEurekaAutoConfiguration {
   @ConditionalOnBean(ObjectStoreService.class)
   public ContentElementService contentElementService() {
     return new SimpleContentElementService();
-  }
-
-  /**
-   * Provide a synchronous index maintenance bridge.
-   * 
-   * FIXME: how do we back off if the application wants to handle index maintenance differently?
-   * 
-   * @return a SynchronousIndexMaintenanceBridge
-   */
-  @Bean
-  @ConditionalOnBean(IndexMaintenanceService.class)
-  public SynchronousIndexMaintenanceBridge synchronousIndexMaintenanceBridge() {
-    return new SynchronousIndexMaintenanceBridge();
   }
 
   /**

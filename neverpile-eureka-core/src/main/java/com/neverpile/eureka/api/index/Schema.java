@@ -1,7 +1,7 @@
 package com.neverpile.eureka.api.index;
 
 
-public abstract class Schema {
+public abstract class Schema implements Comparable<Schema> {
 
   private String name;
 
@@ -19,6 +19,17 @@ public abstract class Schema {
 
   public void setName(final String name) {
     this.name = name;
+  }
+
+  @Override
+  public int compareTo(final Schema o) {
+    // compare by name
+    int c = name.compareTo(o.getName());
+    if (c != 0)
+      return c;
+
+    // then by class
+    return getClass().getName().compareTo(o.getClass().getName());
   }
 
   @Override

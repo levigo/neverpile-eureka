@@ -1,5 +1,7 @@
 package com.neverpile.eureka.search.elastic;
 
+import java.io.IOException;
+
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +18,7 @@ public class ElasticsearchIndexMaintenanceService implements IndexMaintenanceSer
   private ElasticsearchDocumentIndex index;
 
   @PostConstruct
-  public void init() {
+  public void init() throws IOException {
     index.ensureIndexUpToDateOrRebuildInProgress();
   }
 

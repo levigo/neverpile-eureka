@@ -90,7 +90,7 @@ public class AsynchronousIndexMaintenanceService implements IndexMaintenanceServ
   }
 
   @PostConstruct
-  public void init() {
+  public void init() throws IOException {
     ensureIndexUpToDateOrRebuildInProgress();
 
     indexMaintenanceQueue.registerListener(new ElasticQueueUpdateListener());
@@ -188,7 +188,7 @@ public class AsynchronousIndexMaintenanceService implements IndexMaintenanceServ
     }
   }
 
-  private void ensureIndexUpToDateOrRebuildInProgress() {
+  private void ensureIndexUpToDateOrRebuildInProgress() throws IOException {
     Schema schema = index.createIndexSchema();
     JsonNode expectedMapping = index.schemaToMapping(schema);
 

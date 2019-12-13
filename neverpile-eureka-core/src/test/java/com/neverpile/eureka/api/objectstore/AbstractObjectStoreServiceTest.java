@@ -1,16 +1,20 @@
 package com.neverpile.eureka.api.objectstore;
 
-import static java.lang.Math.*;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -30,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.StreamUtils;
 
+import com.neverpile.common.util.DevNullOutputStream;
 import com.neverpile.eureka.api.ObjectStoreService;
 import com.neverpile.eureka.api.exception.VersionMismatchException;
 import com.neverpile.eureka.model.ObjectName;
@@ -155,7 +160,7 @@ public abstract class AbstractObjectStoreServiceTest {
     TestDataInputStream is = new TestDataInputStream("0123456789", 1024 * 1024 * 10); // 100MB
 
     MessageDigest md5 = MessageDigest.getInstance("md5");
-    StreamUtils.copy(is, new DigestOutputStream(new DevNull(), md5));
+    StreamUtils.copy(is, new DigestOutputStream(new DevNullOutputStream(), md5));
     byte expected[] = md5.digest();
 
     is = new TestDataInputStream("0123456789", 1024 * 1024 * 10);
@@ -164,7 +169,7 @@ public abstract class AbstractObjectStoreServiceTest {
     ObjectStoreService.StoreObject so = objectStore.get(ObjectName.of("Test6"));
 
     md5.reset();
-    StreamUtils.copy(so.getInputStream(), new DigestOutputStream(new DevNull(), md5));
+    StreamUtils.copy(so.getInputStream(), new DigestOutputStream(new DevNullOutputStream(), md5));
     assertThat("Stream contents mismatch", expected, equalTo(md5.digest()));
   }
 
@@ -405,13 +410,6 @@ public abstract class AbstractObjectStoreServiceTest {
         throw new IllegalStateException();
 
       pos = marks.pop();
-    }
-  }
-
-  static class DevNull extends OutputStream {
-    @Override
-    public void write(final int b) {
-      // nothing to do
     }
   }
 
