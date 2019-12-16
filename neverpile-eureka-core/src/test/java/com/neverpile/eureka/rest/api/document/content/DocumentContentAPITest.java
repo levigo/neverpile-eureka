@@ -7,7 +7,8 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.isIn;
+import static org.hamcrest.Matchers.in;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
@@ -180,7 +181,7 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
         .post("/api/v1/documents")
       .then()
         .log().all()
-        .statusCode(isIn(Arrays.asList(200, 201)))
+        .statusCode(is(in(Arrays.asList(200, 201))))
         .contentType(ContentType.JSON)
         .body("documentId", equalTo(expectedDocId))
         .body("contentElements.size()", equalTo(3))
@@ -264,7 +265,7 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
         .post("/api/v1/documents")
       .then()
         .log().all()
-        .statusCode(isIn(Arrays.asList(200, 201)))
+        .statusCode(is(in(Arrays.asList(200, 201))))
         .contentType(ContentType.JSON)
         .body("documentId", equalTo("myProvidedId"))
         .body("contentElements.size()", equalTo(1))

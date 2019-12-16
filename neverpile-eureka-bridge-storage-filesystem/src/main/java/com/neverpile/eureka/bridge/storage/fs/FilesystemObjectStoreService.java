@@ -225,12 +225,6 @@ public class FilesystemObjectStoreService implements ObjectStoreService {
     }
 
     @Override
-    protected void finalize() throws Throwable {
-      close();
-      super.finalize();
-    }
-
-    @Override
     public int read() throws IOException {
       int r = super.read();
       if (r <= 0)
