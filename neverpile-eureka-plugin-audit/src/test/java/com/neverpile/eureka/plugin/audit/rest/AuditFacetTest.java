@@ -44,12 +44,6 @@ import com.neverpile.eureka.test.AbstractRestAssuredTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
-
-/*
- * FIXME: there is some potential to factor this test class into a common abstract class with the
- * client tests. The latter run against a mock, static test Neverpile, though, which will support
- * far less realistic tests.
- */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AuditFacetTest extends AbstractRestAssuredTest {

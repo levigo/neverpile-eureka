@@ -11,7 +11,6 @@ public class DirectVerificationService implements VerificationService {
   @Autowired
   HashStrategyService auditStructure;
 
-
   @Override
   public void processEvent(AuditEvent auditEvent) {
     auditStructure.addElement(auditEvent);

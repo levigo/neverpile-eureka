@@ -13,7 +13,6 @@ public class AuditHash implements Serializable {
   private byte[] hash;
 
   public AuditHash() {
-
   }
 
   public AuditHash(byte[] data) {

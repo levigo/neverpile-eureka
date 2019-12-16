@@ -9,6 +9,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.neverpile.eureka.api.DocumentService;
@@ -39,6 +40,15 @@ public class HashChainService implements HashStrategyService {
 
   private String currentHashVersion = ObjectStoreService.NEW_VERSION;
   private final ObjectName currentHashName = getObjectNameOf("current_hash");
+
+  @Value("${neverpile-eureka.audit.verification.seed:NotSoSecretSeed}")
+  private String rootNodeHashSeed = "NotSoSecretSeed";
+
+  private ProofChainLink rootProof;
+
+  public HashChainService() {
+    this.rootProof = new ProofChainLink(new HashChainLink("root", new AuditHash(rootNodeHashSeed.getBytes())));
+  }
 
   @Override
   public void addElement(AuditEvent auditEvent) {
@@ -82,6 +92,9 @@ public class HashChainService implements HashStrategyService {
       if (null != initProof) {
         // Try to initialize atomic.
         currentProof.compareAndSet(null, initProof);
+      } else {
+        // initialize chain with new root.
+        currentProof.compareAndSet(null, rootProof);
       }
     }
   }

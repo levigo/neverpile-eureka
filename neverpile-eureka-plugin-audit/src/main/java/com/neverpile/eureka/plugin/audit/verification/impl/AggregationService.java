@@ -58,7 +58,8 @@ public class AggregationService implements VerificationService {
   @Scheduled(cron = "0 * * * * *") // fires every minute when seconds are 0
   @Transactional
   public void aggregateEvents() {
-    // solve race condition for all eureka instances trying to aggregate the audit log.
+    // Solve race condition for all eureka instances trying to aggregate the audit log.
+    // (This Lock acts as a Semaphore.)
     Lock lock = lockFactory.writeLock(distributedLockType);
     if (lock.tryLock()) {
       try {
