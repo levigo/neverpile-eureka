@@ -23,13 +23,15 @@ public @interface Tag {
   }
 
   /**
-   * The name of the tag.
+   * The name of the tag for a traced parameter.
+   * @return The name of the tag.
    */
   String name();
 
   /**
    * An optional implementation of a {@link Function} used to map from the argument value to the tag
-   * value. 
+   * value.
+   * @return Function to map a non standard value for traceing.
    */
   Class<? extends Function<? extends Object, ? extends Object>> valueAdapter() default NoopMapper.class;
 }

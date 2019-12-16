@@ -4,6 +4,7 @@ import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
@@ -21,17 +22,21 @@ import com.neverpile.authorization.basic.AllowAllAuthorizationService;
 import com.neverpile.eureka.api.DocumentAuthorizationService;
 import com.neverpile.eureka.impl.tx.lock.LocalLockFactory;
 import com.neverpile.eureka.model.Document;
+import com.neverpile.eureka.plugin.audit.verification.VerificationService;
 import com.neverpile.eureka.rest.api.document.DocumentResource;
 import com.neverpile.eureka.rest.configuration.FacetedDocumentDtoModule;
 import com.neverpile.eureka.rest.configuration.JacksonConfiguration;
 import com.neverpile.eureka.rest.configuration.ModelMapperConfiguration;
 import com.neverpile.eureka.rest.mocks.MockObjectStoreService;
+import com.neverpile.eureka.tx.atomic.DistributedAtomicReference;
 import com.neverpile.eureka.tx.lock.ClusterLockFactory;
 
 @SpringBootConfiguration
 @EnableAutoConfiguration
-@EnableHypermediaSupport(type=HypermediaType.HAL)
-@Import({JacksonConfiguration.class, FacetedDocumentDtoModule.class, DocumentResource.class, ModelMapperConfiguration.class})
+@EnableHypermediaSupport(type = HypermediaType.HAL)
+@Import({JacksonConfiguration.class, FacetedDocumentDtoModule.class, DocumentResource.class,
+    ModelMapperConfiguration.class
+})
 @EnableTransactionManagement
 public class BaseTestConfiguration {
   @EnableWebSecurity
@@ -53,29 +58,36 @@ public class BaseTestConfiguration {
           .withUser("user").password("{noop}password").roles("USER");
     }
   }
-  
+
   @Bean
   MockObjectStoreService objectStoreService() {
     return new MockObjectStoreService();
   }
-  
+
   @Bean
   ClusterLockFactory noOpLock() {
     return new LocalLockFactory();
   }
-  
+
   @Bean
   AuthorizationService authorizationService() {
     return new AllowAllAuthorizationService();
   }
-  
+
   @Bean
   public DocumentAuthorizationService documentAuthorizationService() {
     return new DocumentAuthorizationService() {
       @Override
-      public boolean authorizeSubresourceAction(final Document document, final Action action, final String... subResourcePath) {
+      public boolean authorizeSubresourceAction(final Document document, final Action action,
+          final String... subResourcePath) {
         return true;
       }
     };
   }
+
+  @MockBean
+  VerificationService mockVerificationService;
+
+  @MockBean
+  DistributedAtomicReference distributedAtomicReference;
 }

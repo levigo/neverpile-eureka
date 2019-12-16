@@ -5,7 +5,6 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.when;
 
@@ -45,18 +44,11 @@ import com.neverpile.eureka.test.AbstractRestAssuredTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
-
-/*
- * FIXME: there is some potential to factor this test class into a common abstract class with the
- * client tests. The latter run against a mock, static test Neverpile, though, which will support
- * far less realistic tests.
- */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AuditFacetTest extends AbstractRestAssuredTest {
   @TestConfiguration
-  @Import({
-      AuditLogFacet.class, AuditLogResource.class, SimpleContentElementService.class, ContentElementFacet.class,
+  @Import({AuditLogFacet.class, AuditLogResource.class, SimpleContentElementService.class, ContentElementFacet.class,
       ContentElementResource.class
   })
   public static class ServiceConfig {
@@ -127,7 +119,7 @@ public class AuditFacetTest extends AbstractRestAssuredTest {
     BDDMockito
       .given(mockDocumentService.createDocument(storedDocumentC.capture()))
       .willAnswer(i -> i.getArgument(0));
-    Mockito.doNothing().when(mockAuditLogService).logEvent(any(), eventC.capture());
+    Mockito.doNothing().when(mockAuditLogService).logEvent(eventC.capture());
     
     RestAssured
       .given()
@@ -244,7 +236,7 @@ public class AuditFacetTest extends AbstractRestAssuredTest {
         .willReturn(Collections.singletonList(event));
     
     ArgumentCaptor<AuditEvent> eventC = ArgumentCaptor.forClass(AuditEvent.class);
-    Mockito.doNothing().when(mockAuditLogService).logEvent(any(), eventC.capture());
+    Mockito.doNothing().when(mockAuditLogService).logEvent(eventC.capture());
     
     RestAssured
       .given()
