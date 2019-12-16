@@ -19,6 +19,7 @@ public class AuditEvent extends EncryptableElement implements Serializable {
   private String description;
   private String requestPath;
   private String documentId;
+  private Byte[] contentHash;
 
   public Date getTimestamp() {
     return timestamp;
@@ -66,6 +67,14 @@ public class AuditEvent extends EncryptableElement implements Serializable {
 
   public void setDocumentId(String documentId) {
     this.documentId = documentId;
+  }
+
+  public Byte[] getContentHash() {
+    return contentHash;
+  }
+
+  public void setContentHash(Byte[] contentHash) {
+    this.contentHash = contentHash;
   }
 
   @Override
