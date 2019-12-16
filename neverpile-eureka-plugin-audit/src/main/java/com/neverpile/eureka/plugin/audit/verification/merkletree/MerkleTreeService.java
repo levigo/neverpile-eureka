@@ -9,6 +9,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,6 +42,17 @@ public class MerkleTreeService implements HashStrategyService {
   private final ObjectName currentProofName = getObjectNameOf("current_proof");
 
   private String currentProofVersion;
+
+  @Value("${neverpile-eureka.audit.verification.seed:NotSoSecretSeed}")
+  private String rootNodeHashSeed = "NotSoSecretSeed";
+
+  private ProofSet rootProof;
+
+  public MerkleTreeService() {
+    this.rootProof = new ProofSet(
+        Collections.singletonList(new ProofNode(new MerkleNode(new AuditHash(rootNodeHashSeed.getBytes()), 0))), null,
+        "root");
+  }
 
   @Override
   public void addElement(AuditEvent auditEvent) {
@@ -83,6 +95,9 @@ public class MerkleTreeService implements HashStrategyService {
       if (null != latestProof) {
         // Try to initialize atomic.
         currentProof.compareAndSet(null, latestProof);
+      } else {
+        // initialize chain with new root.
+        currentProof.compareAndSet(null, rootProof);
       }
     }
   }
