@@ -11,6 +11,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -32,6 +36,7 @@ import org.elasticsearch.common.xcontent.XContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.codec.Hex;
 import org.springframework.stereotype.Service;
 
@@ -41,7 +46,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.neverpile.common.specifier.Specifier;
 import com.neverpile.common.util.DevNullOutputStream;
-import com.neverpile.common.util.Streams;
 import com.neverpile.common.util.VisibleForTesting;
 import com.neverpile.eureka.api.DocumentService;
 import com.neverpile.eureka.api.index.Array;
@@ -58,6 +62,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 
 @Service
 public class ElasticsearchDocumentIndex {
+  private static final Pattern INDEX_NAME_PATTERN = Pattern.compile("document-(\\d+)-(\\p{XDigit}+)-(\\p{XDigit}+)");
   static String INDEX_ALIAS_READ = "document-read";
   static String INDEX_ALIAS_WRITE = "document-write";
 
@@ -133,6 +138,7 @@ public class ElasticsearchDocumentIndex {
     }
   }
 
+  @Async
   public void hardResetIndex() {
     DeleteIndexRequest request = null;
     try {
@@ -146,6 +152,7 @@ public class ElasticsearchDocumentIndex {
     }
   }
 
+  @Async
   public void rebuildIndex() {
     LOGGER.info("Index rebuild started.");
     rebuildActive.set(true);
@@ -157,13 +164,23 @@ public class ElasticsearchDocumentIndex {
       setAliasForIndex(inProgressIndexName, INDEX_ALIAS_WRITE);
 
       try {
-        LOGGER.info("New index created.");
+        LOGGER.info("Starting index rebuild");
 
+        AtomicInteger indexedDocuments = new AtomicInteger();
+        AtomicLong lastLogMessage = new AtomicLong(System.currentTimeMillis());
         Stream<String> stream = documentService.getAllDocumentIds();
         long indexed = stream //
             .map(d -> documentService.getDocument(d).orElse(null)) //
             .filter(Objects::nonNull) //
-            .peek(d -> addDocument(d, inProgressIndexName)).count();
+            .peek(d -> {
+              addDocument(d, inProgressIndexName);
+              indexedDocuments.incrementAndGet();
+              
+              long last = lastLogMessage.get();
+              if(last < System.currentTimeMillis() - 10000 && lastLogMessage.compareAndSet(last, System.currentTimeMillis())) {
+                LOGGER.info("Indexed {} documents", indexedDocuments);
+              }
+            }).count();
         LOGGER.info("Index rebuild completed with {} elements.", indexed);
 
         // switch active index
@@ -173,9 +190,9 @@ public class ElasticsearchDocumentIndex {
         if (null != obsoleteIndexName) {
           deleteIndex(obsoleteIndexName);
         }
-        LOGGER.info("Index rebuild finished.");
+        LOGGER.info("Index rebuild finished");
       } catch (Exception e) {
-        LOGGER.error("Index rebuild failed.", e);
+        LOGGER.error("Index rebuild failed", e);
 
         try {
           // switch active index
@@ -186,22 +203,42 @@ public class ElasticsearchDocumentIndex {
           // delete the one we tried to create
           deleteIndex(inProgressIndexName);
         } catch (IOException f) {
-          LOGGER.error("Also, failed to cleanup after rebuild failure.", e);
+          LOGGER.error("Also, failed to cleanup after rebuild failure", e);
         }
 
         throw new IndexMaintenanceException("Index rebuild failed", e);
       }
     } catch (Exception e) {
-      LOGGER.error("Failed to (re)bulild index.", e);
+      LOGGER.error("Failed to (re)bulild index", e);
     }
   }
 
   String createIndex() throws IOException {
-    return createIndex(createIndexSchema(), generateNewIndexName());
+    Structure schema = createIndexSchema();
+    schema.setName(ROOT_NAME);
+
+    ObjectNode mapping = schemaToMapping(schema);
+
+    String name = generateNewIndexName(mapping);
+
+    LOGGER.info("Creating index {}", name);
+
+    return createIndex(mapping, name);
   }
 
-  String generateNewIndexName() {
-    return "document" + System.currentTimeMillis();
+  String generateNewIndexName(final ObjectNode mapping) throws IOException {
+    return "document-" + SCHEMA_MAPPING_VERSION + "-" + schemaHash(mapping) + "-"
+        + Long.toHexString(System.currentTimeMillis());
+  }
+
+  public String createIndex(final ObjectNode mapping, final String indexName) throws IOException {
+    CreateIndexRequest request = new CreateIndexRequest(indexName);
+
+    request.mapping(objectMapper.writeValueAsString(mapping), XContentType.JSON);
+
+    client.indices().create(request, RequestOptions.DEFAULT);
+
+    return indexName;
   }
 
   void deleteIndex(final String indexName) throws IOException {
@@ -235,23 +272,6 @@ public class ElasticsearchDocumentIndex {
     }
   }
 
-  public String createIndex(final Schema schema, final String indexName) throws IOException {
-    CreateIndexRequest request = new CreateIndexRequest(indexName);
-
-    schema.setName(ROOT_NAME);
-
-    ObjectNode mapping = schemaToMapping(schema);
-    // add hash and version
-    mapping.with("properties").putObject("__SCHEMA-" + schemaHash(mapping)).put("type", "keyword");
-    mapping.with("properties").putObject("__VERSION-" + SCHEMA_MAPPING_VERSION).put("type", "keyword");
-
-    request.mapping(objectMapper.writeValueAsString(mapping), XContentType.JSON);
-
-    client.indices().create(request, RequestOptions.DEFAULT);
-
-    return indexName;
-  }
-
   ObjectNode schemaToMapping(final Schema rootSchema) throws IOException {
     ObjectNode m = objectMapper.createObjectNode();
 
@@ -268,7 +288,8 @@ public class ElasticsearchDocumentIndex {
         elementNode.put("type", "object");
       elementNode.put("dynamic", t.isDynamic() ? "true" : "false");
 
-      t.getElements().stream().sorted().forEach(e -> schemaToMapping(e, false, elementNode.with("properties").putObject(e.getName())));
+      t.getElements().stream().sorted().forEach(
+          e -> schemaToMapping(e, false, elementNode.with("properties").putObject(e.getName())));
     } else if (s instanceof Array) {
       Array a = (Array) s;
       schemaToMapping(a.getElementSchema(), false, elementNode);
@@ -326,21 +347,19 @@ public class ElasticsearchDocumentIndex {
         .keySet().stream().findAny().orElse(null);
   }
 
-  void ensureIndexUpToDateOrRebuildInProgress() throws IOException {
+  @Async
+  public void ensureIndexUpToDateOrRebuildInProgress() throws IOException {
     Schema schema = createIndexSchema();
-    JsonNode expectedMapping = schemaToMapping(schema);
-    String expectedHash = schemaHash(expectedMapping);
+
+    String expectedHash = schemaHash(schemaToMapping(schema));
 
     try {
-      JsonNode currentReadMapping = getCurrentMapping(INDEX_ALIAS_READ);
-
-      if (null != currentReadMapping && verifyMapping(expectedHash, currentReadMapping, true)) {
+      if (verifyMapping(expectedHash, INDEX_ALIAS_READ, true)) {
         LOGGER.info("Current schema mapping is up to date");
         return;
       }
 
-      JsonNode currentWriteMapping = getCurrentMapping(INDEX_ALIAS_WRITE);
-      if (null != currentReadMapping && verifyMapping(expectedHash, currentWriteMapping, false)) {
+      if (verifyMapping(expectedHash, INDEX_ALIAS_WRITE, true)) {
         LOGGER.info("Current schema mapping is outdated, but rebuild seems to be in progress");
         return;
       }
@@ -352,16 +371,31 @@ public class ElasticsearchDocumentIndex {
     rebuildIndex();
   }
 
-  private boolean verifyMapping(final String expectedHash, final JsonNode mapping, final boolean logMismatch) {
-    String schemaHash = Streams.of(mapping.path("properties").fieldNames()) //
-        .filter(n -> n.startsWith("__SCHEMA-")).map(n -> n.substring(9)).findFirst().orElse("(missing)");
-    String schemaVersion = Streams.of(mapping.path("properties").fieldNames()) //
-        .filter(n -> n.startsWith("__VERSION-")).map(n -> n.substring(10)).findFirst().orElse("(missing)");
+  private boolean verifyMapping(final String expectedHash, final String aliasName, final boolean logInfo)
+      throws IOException {
+    // retrieve index alias by name
+    String indexName = getIndexNameFromAlias(aliasName);
+    if (null == indexName) {
+      if (logInfo)
+        LOGGER.info("Index alias not found", indexName);
+      return false;
+    }
 
+    // match index name against pattern
+    Matcher m = INDEX_NAME_PATTERN.matcher(indexName);
+    if (!m.matches()) {
+      LOGGER.warn("Index name format not of the expected form document-<VERSION>-<HASH>-<TIMESTAMP>: {}", indexName);
+      return false;
+    }
+
+    String schemaVersion = m.group(1);
+    String schemaHash = m.group(2);
+
+    // verify has and version
     boolean match = expectedHash.equals(schemaHash) && SCHEMA_MAPPING_VERSION.equals(schemaVersion);
-
-    if (logMismatch && !match)
-        LOGGER.warn("Schema mismatch - expected schema version {} with hash {}, but got {} / {}", SCHEMA_MAPPING_VERSION, expectedHash, schemaVersion, schemaHash);
+    if (logInfo && !match)
+      LOGGER.info("Schema mismatch - expected schema version {} with hash {}, but got {} / {}", SCHEMA_MAPPING_VERSION,
+          expectedHash, schemaVersion, schemaHash);
 
     return match;
   }
