@@ -175,9 +175,10 @@ public class ElasticsearchDocumentIndex {
             .peek(d -> {
               addDocument(d, inProgressIndexName);
               indexedDocuments.incrementAndGet();
-              
+
               long last = lastLogMessage.get();
-              if(last < System.currentTimeMillis() - 10000 && lastLogMessage.compareAndSet(last, System.currentTimeMillis())) {
+              if (last < System.currentTimeMillis() - 10000
+                  && lastLogMessage.compareAndSet(last, System.currentTimeMillis())) {
                 LOGGER.info("Indexed {} documents", indexedDocuments);
               }
             }).count();
@@ -348,12 +349,12 @@ public class ElasticsearchDocumentIndex {
   }
 
   @Async
-  public void ensureIndexUpToDateOrRebuildInProgress() throws IOException {
-    Schema schema = createIndexSchema();
-
-    String expectedHash = schemaHash(schemaToMapping(schema));
-
+  public void ensureIndexUpToDateOrRebuildInProgress() {
     try {
+      Schema schema = createIndexSchema();
+
+      String expectedHash = schemaHash(schemaToMapping(schema));
+
       if (verifyMapping(expectedHash, INDEX_ALIAS_READ, true)) {
         LOGGER.info("Current schema mapping is up to date");
         return;
