@@ -15,8 +15,8 @@ import com.neverpile.eureka.plugin.audit.service.TimeBasedAuditIdGenerationStrat
 import com.neverpile.eureka.plugin.audit.service.impl.DefaultAuditIdGenerationStrategy;
 import com.neverpile.eureka.plugin.audit.service.impl.DefaultAuditLogService;
 import com.neverpile.eureka.plugin.audit.verification.HashStrategyService;
-import com.neverpile.eureka.plugin.audit.verification.hashchain.HashChainService;
 import com.neverpile.eureka.plugin.audit.verification.VerificationService;
+import com.neverpile.eureka.plugin.audit.verification.hashchain.HashChainService;
 import com.neverpile.eureka.plugin.audit.verification.impl.DirectVerificationService;
 
 /**

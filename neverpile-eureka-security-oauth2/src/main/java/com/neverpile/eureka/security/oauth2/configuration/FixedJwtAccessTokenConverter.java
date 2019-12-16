@@ -1,5 +1,13 @@
 package com.neverpile.eureka.security.oauth2.configuration;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -8,7 +16,6 @@ import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.token.DefaultUserAuthenticationConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 
-import java.util.*;
 
 public class FixedJwtAccessTokenConverter extends JwtAccessTokenConverter {
 
