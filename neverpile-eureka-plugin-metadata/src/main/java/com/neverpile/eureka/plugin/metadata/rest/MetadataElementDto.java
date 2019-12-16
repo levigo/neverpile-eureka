@@ -1,7 +1,7 @@
 package com.neverpile.eureka.plugin.metadata.rest;
 
+import java.time.Instant;
 import java.util.Arrays;
-import java.util.Date;
 
 import javax.validation.constraints.Pattern;
 import javax.ws.rs.core.MediaType;
@@ -33,9 +33,9 @@ public class MetadataElementDto extends RepresentationModel<MetadataDto> impleme
 
   private String keyHint;
 
-  private Date dateCreated;
+  private Instant dateCreated;
 
-  private Date dateModified;
+  private Instant dateModified;
   
   @Schema(description = "A reference to a schema which the element is supposed to conform to, "
       + "e.g. an XML namespace definition, an XSD reference, a JSON schema reference etc.")
@@ -83,20 +83,20 @@ public class MetadataElementDto extends RepresentationModel<MetadataDto> impleme
   }
 
   @Schema(description = "The timestamp at which the element was created")
-  public Date getDateCreated() {
+  public Instant getDateCreated() {
     return dateCreated;
   }
 
-  public void setDateCreated(final Date dateCreated) {
+  public void setDateCreated(final Instant dateCreated) {
     this.dateCreated = dateCreated;
   }
 
   @Schema(description = "The timestamp at which the element was last modified")
-  public Date getDateModified() {
+  public Instant getDateModified() {
     return dateModified;
   }
 
-  public void setDateModified(final Date dateModified) {
+  public void setDateModified(final Instant dateModified) {
     this.dateModified = dateModified;
   }
 

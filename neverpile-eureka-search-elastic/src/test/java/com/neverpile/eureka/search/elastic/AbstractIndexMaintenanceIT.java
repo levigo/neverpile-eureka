@@ -10,7 +10,6 @@ import static org.mockito.ArgumentMatchers.any;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,7 +102,7 @@ public abstract class AbstractIndexMaintenanceIT extends AbstractManualIT {
     Assert.assertEquals(1000000000000L, response.getSource().get("dateCreated"));
 
     Document doc = new Document(listOfDocuments.get(0).getDocumentId());
-    doc.setDateCreated(new Date(1100000000000L));
+    doc.setDateCreated(Instant.ofEpochMilli(1100000000000L));
 
     BDDMockito.given(mockDocumentService.getDocument(any())).willReturn(Optional.of(doc));
 
@@ -183,8 +182,8 @@ public abstract class AbstractIndexMaintenanceIT extends AbstractManualIT {
     }
     Map<String, Object> json = new HashMap<>();
     json.put("documentId", listOfDocuments.get(index).getDocumentId());
-    json.put("dateCreated", listOfDocuments.get(index).getDateCreated().getTime());
-    json.put("dateModified", listOfDocuments.get(index).getDateModified().getTime());
+    json.put("dateCreated", listOfDocuments.get(index).getDateCreated().toEpochMilli());
+    json.put("dateModified", listOfDocuments.get(index).getDateModified().toEpochMilli());
     return json;
   }
 

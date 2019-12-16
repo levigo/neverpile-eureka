@@ -1,6 +1,6 @@
 package com.neverpile.eureka.rest.api.document.core;
 
-import java.util.Date;
+import java.time.Instant;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -21,7 +21,7 @@ import com.neverpile.eureka.rest.api.document.DocumentFacet;
 
 @Component
 @ConditionalOnProperty(name = "neverpile.facet.creationDate.enabled", matchIfMissing = true)
-public class CreationDateFacet implements DocumentFacet<Date> {
+public class CreationDateFacet implements DocumentFacet<Instant> {
   @Autowired
   private ObjectMapper objectMapper;
 
@@ -32,7 +32,7 @@ public class CreationDateFacet implements DocumentFacet<Date> {
 
   @Override
   public JavaType getValueType(final TypeFactory f) {
-    return f.constructType(Date.class);
+    return f.constructType(Instant.class);
   }
 
   @Override
@@ -42,7 +42,7 @@ public class CreationDateFacet implements DocumentFacet<Date> {
      * is required for data migrated from other systems where the lifecycle dates should be
      * preserved.
      */
-    Date now = new Date();
+    Instant now = Instant.now();
     toBeCreated.setDateCreated(now);
   }
 
@@ -61,7 +61,7 @@ public class CreationDateFacet implements DocumentFacet<Date> {
   @Override
   public JsonNode getIndexData(final Document document) {
     return objectMapper.getNodeFactory().numberNode(
-        document.getDateCreated() != null ? document.getDateCreated().getTime() : null);
+        document.getDateCreated() != null ? document.getDateCreated().toEpochMilli() : null);
   }
 
   public AuthorizationContext getAuthorizationContextContribution(final Document document) {

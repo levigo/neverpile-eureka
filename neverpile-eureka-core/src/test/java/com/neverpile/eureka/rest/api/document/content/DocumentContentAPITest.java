@@ -20,10 +20,10 @@ import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -159,7 +159,7 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
 
   private void testDocumentCreation(final Function<RequestSpecification, RequestSpecification> requestConfigurer,
       final String expectedDocId) {
-    Date then = new Date();
+    Instant then = Instant.now();
 
     // @formatter:off
     // store it
@@ -212,7 +212,7 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
         .extract().as(Document.class);
 
     // verify returned document
-    Date now = new Date();
+    Instant now = Instant.now();
     assertThat(returnedDocument.getDocumentId(), equalTo(expectedDocId));
     assertThat(returnedDocument.getDateCreated(), allOf(greaterThanOrEqualTo(then), lessThanOrEqualTo(now)));
 
@@ -247,7 +247,7 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
    */
   @Test
   public void testThat_documentCanBeCreatedUsingMultipartWithMissingContentTypeOnDOCPart() throws Exception {
-    Date then = new Date();
+    Instant then = Instant.now();
     
     // @formatter:off
     BDDMockito

@@ -13,7 +13,7 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.Optional;
 
 import javax.ws.rs.core.MediaType;
@@ -412,8 +412,8 @@ public class MetadataAuthorizationTest extends AbstractRestAssuredTest {
     metadataElement.setContent(objectMapper.writeValueAsBytes(metadataJson));
     metadataElement.setContentType(MediaType.APPLICATION_JSON_TYPE);
     metadataElement.setSchema("mySchema");
-    metadataElement.setDateCreated(new Date());
-    metadataElement.setDateModified(new Date());
+    metadataElement.setDateCreated(Instant.now());
+    metadataElement.setDateModified(Instant.now());
 
     MetadataDto metadata = MetadataDto.with("foo", metadataElement);
     return metadata;

@@ -1,6 +1,6 @@
 package com.neverpile.eureka.search.elastic;
 
-import java.util.Date;
+import java.time.Instant;
 
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
@@ -30,12 +30,12 @@ public class ServiceConfig {
   }
 
   @Bean
-  DocumentFacet<Date> getCreationDateFacet() {
+  DocumentFacet<Instant> getCreationDateFacet() {
     return new CreationDateFacet();
   }
 
   @Bean
-  DocumentFacet<Date> getModificationDateFacet() {
+  DocumentFacet<Instant> getModificationDateFacet() {
     return new ModificationDateFacet();
   }
 

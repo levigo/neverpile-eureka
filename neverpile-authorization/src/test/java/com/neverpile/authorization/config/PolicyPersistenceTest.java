@@ -1,10 +1,12 @@
 package com.neverpile.authorization.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 import static org.hamcrest.CoreMatchers.containsString;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
-import java.util.Date;
 
 import org.assertj.core.api.ListAssert;
 import org.junit.Rule;
@@ -41,7 +43,7 @@ public class PolicyPersistenceTest {
 
     assertThat(policy.getDefaultEffect()).isEqualTo(Effect.DENY);
     assertThat(policy.getDescription()).contains("some policy");
-    assertThat(policy.getValidFrom()).isCloseTo(new Date(0), 0);
+    assertThat(policy.getValidFrom()).isCloseTo(Instant.ofEpochMilli(0),within(0, ChronoUnit.MILLIS));
     assertThat(policy.getRules()).size().isEqualTo(8);
     assertThat(policy.getRules().get(0).getName()).isEqualTo("Superuser-permissions");
     assertThat(policy.getRules().get(0).getEffect()).isEqualTo(Effect.ALLOW);

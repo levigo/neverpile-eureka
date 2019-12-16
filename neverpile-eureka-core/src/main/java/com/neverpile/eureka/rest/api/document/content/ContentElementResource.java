@@ -5,9 +5,9 @@ import java.lang.reflect.Type;
 import java.net.URI;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -215,8 +215,8 @@ public class ContentElementResource {
 
     return ResponseEntity.ok() //
         .lastModified(document.getDateModified() != null
-            ? document.getDateModified().getTime()
-            : document.getDateCreated().getTime()) //
+            ? document.getDateModified().toEpochMilli()
+            : document.getDateCreated().toEpochMilli()) //
         .header(HttpHeaders.CONTENT_TYPE, "multipart/mixed") //
         .body(mbb);
   }
@@ -232,15 +232,15 @@ public class ContentElementResource {
     ContentDisposition contentDisposition = ContentDisposition //
         .builder("inline") //
         .name(contentElement.getRole()).filename(contentElement.getFileName()) //
-        .creationDate(document.getDateCreated().toInstant().atZone(ZoneId.systemDefault())) //
-        .modificationDate(document.getDateModified().toInstant().atZone(ZoneId.systemDefault())) //
+        .creationDate(document.getDateCreated().atZone(ZoneId.systemDefault())) //
+        .modificationDate(document.getDateModified().atZone(ZoneId.systemDefault())) //
         .size(contentElement.getLength()) //
         .build();
 
     return ResponseEntity.ok() //
         .lastModified(document.getDateModified() != null
-            ? document.getDateModified().getTime()
-            : document.getDateCreated().getTime()) //
+            ? document.getDateModified().toEpochMilli()
+            : document.getDateCreated().toEpochMilli()) //
         .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString()) //
         .header(HttpHeaders.CONTENT_TYPE, contentElement.getType().toString()) //
         .header(HttpHeaders.CONTENT_LENGTH, Long.toString(contentElement.getLength())) //
@@ -289,7 +289,7 @@ public class ContentElementResource {
     return ResponseEntity//
         .created(URI.create(created.getLink(IanaLinkRelations.SELF)
             .orElseThrow(() -> new RuntimeException("self rel not populated")).getHref())) //
-        .lastModified(created.getFacetData(mdFacet).orElse(new Date()).getTime()) //
+        .lastModified(created.getFacetData(mdFacet).orElse(Instant.now()).toEpochMilli()) //
         .body(created);
   }
 

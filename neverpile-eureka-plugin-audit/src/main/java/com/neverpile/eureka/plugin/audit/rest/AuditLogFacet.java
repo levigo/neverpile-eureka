@@ -1,6 +1,6 @@
 package com.neverpile.eureka.plugin.audit.rest;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -74,7 +74,7 @@ public class AuditLogFacet implements DocumentFacet<List<AuditEventDto>> {
 
   private AuditEvent createAuditEvent(final Type type, String documentId) {
     AuditEvent eventDto = new AuditEvent();
-    Date timestamp = new Date();
+    Instant timestamp = Instant.now();
     eventDto.setTimestamp(timestamp);
     eventDto.setType(type);
     eventDto.setAuditId(idGenerationStrategy.createAuditId(timestamp, documentId));

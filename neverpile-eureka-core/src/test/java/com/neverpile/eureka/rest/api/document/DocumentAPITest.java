@@ -14,9 +14,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Date;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -144,7 +144,7 @@ public class DocumentAPITest extends AbstractRestAssuredTest {
 
   @Test
   public void testThat_documentCanBeRetrievedAsJSON() throws Exception {
-    Date then = new Date();
+    Instant then = Instant.now();
 
     Document doc = createTestDocumentWithContent();
 
@@ -194,7 +194,7 @@ public class DocumentAPITest extends AbstractRestAssuredTest {
     // @formatter:on
 
     // verify returned document
-    Date now = new Date();
+    Instant now = Instant.now();
     assertThat(returnedDocument.getDocumentId(), equalTo(D));
     assertThat(returnedDocument.getDateCreated(), allOf(greaterThanOrEqualTo(then), lessThanOrEqualTo(now)));
 

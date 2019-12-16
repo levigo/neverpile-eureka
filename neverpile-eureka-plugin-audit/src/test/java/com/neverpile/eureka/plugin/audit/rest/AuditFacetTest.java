@@ -9,8 +9,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.when;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -85,7 +85,7 @@ public class AuditFacetTest extends AbstractRestAssuredTest {
     doc.setDocumentId(D);
 
     AuditEvent event = new AuditEvent();
-    event.setTimestamp(new Date());
+    event.setTimestamp(Instant.now());
     event.setUserID("HarryHirsch");
     event.setDescription("Unit Test");
     event.setType(Type.CREATE);
@@ -142,7 +142,7 @@ public class AuditFacetTest extends AbstractRestAssuredTest {
   @Test
   public void testThat_retrievedDocumentContainsAuditLog() throws Exception {
     AuditEvent event = new AuditEvent();
-    event.setTimestamp(new Date(12345678L));
+    event.setTimestamp(Instant.ofEpochMilli(12345678L));
     event.setUserID("HarryHirsch");
     event.setDescription("Unit Test");
     event.setType(Type.CREATE);
@@ -182,7 +182,7 @@ public class AuditFacetTest extends AbstractRestAssuredTest {
   @Test
   public void testThat_auditLogCanBeRetrieved() throws Exception {
     AuditEvent event = new AuditEvent();
-    event.setTimestamp(new Date(12345678L));
+    event.setTimestamp(Instant.ofEpochMilli(12345678L));
     event.setUserID("HarryHirsch");
     event.setDescription("Unit Test");
     event.setType(Type.CREATE);
@@ -218,7 +218,7 @@ public class AuditFacetTest extends AbstractRestAssuredTest {
   @Test
   public void testThat_auditLogCanBeAppendedTo() throws Exception {
     AuditEvent event = new AuditEvent();
-    event.setTimestamp(new Date(12345979L));
+    event.setTimestamp(Instant.ofEpochMilli(12345979L));
     event.setUserID("replaced by principal!");
     event.setDescription("Unit Test");
     event.setType(Type.UPDATE);
@@ -267,7 +267,7 @@ public class AuditFacetTest extends AbstractRestAssuredTest {
   @Test
   public void testThat_onlySelectedFacetIsReturned() throws Exception {
     AuditEvent event = new AuditEvent();
-    event.setTimestamp(new Date(12345678L));
+    event.setTimestamp(Instant.ofEpochMilli(12345678L));
     event.setUserID("HarryHirsch");
     event.setDescription("Unit Test");
     event.setType(Type.CREATE);

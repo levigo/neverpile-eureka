@@ -1,7 +1,8 @@
 package com.neverpile.eureka.plugin.audit.verification.impl;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 
@@ -10,11 +11,11 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.neverpile.eureka.tasks.TaskQueue;
-import com.neverpile.eureka.tasks.DistributedPersistentQueueType;
 import com.neverpile.eureka.plugin.audit.service.AuditEvent;
 import com.neverpile.eureka.plugin.audit.verification.HashStrategyService;
 import com.neverpile.eureka.plugin.audit.verification.VerificationService;
+import com.neverpile.eureka.tasks.DistributedPersistentQueueType;
+import com.neverpile.eureka.tasks.TaskQueue;
 import com.neverpile.eureka.tx.lock.ClusterLockFactory;
 
 @Service
@@ -75,7 +76,7 @@ public class AggregationService implements VerificationService {
         // Distinguish Events via age.
         ArrayList<AuditEvent> readyToAggregate = new ArrayList<>();
         for (TaskQueue.ProcessElement<AuditEvent> auditElement : auditBlockList) {
-          if (auditElement.getValue().getTimestamp().before(new Date(System.currentTimeMillis() - auditTimeBuffer))) {
+          if (auditElement.getValue().getTimestamp().isBefore(Instant.now().minus(auditTimeBuffer, ChronoUnit.MILLIS))) {
             // Events old enough for aggregation.
             readyToAggregate.add(auditElement.getValue());
           } else {

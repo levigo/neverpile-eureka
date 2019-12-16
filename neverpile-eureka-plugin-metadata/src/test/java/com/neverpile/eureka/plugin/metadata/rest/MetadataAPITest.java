@@ -11,7 +11,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.when;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.Optional;
 
 import javax.ws.rs.core.MediaType;
@@ -75,7 +75,7 @@ public class MetadataAPITest extends AbstractRestAssuredTest {
 
   @Test
   public void testThat_documentCreationWithMetadataWorks() throws JsonProcessingException {
-    Date now = new Date();
+    Instant now = Instant.now();
     BDDMockito.given(mockDocumentService.createDocument(notNull())).willAnswer(i -> {
       Document d = i.getArgument(0);
       d.setDateCreated(now);
@@ -154,8 +154,8 @@ public class MetadataAPITest extends AbstractRestAssuredTest {
     metadataElement.setContent(objectMapper.writeValueAsBytes(metadataJson));
     metadataElement.setContentType(MediaType.APPLICATION_JSON_TYPE);
     metadataElement.setSchema("mySchema");
-    metadataElement.setDateCreated(new Date());
-    metadataElement.setDateModified(new Date());
+    metadataElement.setDateCreated(Instant.now());
+    metadataElement.setDateModified(Instant.now());
 
     MetadataDto metadata = MetadataDto.with("foo", metadataElement);
     return metadata;
@@ -199,7 +199,7 @@ public class MetadataAPITest extends AbstractRestAssuredTest {
   public void testThat_replacementOfAllDocumentMetadataWorks() throws JsonProcessingException {
     withTestDocumentAndMetadata();
 
-    Date now = new Date();
+    Instant now = Instant.now();
     ArgumentCaptor<Metadata> storedMetadataC = ArgumentCaptor.forClass(Metadata.class);
     BDDMockito.given(mockMetadataService.store(any(), storedMetadataC.capture())).willAnswer(i -> {
       Metadata m = i.getArgument(1);
@@ -307,7 +307,7 @@ public class MetadataAPITest extends AbstractRestAssuredTest {
 
     ArgumentCaptor<Metadata> storedMetadataC = captureStoredMetadata();
 
-    Date now = new Date();
+    Instant now = Instant.now();
     MetadataElementDto metadataElement = new MetadataElementDto();
     ObjectNode metadataJson = objectMapper.createObjectNode();
     metadataJson.put("foo", "bar2");
