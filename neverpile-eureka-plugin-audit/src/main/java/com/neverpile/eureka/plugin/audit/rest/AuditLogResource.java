@@ -65,10 +65,8 @@ public class AuditLogResource {
   @PreSignedUrlEnabled
   @GetMapping()
   @Operation(summary = "Fetches a document's audit log")
-  @ApiResponse(responseCode = "200",
-      description = "Audit log found")
-  @ApiResponse(responseCode = "404",
-      description = "Document not found")
+  @ApiResponse(responseCode = "200", description = "Audit log found")
+  @ApiResponse(responseCode = "404", description = "Document not found")
   @Timed(description = "get audit log",
       extraTags = {"operation", "retrieve", "target", "audit-log"
       },

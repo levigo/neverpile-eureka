@@ -101,5 +101,9 @@ public class AuditLogFacet implements DocumentFacet<List<AuditEventDto>> {
     );
   }
 
+  @Override
+  public String toString() {
+    return "DocumentFacet{" + "name=" + getName() + '}';
+  }
 }
 
