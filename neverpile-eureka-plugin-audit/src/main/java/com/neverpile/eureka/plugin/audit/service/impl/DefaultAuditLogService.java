@@ -124,7 +124,7 @@ public class DefaultAuditLogService implements AuditLogService {
 
   @Override
   public boolean completeVerification() {
-    return false; // TODO: implement
+    return verificationService.completeVerification();
   }
 
   private List<AuditEvent> getAuditEventsFromLog(String auditId) {

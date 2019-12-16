@@ -185,7 +185,7 @@ public class ChunkedAuditLogService implements AuditLogService {
 
   @Override
   public boolean completeVerification() {
-    return false; // TODO: implement
+    return verificationService.completeVerification();
   }
 
   private List<AuditEvent> getAuditEventsFromBlock(ObjectName auditBlockObjectName) {
