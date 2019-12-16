@@ -90,7 +90,7 @@ public class AsynchronousIndexMaintenanceService implements IndexMaintenanceServ
   }
 
   @PostConstruct
-  public void init() throws IOException {
+  public void init() {
     ensureIndexUpToDateOrRebuildInProgress();
 
     indexMaintenanceQueue.registerListener(new ElasticQueueUpdateListener());
@@ -156,9 +156,8 @@ public class AsynchronousIndexMaintenanceService implements IndexMaintenanceServ
       LOGGER.info("New index created.");
 
       Stream<String> stream = documentService.getAllDocumentIds();
-      long enqueuedElements = stream
-          .filter(Objects::nonNull)
-          .peek(documentId -> indexMaintenanceQueue.putInQueue(documentId, EventType.CREATE)).count();
+      long enqueuedElements = stream.filter(Objects::nonNull).peek(
+          documentId -> indexMaintenanceQueue.putInQueue(documentId, EventType.CREATE)).count();
       LOGGER.info("Index rebuild enqueued {} Elements.", enqueuedElements);
 
       if (enqueuedElements < 1) {
@@ -188,11 +187,11 @@ public class AsynchronousIndexMaintenanceService implements IndexMaintenanceServ
     }
   }
 
-  private void ensureIndexUpToDateOrRebuildInProgress() throws IOException {
-    Schema schema = index.createIndexSchema();
-    JsonNode expectedMapping = index.schemaToMapping(schema);
-
+  private void ensureIndexUpToDateOrRebuildInProgress() {
     try {
+      Schema schema = index.createIndexSchema();
+      JsonNode expectedMapping = index.schemaToMapping(schema);
+
       JsonNode currentReadMapping = index.getCurrentMapping(ElasticsearchDocumentIndex.INDEX_ALIAS_READ);
 
       if (expectedMapping.equals(currentReadMapping)) {
