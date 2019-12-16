@@ -93,7 +93,7 @@ public class SimpleMutablePolicyRepositoryTest {
   ObjectMapper objectMapper;
 
 
-  String policyPattern = "{\"validFrom\" : \"2018-01-01\",\"description\": \"%s\",\"default_effect\": \"DENY\",\"rules\": []}";
+  String policyPattern = "{\"validFrom\" : \"2018-01-01T00:00:00.000Z\",\"description\": \"%s\",\"default_effect\": \"DENY\",\"rules\": []}";
 
   private Instant now;
 

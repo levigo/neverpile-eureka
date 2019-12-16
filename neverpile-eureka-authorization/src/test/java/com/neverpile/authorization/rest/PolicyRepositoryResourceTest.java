@@ -136,6 +136,14 @@ public class PolicyRepositoryResourceTest extends AbstractRestAssuredTest {
     inOneHour = now.plus(1, HOURS);
     threeHoursAgo = now.minus(3, HOURS);
     oneHourAgo = now.minus(1, HOURS);
+
+    // Fix date precision to match used date fromat:
+    now = Instant.parse(formatter.format(now));
+    oneMinuteAgo = Instant.parse(formatter.format(oneMinuteAgo));
+    inOneHour = Instant.parse(formatter.format(inOneHour));
+    threeHoursAgo = Instant.parse(formatter.format(threeHoursAgo));
+    oneHourAgo = Instant.parse(formatter.format(oneHourAgo));
+
   }
 
   @Test
