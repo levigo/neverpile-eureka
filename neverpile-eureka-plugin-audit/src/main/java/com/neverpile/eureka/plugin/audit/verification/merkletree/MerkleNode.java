@@ -18,6 +18,7 @@ public class MerkleNode {
    * Leaf node constructor.
    *
    * @param hash leaf object hash
+   * @param index leaf index in tree
    */
   public MerkleNode(AuditHash hash, long index) {
     this.depth = 0;
@@ -30,6 +31,7 @@ public class MerkleNode {
    *
    * @param leftChild  may not be null
    * @param rightChild my be null
+   * @param depth in tree (0 is root)
    */
   MerkleNode(MerkleNode leftChild, MerkleNode rightChild, int depth) {
     if (leftChild == null) {
