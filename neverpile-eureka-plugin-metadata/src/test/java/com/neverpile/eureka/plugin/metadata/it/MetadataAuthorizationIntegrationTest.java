@@ -1,8 +1,10 @@
 package com.neverpile.eureka.plugin.metadata.it;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.given;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;

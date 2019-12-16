@@ -1,11 +1,15 @@
 package com.neverpile.eureka.plugin.metadata.rest;
 
-import static io.restassured.matcher.RestAssuredMatchers.*;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
+import static io.restassured.matcher.RestAssuredMatchers.equalToPath;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.Mockito.when;
 
 import java.util.Date;
 import java.util.Optional;

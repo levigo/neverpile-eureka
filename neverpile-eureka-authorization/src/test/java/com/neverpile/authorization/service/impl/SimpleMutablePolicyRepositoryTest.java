@@ -1,13 +1,20 @@
 package com.neverpile.authorization.service.impl;
 
-import static com.neverpile.authorization.service.impl.SimpleMutablePolicyRepository.*;
-import static com.neverpile.eureka.api.ObjectStoreService.*;
-import static java.nio.charset.StandardCharsets.*;
-import static java.time.Instant.*;
-import static java.time.temporal.ChronoUnit.*;
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.*;
+import static com.neverpile.authorization.service.impl.SimpleMutablePolicyRepository.EXPIRED_POLICY_REPO_PREFIX;
+import static com.neverpile.authorization.service.impl.SimpleMutablePolicyRepository.OBJECT_NAME_FORMATTER;
+import static com.neverpile.authorization.service.impl.SimpleMutablePolicyRepository.POLICY_REPO_PREFIX;
+import static com.neverpile.eureka.api.ObjectStoreService.NEW_VERSION;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.time.Instant.now;
+import static java.time.temporal.ChronoUnit.DAYS;
+import static java.time.temporal.ChronoUnit.HOURS;
+import static java.time.temporal.ChronoUnit.MINUTES;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.verify;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.time.Instant;
@@ -31,7 +38,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.neverpile.authorization.policy.AccessPolicy;
 import com.neverpile.authorization.policy.Effect;
-import com.neverpile.authorization.service.impl.SimpleMutablePolicyRepository;
 import com.neverpile.eureka.api.ObjectStoreService;
 import com.neverpile.eureka.model.ObjectName;
 
