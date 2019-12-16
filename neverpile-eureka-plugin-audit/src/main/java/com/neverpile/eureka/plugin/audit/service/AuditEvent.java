@@ -52,7 +52,7 @@ public class AuditEvent extends EncryptableElement implements Serializable {
   public void setDescription(final String description) {
     this.description = description;
   }
-  
+
   public String getAuditId() {
     return auditId;
   }
@@ -100,5 +100,5 @@ public class AuditEvent extends EncryptableElement implements Serializable {
   public void setRequestPath(String requestPath) {
     this.requestPath = requestPath;
   }
-  
+
 }

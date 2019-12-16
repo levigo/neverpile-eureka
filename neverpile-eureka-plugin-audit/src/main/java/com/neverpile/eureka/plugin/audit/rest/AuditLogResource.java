@@ -44,9 +44,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
-@RequestMapping(path = "/api/v1/documents/{documentId}/audit", produces = {
-    MediaType.APPLICATION_JSON_VALUE
-})
+@RequestMapping(path = "/api/v1/documents/{documentId}/audit",
+    produces = {MediaType.APPLICATION_JSON_VALUE
+    })
 @ConditionalOnBean(AuditLogFacet.class)
 @OpenAPIDefinition(tags = @Tag(name = "Audit"))
 public class AuditLogResource {
@@ -65,11 +65,14 @@ public class AuditLogResource {
   @PreSignedUrlEnabled
   @GetMapping()
   @Operation(summary = "Fetches a document's audit log")
-  @ApiResponse(responseCode = "200", description = "Audit log found")
-  @ApiResponse(responseCode = "404", description = "Document not found")
-  @Timed(description = "get audit log", extraTags = {
-      "operation", "retrieve", "target", "audit-log"
-  }, value = "eureka.audit.log.get")
+  @ApiResponse(responseCode = "200",
+      description = "Audit log found")
+  @ApiResponse(responseCode = "404",
+      description = "Document not found")
+  @Timed(description = "get audit log",
+      extraTags = {"operation", "retrieve", "target", "audit-log"
+      },
+      value = "eureka.audit.log.get")
   public ResponseEntity<List<AuditEventDto>> getDocumentLog(
       @Parameter(description = "The ID of the document") @PathVariable("documentId") final String documentId) {
 
@@ -99,9 +102,10 @@ public class AuditLogResource {
       @ApiResponse(responseCode = "200", description = "Audit event found"),
       @ApiResponse(responseCode = "404", description = "AuditEvent not found")
   })
-  @Timed(description = "get audit event", extraTags = {
-      "operation", "retrieve", "target", "audit-event"
-  }, value = "eureka.audit.event.get")
+  @Timed(description = "get audit event",
+      extraTags = {"operation", "retrieve", "target", "audit-event"
+      },
+      value = "eureka.audit.event.get")
   public ResponseEntity<AuditEventDto> getEvent(
       @Parameter(description = "The ID of the audit event to be fetched") @PathVariable("auditId") final String auditId) {
     AuditEvent auditEvent = auditLogService.getEvent(auditId);
@@ -122,7 +126,8 @@ public class AuditLogResource {
       @ApiResponse(responseCode = "200", description = "Audit event found"),
       @ApiResponse(responseCode = "404", description = "Audit event not found")
   })
-  @Timed(description = "verify audit event", extraTags = {"operation", "verify", "target", "audit-event"},
+  @Timed(description = "verify audit event",
+      extraTags = {"operation", "verify", "target", "audit-event"},
       value = "eureka.audit.event.verify")
   public ResponseEntity<String> verifyEvent(
       @Parameter(description = "The ID of the audit event to be verified") @PathVariable("auditId") final String auditId) {

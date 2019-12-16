@@ -26,12 +26,11 @@ import com.neverpile.eureka.plugin.audit.verification.signature.SimpleDigSigVer;
 public class TimingIT {
 
 
-
   @Test
   public void testSignatureOfAuditEvents()
       throws NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException, SignatureException {
 
-    Stack<byte[]> testData= new Stack<>();
+    Stack<byte[]> testData = new Stack<>();
     SimpleDigSigGen simpleDigSigGen = new SimpleDigSigGen();
     Random rnd = new Random();
     for (int i = 0; i < 10/*0000*/; i++) {
@@ -44,7 +43,9 @@ public class TimingIT {
     }
     Instant end = Instant.now();
     Duration duration = Duration.between(start, end).dividedBy(100000);
-    System.out.println(duration.getSeconds()+ "s "+ duration.getNano() + "ns -> " + ((duration.getSeconds() * 1000.0f) + (duration.getNano() / 1000000.0f)) + "ms" );
+    System.out.println(
+        duration.getSeconds() + "s " + duration.getNano() + "ns -> " + ((duration.getSeconds() * 1000.0f) + (
+            duration.getNano() / 1000000.0f)) + "ms");
   }
 
   @Test
@@ -52,7 +53,7 @@ public class TimingIT {
       throws NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException, SignatureException,
       InvalidKeySpecException {
 
-    Stack<byte[]> testData= new Stack<>();
+    Stack<byte[]> testData = new Stack<>();
     Stack<byte[]> signatures = new Stack<>();
     SimpleDigSigGen simpleDigSigGen = new SimpleDigSigGen();
     SimpleDigSigVer simpleDigSigVer = new SimpleDigSigVer();
@@ -71,7 +72,9 @@ public class TimingIT {
     Instant end = Instant.now();
 
     Duration duration = Duration.between(start, end).dividedBy(100000);
-    System.out.println(duration.getSeconds()+ "s "+ duration.getNano() + "ns -> " + ((duration.getSeconds() * 1000.0f) + (duration.getNano() / 1000000.0f)) + "ms");
+    System.out.println(
+        duration.getSeconds() + "s " + duration.getNano() + "ns -> " + ((duration.getSeconds() * 1000.0f) + (
+            duration.getNano() / 1000000.0f)) + "ms");
   }
 
   private byte[] getRandomAuditEvent(Random rnd) {

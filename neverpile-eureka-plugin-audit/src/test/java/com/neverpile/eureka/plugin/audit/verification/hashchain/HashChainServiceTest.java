@@ -28,11 +28,7 @@ public class HashChainServiceTest extends AbstractHashStrategyServiceTest {
 
     proof.setAuditId(ae.getAuditId());
     proof.setParentId(parent.getAuditId());
-    proof.setLinkHash(
-        new AuditHash(
-            parent.getLinkHash(), new AuditHash(ae)
-        )
-    );
+    proof.setLinkHash(new AuditHash(parent.getLinkHash(), new AuditHash(ae)));
 
     TestProofSet testProofSet = new TestProofSet();
     testProofSet.auditEvent = ae;

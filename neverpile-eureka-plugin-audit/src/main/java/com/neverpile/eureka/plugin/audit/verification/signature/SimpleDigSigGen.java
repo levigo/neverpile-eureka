@@ -33,11 +33,11 @@ public class SimpleDigSigGen implements DigSigGen {
 
 
   public SimpleDigSigGen() throws NoSuchProviderException, NoSuchAlgorithmException, InvalidKeyException {
-    if(null != publicKeyEncoded && null != privateKeyEncoded) {
+    if (null != publicKeyEncoded && null != privateKeyEncoded) {
       pub = getPubKey(publicKeyEncoded);
       priv = getPrivKey(privateKeyEncoded);
     }
-    if(null == pub || null == priv){
+    if (null == pub || null == priv) {
       KeyPair pair = getKeyPair();
 
       priv = pair.getPrivate();
@@ -72,29 +72,27 @@ public class SimpleDigSigGen implements DigSigGen {
     return keyGen.generateKeyPair();
   }
 
-  private PublicKey getPubKey(String key){
-    try{
+  private PublicKey getPubKey(String key) {
+    try {
       byte[] byteKey = key.getBytes();
       X509EncodedKeySpec X509publicKey = new X509EncodedKeySpec(byteKey);
       KeyFactory kf = KeyFactory.getInstance("DSA", "SUN");
 
       return kf.generatePublic(X509publicKey);
-    }
-    catch(Exception e){
+    } catch (Exception e) {
       e.printStackTrace();
     }
     return null;
   }
 
-  private PrivateKey getPrivKey(String key){
-    try{
+  private PrivateKey getPrivKey(String key) {
+    try {
       byte[] byteKey = key.getBytes();
       X509EncodedKeySpec X509publicKey = new X509EncodedKeySpec(byteKey);
       KeyFactory kf = KeyFactory.getInstance("DSA", "SUN");
 
       return kf.generatePrivate(X509publicKey);
-    }
-    catch(Exception e){
+    } catch (Exception e) {
       e.printStackTrace();
     }
     return null;

@@ -13,11 +13,11 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.neverpile.eureka.plugin.audit.service.AuditEvent;
-import com.neverpile.eureka.plugin.audit.service.TimeBasedAuditIdGenerationStrategy;
-import com.neverpile.eureka.plugin.audit.service.AuditLogService;
-import com.neverpile.eureka.plugin.audit.service.AuditEvent.Type;
 import com.neverpile.eureka.model.Document;
+import com.neverpile.eureka.plugin.audit.service.AuditEvent;
+import com.neverpile.eureka.plugin.audit.service.AuditEvent.Type;
+import com.neverpile.eureka.plugin.audit.service.AuditLogService;
+import com.neverpile.eureka.plugin.audit.service.TimeBasedAuditIdGenerationStrategy;
 import com.neverpile.eureka.rest.api.document.DocumentDto;
 import com.neverpile.eureka.rest.api.document.DocumentFacet;
 import com.neverpile.eureka.rest.api.hateoas.Links;
@@ -43,7 +43,7 @@ public class AuditLogFacet implements DocumentFacet<List<AuditEventDto>> {
   public boolean includeByDefault() {
     return false; // the audit log is expensive and rarely examined
   }
-  
+
   @Override
   public JavaType getValueType(final TypeFactory f) {
     return f.constructCollectionLikeType(List.class, AuditEventDto.class);
@@ -92,12 +92,12 @@ public class AuditLogFacet implements DocumentFacet<List<AuditEventDto>> {
 
   private void attachAuditLog(final Document document, final DocumentDto dto) {
     dto.setFacet(getName(), auditLogService.getEventLog(document.getDocumentId()).stream().map(audit -> {
-      AuditEventDto auditDto = modelMapper.map(audit, AuditEventDto.class);
-      
-      auditDto.add(Links.facet(document, this, audit.getAuditId()));
-      
-      return auditDto;
-    }).collect(Collectors.toList()) //
+          AuditEventDto auditDto = modelMapper.map(audit, AuditEventDto.class);
+
+          auditDto.add(Links.facet(document, this, audit.getAuditId()));
+
+          return auditDto;
+        }).collect(Collectors.toList()) //
     );
   }
 

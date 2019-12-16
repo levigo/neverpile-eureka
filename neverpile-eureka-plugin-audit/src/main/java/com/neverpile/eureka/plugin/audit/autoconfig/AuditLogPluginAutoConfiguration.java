@@ -41,14 +41,14 @@ public class AuditLogPluginAutoConfiguration {
   @Bean
   @ConditionalOnBean(value = ObjectStoreService.class)
   @ConditionalOnMissingBean
-  HashStrategyService simpleHashStrategyService(){
+  HashStrategyService simpleHashStrategyService() {
     return new HashChainService();
   }
 
   /**
    * Provide an implementation of {@link AuditLogService} which is based on a backing
    * {@link ObjectStoreService}. Back off if any other implementation is present.
-   * 
+   *
    * @return a AuditLogService implementation
    */
   @Bean

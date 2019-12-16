@@ -48,8 +48,7 @@ import io.restassured.http.ContentType;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AuditFacetTest extends AbstractRestAssuredTest {
   @TestConfiguration
-  @Import({
-      AuditLogFacet.class, AuditLogResource.class, SimpleContentElementService.class, ContentElementFacet.class,
+  @Import({AuditLogFacet.class, AuditLogResource.class, SimpleContentElementService.class, ContentElementFacet.class,
       ContentElementResource.class
   })
   public static class ServiceConfig {

@@ -133,7 +133,7 @@ public class TreeTest {
   }
 
   @Test
-  public void testThat_TreeFromProofProducesEqualResultsToFullTree(){
+  public void testThat_TreeFromProofProducesEqualResultsToFullTree() {
     MerkleTree mt1 = getMerkleTreeWith7Nodes();
     MerkleTree mt2 = new MerkleTree();
     mt1.buildTreeFromLeaves();
@@ -156,7 +156,7 @@ public class TreeTest {
     assertEquals(finalProof1.size(), finalProof2.size());
 
     for (int i = 0; i < finalProof1.size(); i++) {
-      assertEquals(finalProof1.get(i).getIndex(),finalProof2.get(i).getIndex());
+      assertEquals(finalProof1.get(i).getIndex(), finalProof2.get(i).getIndex());
       assertEquals(finalProof1.get(i).getDepth(), finalProof2.get(i).getDepth());
       assertArrayEquals(finalProof1.get(i).getNodeHash().getHash(), finalProof2.get(i).getNodeHash().getHash());
     }

@@ -21,7 +21,7 @@ import com.neverpile.eureka.plugin.audit.verification.DigSigGen;
 import com.neverpile.eureka.plugin.audit.verification.DigSigVer;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes=Config.class)
+@SpringBootTest(classes = Config.class)
 public class DigSigTest {
 
   @Autowired
@@ -54,7 +54,7 @@ public class DigSigTest {
     byte[] tamperKey = new byte[dsg.getPubKey().length];
     System.arraycopy(dsg.getPubKey(), 0, tamperKey, 0, dsg.getPubKey().length);
     // Modify a byte by one
-    ++tamperKey[dsg.getPubKey().length-1];
+    ++tamperKey[dsg.getPubKey().length - 1];
 
     boolean v = dsv.verDigSig(tamperKey, sig, "foo".getBytes());
     assertFalse(v);
@@ -67,7 +67,7 @@ public class DigSigTest {
     byte[] tamperSig = new byte[sig.length];
     System.arraycopy(sig, 0, tamperSig, 0, sig.length);
     // Modify a byte by one
-    ++tamperSig[sig.length-1];
+    ++tamperSig[sig.length - 1];
 
     boolean v = dsv.verDigSig(dsg.getPubKey(), tamperSig, "foo".getBytes());
     assertFalse(v);

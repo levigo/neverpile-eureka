@@ -62,7 +62,7 @@ public class HashChainService implements HashStrategyService {
     }
     initCurrentProof();
     // Insert all new events as link into chain
-    ProofChainLink nextProofLink= null;
+    ProofChainLink nextProofLink = null;
 
     for (AuditEvent auditEvent : newLogEvents) {
       nextProofLink = currentProof.alterAndGet(input -> {
