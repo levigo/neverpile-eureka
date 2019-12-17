@@ -150,7 +150,7 @@ public class IgniteTaskQueue<T> implements TaskQueue<T> {
 
     qry.setLocalListener((evts) -> evts.forEach(e -> {
       if (e.getEventType() == EventType.CREATED || e.getEventType() == EventType.UPDATED)
-        notifyListeners(e.getKey(), e.getValue());
+        notifyListeners();
     }));
 
     qry.setRemoteFilterFactory(() -> new RemoteEventFilter<T>());
@@ -158,10 +158,10 @@ public class IgniteTaskQueue<T> implements TaskQueue<T> {
     continuousQuery = queueCache.query(qry);
 
     // deal with initial results
-    continuousQuery.forEach(e -> notifyListeners(e.getKey(), e.getValue()));
+    continuousQuery.forEach(e -> notifyListeners());
   }
 
-  private void notifyListeners(final String key, final CacheData<T> value) {
+  private void notifyListeners() {
     for (QueueListener<T> listener : listeners) {
       notificationExecutor.submit(() -> listener.notifyUpdate());
     }
