@@ -325,7 +325,7 @@ public class DefaultMultiversioningDocumentServiceTest {
   public void testThat_documentExistsIsCorrect() throws IOException {
     Document doc = anEmptyDocument();
 
-    ObjectName name = mockExistingVersion(doc);
+    mockExistingVersion(doc);
 
     assertThat(documentService.documentExists(D), equalTo(true));
     assertThat(documentService.documentExists("someNonexistingId"), equalTo(false));

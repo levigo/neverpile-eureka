@@ -32,6 +32,7 @@ public class CassandraObjectData {
 
   public CassandraObjectData(final String objectName, final int version) {
     this.objectName = objectName;
+    this.version = version;
   }
 
   public CassandraObjectData(final String objectName) {
