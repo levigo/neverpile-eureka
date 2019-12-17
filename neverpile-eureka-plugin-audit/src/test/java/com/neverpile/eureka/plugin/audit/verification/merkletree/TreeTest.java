@@ -55,8 +55,6 @@ public class TreeTest {
     AuditHash mh9 = new AuditHash("bar3".getBytes());
     MerkleNode mnLeaf9 = new MerkleNode(mh9, 8);
 
-    MerkleTree.MerkleTreeVaildator mtv = new MerkleTree.MerkleTreeVaildator();
-
     mt1.buildTreeFromLeaves();
 
     assertEquals(3, mt1.getProofNodes().size());

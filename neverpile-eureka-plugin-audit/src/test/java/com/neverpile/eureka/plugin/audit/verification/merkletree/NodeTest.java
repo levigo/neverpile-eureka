@@ -20,7 +20,7 @@ public class NodeTest {
     AuditHash mh = new AuditHash("foo".getBytes());
     MerkleNode mnLeaf = new MerkleNode(mh, 0);
 
-    MerkleNode mnRoot = new MerkleNode(mnLeaf, null, 0);
+    new MerkleNode(mnLeaf, null, 0);
 
     assertTrue(mnLeaf.isLeaf());
     assertFalse(mnLeaf.isRoot());

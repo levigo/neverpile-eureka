@@ -246,8 +246,7 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
    */
   @Test
   public void testThat_documentCanBeCreatedUsingMultipartWithMissingContentTypeOnDOCPart() throws Exception {
-    Date then = new Date();
-    
+
     // @formatter:off
     BDDMockito
       .given(mockDocumentService.createDocument(any()))
