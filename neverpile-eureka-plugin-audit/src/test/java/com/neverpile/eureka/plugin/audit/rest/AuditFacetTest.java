@@ -171,7 +171,7 @@ public class AuditFacetTest extends AbstractRestAssuredTest {
         .statusCode(200)
         .contentType(ContentType.JSON)
         .body("audit.size()", equalTo(1))
-        .body("audit[0].timestamp", equalTo("1970-01-01T03:25:45.678+0000"))
+        .body("audit[0].timestamp", equalTo("1970-01-01T03:25:45.678Z"))
         .body("audit[0].userID", equalTo("HarryHirsch"))
         .body("audit[0].description", equalTo("Unit Test"))
         .body("audit[0].type", equalTo("CREATE"))
@@ -208,7 +208,7 @@ public class AuditFacetTest extends AbstractRestAssuredTest {
         .statusCode(200)
         .contentType(ContentType.JSON)
         .body("size()", equalTo(1))
-        .body("[0].timestamp", equalTo("1970-01-01T03:25:45.678+0000"))
+        .body("[0].timestamp", equalTo("1970-01-01T03:25:45.678Z"))
         .body("[0].userID", equalTo("HarryHirsch"))
         .body("[0].description", equalTo("Unit Test"))
         .body("[0].type", equalTo("CREATE"));
@@ -250,7 +250,7 @@ public class AuditFacetTest extends AbstractRestAssuredTest {
         .log().all()
         .statusCode(200)
         .contentType(ContentType.JSON)
-        .body("timestamp", equalTo("1970-01-01T03:25:45.979+0000"))
+        .body("timestamp", equalTo("1970-01-01T03:25:45.979Z"))
         .body("userID", equalTo("user"))
         .body("description", equalTo("Unit Test"))
         .body("type", equalTo("UPDATE"));
