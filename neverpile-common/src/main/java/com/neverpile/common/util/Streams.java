@@ -15,7 +15,7 @@ public class Streams {
   /**
    * Create a stream from an iterator.
    * 
-   * @param <T>
+   * @param <T> Type of items to be streamed.
    * @param i the iterator
    * @return a stream
    */
