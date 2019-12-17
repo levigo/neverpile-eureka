@@ -20,11 +20,46 @@
       <artifactId>ignite-core</artifactId>
       <version>${ignite.version}</version>
     </dependency>
+
     <dependency>
       <groupId>org.apache.ignite</groupId>
       <artifactId>ignite-spring</artifactId>
       <version>${ignite.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.h2database</groupId>
+          <artifactId>h2</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-jdbc</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.ignite</groupId>
+          <artifactId>ignite-indexing</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
+    
+    <dependency>
+      <groupId>org.apache.ignite</groupId>
+      <artifactId>ignite-cloud</artifactId>
+      <version>${ignite.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.ignite</groupId>
+      <artifactId>ignite-aws</artifactId>
+      <version>${ignite.version}</version>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>com.amazonaws</groupId>
+          <artifactId>aws-java-sdk-s3</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
     <dependency>
       <groupId>com.neverpile.eureka</groupId>
       <artifactId>neverpile-eureka-core</artifactId>
@@ -39,5 +74,34 @@
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-jta-atomikos</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.amazonaws</groupId>
+        <artifactId>aws-java-sdk-core</artifactId>
+        <version>${aws-s3.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.amazonaws</groupId>
+        <artifactId>aws-java-sdk-ec2</artifactId>
+        <version>${aws-s3.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.amazonaws</groupId>
+        <artifactId>aws-java-sdk-elasticloadbalancing</artifactId>
+        <version>${aws-s3.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.amazonaws</groupId>
+        <artifactId>aws-java-sdk-kms</artifactId>
+        <version>${aws-s3.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 </project>

@@ -19,9 +19,12 @@ import org.apache.ignite.spi.discovery.tcp.ipfinder.TcpDiscoveryIpFinderAdapter;
 import org.apache.ignite.spi.discovery.tcp.ipfinder.multicast.TcpDiscoveryMulticastIpFinder;
 import org.apache.ignite.spi.discovery.tcp.ipfinder.sharedfs.TcpDiscoverySharedFsIpFinder;
 import org.apache.ignite.spi.discovery.tcp.ipfinder.vm.TcpDiscoveryVmIpFinder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InjectionPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -38,9 +41,11 @@ import com.neverpile.eureka.tx.lock.ClusterLockFactory;
 import com.neverpile.eureka.tx.wal.WriteAheadLog;
 
 @Configuration
-@ConditionalOnProperty(name = "neverpile-eureka.ignite.enabled", havingValue = "true", matchIfMissing = false)
 @ComponentScan
+@ConditionalOnProperty(name = "neverpile-eureka.ignite.enabled", havingValue = "true", matchIfMissing = false)
 public class NeverpileIgniteAutoConfiguration {
+  private static final Logger LOGGER = LoggerFactory.getLogger(NeverpileIgniteAutoConfiguration.class);
+  
   @Value("${neverpile-eureka.ignite.configuration.work-directory:./ignite}")
   private String workDirectory;
 
@@ -67,8 +72,7 @@ public class NeverpileIgniteAutoConfiguration {
   IgniteConfigurationProperties config;
   
   @Bean
-  @ConfigurationProperties(prefix = "neverpile-eureka.ignite")
-  Ignite igniteInstance() {
+  public Ignite igniteInstance(final TcpDiscoveryIpFinder finder) {
     IgniteSpringBean i = new IgniteInstanceConfiguration();
 
     IgniteConfiguration configuration = new IgniteConfiguration() {
@@ -85,29 +89,9 @@ public class NeverpileIgniteAutoConfiguration {
     communicationSpi.setConnectTimeout(1000);
     configuration.setCommunicationSpi(communicationSpi);
     
-    TcpDiscoverySpi discoSpi = new TcpDiscoverySpi();
-    configuration.setDiscoverySpi(discoSpi);
-    TcpDiscoveryIpFinder finder;
-    switch (config.getDiscovery()){
-      default :
-      case NONE :
-        finder = new TcpDiscoveryNOPFinder();
-        break;
-
-      case MULTICAST :
-        finder = new TcpDiscoveryMulticastIpFinder();
-        break;
-
-      case STATIC :
-        finder = new TcpDiscoveryVmIpFinder();
-        break;
-
-      case FILESYSTEM :
-        finder = new TcpDiscoverySharedFsIpFinder();
-        break;
-    }
-
-    ((TcpDiscoverySpi)configuration.getDiscoverySpi()).setIpFinder(finder);
+    TcpDiscoverySpi discovery = getDiscovery(finder);
+    
+    configuration.setDiscoverySpi(discovery);
 
     if (config.getPersistence().isEnabled()) {
       DataRegionConfiguration persistent = new DataRegionConfiguration();
@@ -129,8 +113,53 @@ public class NeverpileIgniteAutoConfiguration {
     i.configuration().setClassLoader(getClass().getClassLoader());
 
     i.configuration().setIncludeEventTypes(EventType.EVT_CACHE_OBJECT_PUT, EventType.EVT_CACHE_OBJECT_REMOVED);
+    
+    // silence noise
+    i.configuration().setMetricsLogFrequency(0);
 
     return i;
+  }
+
+  @Bean
+  @ConfigurationProperties(prefix = "neverpile-eureka.ignite.discovery")
+  @ConditionalOnMissingBean(TcpDiscoverySpi.class)
+  public TcpDiscoverySpi getDiscovery(final TcpDiscoveryIpFinder finder) {
+    TcpDiscoverySpi discovery = new TcpDiscoverySpi();
+    discovery.setIpFinder(finder);
+    return discovery;
+  }
+
+  @Bean
+  @ConfigurationProperties("neverpile-eureka.ignite.finder.filesystem")
+  @ConditionalOnProperty("neverpile-eureka.ignite.finder.filesystem.enabled")
+  public TcpDiscoverySharedFsIpFinder filesystemDiscoveryFinder() {
+    return new TcpDiscoverySharedFsIpFinder();
+  }
+
+  @Bean
+  @ConfigurationProperties("neverpile-eureka.ignite.finder.static-ip")
+  @ConditionalOnProperty("neverpile-eureka.ignite.finder.static-ip.enabled")
+  public TcpDiscoveryVmIpFinder staticIpFinder(final IgniteConfigurationProperties props) {
+    TcpDiscoveryVmIpFinder tcpDiscoveryVmIpFinder = new TcpDiscoveryVmIpFinder();
+    
+    // bind ip addresses manually, as spring doesn't correctly bind them automatically (setter/getter names differ)
+    tcpDiscoveryVmIpFinder.setAddresses(props.getFinder().getStaticIp().getAddresses());
+    
+    return tcpDiscoveryVmIpFinder;
+  }
+
+  @Bean
+  @ConditionalOnMissingBean(TcpDiscoveryIpFinder.class)
+  public TcpDiscoveryNOPFinder nopFinder() {
+    LOGGER.warn("Using NOP finder - suitable for local development use only");
+    return new TcpDiscoveryNOPFinder();
+  }
+  
+  @Bean
+  @ConfigurationProperties("neverpile-eureka.ignite.finder.multicast")
+  @ConditionalOnProperty("neverpile-eureka.ignite.finder.multicast.enabled")
+  public TcpDiscoveryMulticastIpFinder multicastIpFinder() {
+    return new TcpDiscoveryMulticastIpFinder();
   }
 
   @Bean

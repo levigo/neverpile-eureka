@@ -11,12 +11,6 @@
   <artifactId>neverpile-eureka-bridge-storage-s3</artifactId>
   <packaging>jar</packaging>
 
-  <properties>
-    <aws-s3.version>1.11.683</aws-s3.version>
-    <s3mock.version>2.1.16</s3mock.version>
-    <minio.version>4.0.2</minio.version>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>com.neverpile.eureka</groupId>
