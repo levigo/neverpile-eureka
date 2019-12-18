@@ -13,17 +13,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.neverpile.eureka.hazelcast.lock.HazelcastLockFactory;
+import com.neverpile.eureka.tx.lock.ClusterLockFactory;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = TestConfig.class, properties = {
     "neverpile.wal.ignite.auto-rollback-timeout=1", "neverpile.wal.ignite.prune-interval=1000"
 })
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-@Ignore
 public class HazelcastReadWriteLockTest {
   @Autowired
-  HazelcastLockFactory rwlf;
+  ClusterLockFactory rwlf;
 
   AtomicInteger count;
 
@@ -55,7 +54,11 @@ public class HazelcastReadWriteLockTest {
     Assert.assertEquals(2, count.get());
   }
 
+
+  // the @HazelcastSimpleLockFactory implementionin is a simple lock without andy read write functionallity.
+  // TODO: has to be reenabled, wehn the rw-lock implementation is done.
   @Test
+  @Ignore
   public void testThat_multipleReadersCanAccess() throws InterruptedException {
     count = new AtomicInteger(0);
     Thread t1 = new Thread(() -> {

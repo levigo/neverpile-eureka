@@ -1,6 +1,6 @@
 package com.neverpile.eureka.ignite;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.joining;
 
 import org.apache.ignite.Ignite;
 import org.springframework.beans.factory.annotation.Autowired;

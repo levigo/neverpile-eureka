@@ -2,12 +2,14 @@ package com.neverpile.eureka.rest.api.document.core;
 
 import static java.util.Collections.singleton;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.verify;
 
-import java.util.Date;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 import org.junit.Before;
@@ -83,8 +85,8 @@ public class CoreAuthContextTest extends AbstractRestAssuredTest {
   private Document createTestDocument(final String id) {
     Document doc = new Document(id);
 
-    doc.setDateCreated(new Date());
-    doc.setDateModified(new Date());
+    doc.setDateCreated(Instant.now());
+    doc.setDateModified(Instant.now());
 
     return doc;
   }
@@ -109,7 +111,7 @@ public class CoreAuthContextTest extends AbstractRestAssuredTest {
 
     assertThat(authContext.resolveValue("document.documentId")).isEqualTo(D);
 
-    assertThat((Date) authContext.resolveValue("document.dateCreated")).isCloseTo(new Date(), 1000);
-    assertThat((Date) authContext.resolveValue("document.dateModified")).isCloseTo(new Date(), 1000);
+    assertThat((Instant) authContext.resolveValue("document.dateCreated")).isCloseTo(Instant.now(), within(1000, ChronoUnit.MILLIS));
+    assertThat((Instant) authContext.resolveValue("document.dateModified")).isCloseTo(Instant.now(), within(1000, ChronoUnit.MILLIS));
   }
 }

@@ -1,13 +1,19 @@
 package com.neverpile.eureka.plugin.metadata.rest;
 
-import static org.hamcrest.Matchers.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.http.HttpStatus.*;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.atLeastOnce;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.times;
+import static org.mockito.BDDMockito.verify;
+import static org.mockito.BDDMockito.verifyNoMoreInteractions;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.OK;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.Optional;
 
 import javax.ws.rs.core.MediaType;
@@ -406,8 +412,8 @@ public class MetadataAuthorizationTest extends AbstractRestAssuredTest {
     metadataElement.setContent(objectMapper.writeValueAsBytes(metadataJson));
     metadataElement.setContentType(MediaType.APPLICATION_JSON_TYPE);
     metadataElement.setSchema("mySchema");
-    metadataElement.setDateCreated(new Date());
-    metadataElement.setDateModified(new Date());
+    metadataElement.setDateCreated(Instant.now());
+    metadataElement.setDateModified(Instant.now());
 
     MetadataDto metadata = MetadataDto.with("foo", metadataElement);
     return metadata;

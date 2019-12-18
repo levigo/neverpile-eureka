@@ -48,7 +48,7 @@ public class CassandraHealthIndicator implements HealthIndicator {
       builder.withDetail("Open Connections", state.getOpenConnections(f));
       builder.withDetail("Trashed Connections", state.getTrashedConnections(f));
 
-      if (!f.getState().equals(Status.UP) && checkSessionState()) {
+      if (!f.getState().equals(Status.UP.getCode()) && checkSessionState()) {
         builder.up();
       } else {
         builder.down();

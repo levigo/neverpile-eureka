@@ -2,7 +2,6 @@ package com.neverpile.eureka.model;
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -16,9 +15,9 @@ public class Document {
   @JsonInclude(Include.NON_NULL)
   private Instant versionTimestamp;
 
-  private Date dateCreated;
+  private Instant dateCreated;
 
-  private Date dateModified;
+  private Instant dateModified;
 
   private List<ContentElement> contentElements = new ArrayList<ContentElement>();
 
@@ -45,11 +44,11 @@ public class Document {
     this.versionTimestamp = versionTimestamp;
   }
 
-  public Date getDateCreated() {
+  public Instant getDateCreated() {
     return dateCreated;
   }
 
-  public void setDateCreated(final Date creationDate) {
+  public void setDateCreated(final Instant creationDate) {
     this.dateCreated = creationDate;
   }
 
@@ -67,11 +66,11 @@ public class Document {
     }
   }
 
-  public Date getDateModified() {
+  public Instant getDateModified() {
     return dateModified;
   }
 
-  public void setDateModified(final Date dateModified) {
+  public void setDateModified(final Instant dateModified) {
     this.dateModified = dateModified;
   }
 }

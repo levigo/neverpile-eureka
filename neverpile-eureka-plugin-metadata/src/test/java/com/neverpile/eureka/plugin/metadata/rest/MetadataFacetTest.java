@@ -1,12 +1,18 @@
 package com.neverpile.eureka.plugin.metadata.rest;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.util.Date;
+import java.time.Instant;
 import java.util.Optional;
 
 import javax.ws.rs.core.MediaType;
@@ -87,7 +93,7 @@ public class MetadataFacetTest extends AbstractRestAssuredTest {
 
     doc.setFacet("metadata", MetadataDto.with("foo", element));
 
-    Date now = new Date();
+    Instant now = Instant.now();
 
     doc.setFacet("dateCreated", now);
 
@@ -104,7 +110,7 @@ public class MetadataFacetTest extends AbstractRestAssuredTest {
     assertThat(md0.getContentType(), equalTo(MediaType.APPLICATION_JSON_TYPE));
     assertThat(md0.getEncryption(), equalTo(EncryptionType.SHARED));
 
-    assertThat(deserialized.getFacets().get("dateCreated"), instanceOf(Date.class));
+    assertThat(deserialized.getFacets().get("dateCreated"), instanceOf(Instant.class));
     assertThat(deserialized.getFacets().get("dateCreated"), equalTo(now));
 
     assertThat(md0.getContent(), equalTo(element.getContent()));
@@ -112,7 +118,7 @@ public class MetadataFacetTest extends AbstractRestAssuredTest {
 
   @Test
   public void testThat_documentCanBeCreated() throws Exception {
-    Date then = new Date();
+    Instant then = Instant.now();
 
     // prepare a document
     DocumentDto doc = new DocumentDto();
@@ -163,7 +169,7 @@ public class MetadataFacetTest extends AbstractRestAssuredTest {
         .extract().as(DocumentDto.class);
 
     // verify returned document
-    Date now = new Date();
+    Instant now = Instant.now();
     assertThat(returnedDocument.getDocumentId(), equalTo(D));
     assertThat(((MetadataDto)returnedDocument.getFacets().get("metadata")), equalTo(metadataDto));
     

@@ -1,9 +1,9 @@
 package com.neverpile.eureka.search.elastic;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Date;
 import java.util.List;
 
 import javax.ws.rs.core.MediaType;
@@ -60,8 +60,8 @@ public abstract class AbstractManualIT {
 
   private static Document createTestDocumentWithContent(final int id) {
     Document document = new Document("id" + id);
-    document.setDateCreated(new Date(1000000000000L + ((id / 3) * 1000000000L)));
-    document.setDateModified(new Date(1500000000000L + ((id / 3) * 1000000000L)));
+    document.setDateCreated(Instant.ofEpochMilli(1000000000000L + ((id / 3) * 1000000000L)));
+    document.setDateModified(Instant.ofEpochMilli(1500000000000L + ((id / 3) * 1000000000L)));
 
     ContentElement ce0 = new ContentElement();
     ce0.setContentElementId("2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae");

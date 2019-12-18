@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,10 +84,10 @@ public class ElasticsearchQueryManualIT extends AbstractManualIT {
     // combined conditions
 
     Condition cond1 = createEqualsCondition("dateModified",
-        Long.toString(new Date(1500000000000L + (3 * 1000000000L)).getTime()));
+        Long.toString(Instant.ofEpochMilli(1500000000000L + (3 * 1000000000L)).toEpochMilli()));
     Condition cond2 = createRangeCondition("dateCreated",
-        Long.toString(new Date(1000000000000L + (2 * 1000000000L)).getTime()),
-        Long.toString(new Date(1000000000000L + (3 * 1000000000L)).getTime()));
+        Long.toString(Instant.ofEpochMilli(1000000000000L + (2 * 1000000000L)).toEpochMilli()),
+        Long.toString(Instant.ofEpochMilli(1000000000000L + (3 * 1000000000L)).toEpochMilli()));
 
     testQuery = createCombinedTestQuery(Arrays.asList(cond1, cond2));
 
@@ -236,8 +235,8 @@ public class ElasticsearchQueryManualIT extends AbstractManualIT {
     }
     Map<String, Object> json = new HashMap<>();
     json.put("documentId", listOfDocuments.get(index).getDocumentId());
-    json.put("dateCreated", listOfDocuments.get(index).getDateCreated().getTime());
-    json.put("dateModified", listOfDocuments.get(index).getDateModified().getTime());
+    json.put("dateCreated", listOfDocuments.get(index).getDateCreated().toEpochMilli());
+    json.put("dateModified", listOfDocuments.get(index).getDateModified().toEpochMilli());
     return json;
   }
 }

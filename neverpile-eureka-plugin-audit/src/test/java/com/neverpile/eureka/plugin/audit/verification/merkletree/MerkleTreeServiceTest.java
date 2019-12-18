@@ -1,6 +1,6 @@
 package com.neverpile.eureka.plugin.audit.verification.merkletree;
 
-import java.util.Date;
+import java.time.Instant;
 
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,7 +24,7 @@ public class MerkleTreeServiceTest extends AbstractHashStrategyServiceTest {
 
     AuditEvent ae = new AuditEvent();
     ae.setAuditId("audit1");
-    ae.setTimestamp(new Date());
+    ae.setTimestamp(Instant.now());
 
     mtProof.addLeaf(new MerkleNode(new AuditHash(ae), 7));
     mtProof.buildTreeWithProof(parent.getProofNodes());

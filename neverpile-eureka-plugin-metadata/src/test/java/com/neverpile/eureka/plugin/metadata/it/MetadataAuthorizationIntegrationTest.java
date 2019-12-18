@@ -1,13 +1,15 @@
 package com.neverpile.eureka.plugin.metadata.it;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.given;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Date;
 import java.util.Optional;
 
 import javax.ws.rs.core.MediaType;
@@ -92,8 +94,8 @@ public class MetadataAuthorizationIntegrationTest extends AbstractRestAssuredTes
   protected Document createTestDocument() {
     Document doc = new Document();
 
-    doc.setDateCreated(new Date());
-    doc.setDateModified(new Date());
+    doc.setDateCreated(Instant.now());
+    doc.setDateModified(Instant.now());
 
     return doc;
   }
@@ -241,8 +243,8 @@ public class MetadataAuthorizationIntegrationTest extends AbstractRestAssuredTes
     MetadataElementDto jsonElement = new MetadataElementDto();
     jsonElement.setEncryption(EncryptionType.SHARED);
     jsonElement.setSchema("someJsonSchema");
-    jsonElement.setDateCreated(new Date());
-    jsonElement.setDateModified(new Date());
+    jsonElement.setDateCreated(Instant.now());
+    jsonElement.setDateModified(Instant.now());
 
     ObjectNode metadataJson = objectMapper.createObjectNode() //
         .put("aString", "foo") //
@@ -260,8 +262,8 @@ public class MetadataAuthorizationIntegrationTest extends AbstractRestAssuredTes
 
     // XML
     MetadataElementDto xmlElement = new MetadataElementDto();
-    xmlElement.setDateCreated(new Date());
-    xmlElement.setDateModified(new Date());
+    xmlElement.setDateCreated(Instant.now());
+    xmlElement.setDateModified(Instant.now());
     xmlElement.setEncryption(EncryptionType.SHARED);
     xmlElement.setSchema("someXmlSchema");
 
@@ -275,8 +277,8 @@ public class MetadataAuthorizationIntegrationTest extends AbstractRestAssuredTes
 
     // raw
     MetadataElementDto rawElement = new MetadataElementDto();
-    rawElement.setDateCreated(new Date());
-    rawElement.setDateModified(new Date());
+    rawElement.setDateCreated(Instant.now());
+    rawElement.setDateModified(Instant.now());
     rawElement.setEncryption(EncryptionType.SHARED);
     rawElement.setSchema("someRawSchema");
 

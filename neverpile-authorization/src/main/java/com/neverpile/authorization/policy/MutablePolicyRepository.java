@@ -1,6 +1,6 @@
 package com.neverpile.authorization.policy;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 
 /**
@@ -24,7 +24,7 @@ public interface MutablePolicyRepository extends PolicyRepository {
    * @param limit the maximum number of policies to return
    * @return a list of access policies matching the range
    */
-  List<AccessPolicy> queryRepository(Date from, Date to, int limit);
+  List<AccessPolicy> queryRepository(Instant from, Instant to, int limit);
 
   /**
    * Query only upcoming (future) policies. This excludes the currently applicable policy.
@@ -40,7 +40,7 @@ public interface MutablePolicyRepository extends PolicyRepository {
    * @param startOfValidity the start-of-validity date
    * @return the policy or <code>null</code> if there is no such policy
    */
-  AccessPolicy get(Date startOfValidity);
+  AccessPolicy get(Instant startOfValidity);
 
   /**
    * Save an access policy with the start-of-validity date in the policy. Serves both as a method
@@ -71,5 +71,5 @@ public interface MutablePolicyRepository extends PolicyRepository {
    * @param startOfValidity the start-of-validity date
    * @return <code>true</code> if the delete succeeded, <code>false</code> otherwise
    */
-  boolean delete(Date startOfValidity);
+  boolean delete(Instant startOfValidity);
 }

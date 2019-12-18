@@ -11,7 +11,6 @@ import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Date;
 import java.util.Random;
 import java.util.Stack;
 import java.util.UUID;
@@ -79,7 +78,7 @@ public class TimingIT {
 
   private byte[] getRandomAuditEvent(Random rnd) {
     AuditEvent ae = new AuditEvent();
-    ae.setTimestamp(new Date(rnd.nextInt()));
+    ae.setTimestamp(Instant.ofEpochMilli(rnd.nextInt()));
     ae.setAuditId(UUID.randomUUID().toString());
     ae.setType(AuditEvent.Type.values()[rnd.nextInt(3)]);
     ae.setDescription("this is a placeholder description text.");

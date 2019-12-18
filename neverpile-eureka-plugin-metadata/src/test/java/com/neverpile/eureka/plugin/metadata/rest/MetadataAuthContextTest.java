@@ -1,14 +1,16 @@
 package com.neverpile.eureka.plugin.metadata.rest;
 
-import static java.util.Collections.*;
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static java.util.Collections.singleton;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.verify;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 import javax.ws.rs.core.MediaType;
@@ -98,8 +100,10 @@ public class MetadataAuthContextTest extends AbstractRestAssuredTest {
 
     assertThat(authContext.resolveValue("document.metadata.someJson")).isEqualTo(Boolean.TRUE);
 
-    assertThat((Date) authContext.resolveValue("document.metadata.someJson.dateCreated")).isCloseTo(new Date(), 500);
-    assertThat((Date) authContext.resolveValue("document.metadata.someJson.dateModified")).isCloseTo(new Date(), 500);
+    assertThat((Instant) authContext.resolveValue("document.metadata.someJson.dateCreated")).isCloseTo(Instant.now(),
+        within(500, ChronoUnit.MILLIS));
+    assertThat((Instant) authContext.resolveValue("document.metadata.someJson.dateModified")).isCloseTo(Instant.now(),
+        within(500, ChronoUnit.MILLIS));
     assertThat((String) authContext.resolveValue("document.metadata.someJson.encryption")).isEqualTo("SHARED");
     assertThat((String) authContext.resolveValue("document.metadata.someJson.schema")).isEqualTo("someJsonSchema");
 
@@ -129,8 +133,8 @@ public class MetadataAuthContextTest extends AbstractRestAssuredTest {
     MetadataElementDto jsonElement = new MetadataElementDto();
     jsonElement.setEncryption(EncryptionType.SHARED);
     jsonElement.setSchema("someJsonSchema");
-    jsonElement.setDateCreated(new Date());
-    jsonElement.setDateModified(new Date());
+    jsonElement.setDateCreated(Instant.now());
+    jsonElement.setDateModified(Instant.now());
 
     ObjectNode metadataJson = objectMapper.createObjectNode() //
         .put("aString", "foo") //
@@ -148,8 +152,8 @@ public class MetadataAuthContextTest extends AbstractRestAssuredTest {
 
     // XML
     MetadataElementDto xmlElement = new MetadataElementDto();
-    xmlElement.setDateCreated(new Date());
-    xmlElement.setDateModified(new Date());
+    xmlElement.setDateCreated(Instant.now());
+    xmlElement.setDateModified(Instant.now());
     xmlElement.setEncryption(EncryptionType.SHARED);
     xmlElement.setSchema("someXmlSchema");
 
@@ -163,8 +167,8 @@ public class MetadataAuthContextTest extends AbstractRestAssuredTest {
 
     // raw
     MetadataElementDto rawElement = new MetadataElementDto();
-    rawElement.setDateCreated(new Date());
-    rawElement.setDateModified(new Date());
+    rawElement.setDateCreated(Instant.now());
+    rawElement.setDateModified(Instant.now());
     rawElement.setEncryption(EncryptionType.SHARED);
     rawElement.setSchema("someRawSchema");
 

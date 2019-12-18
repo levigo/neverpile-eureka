@@ -1,6 +1,6 @@
 package com.neverpile.eureka.plugin.metadata.service.impl;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -67,7 +67,7 @@ public class SimpleMetadataService implements MetadataService {
         newElement.setDateCreated(element.getDateCreated());
     });
 
-    Date now = new Date();
+    Instant now = Instant.now();
     metadata.forEach((name, element) -> {
       element.setDateModified(now);
       if (null == element.getDateCreated())

@@ -6,7 +6,6 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -90,13 +89,13 @@ public class IgniteWAL implements WriteAheadLog {
 
     private static final long serialVersionUID = 1L;
 
-    public final Date started;
+    public final Instant started;
 
     public int recoveryAttempts;
 
     public TransactionRecord() {
       super();
-      this.started = new Date();
+      this.started = Instant.now();
     }
 
     public int recoveryAttempts() {
@@ -107,12 +106,12 @@ public class IgniteWAL implements WriteAheadLog {
       this.recoveryAttempts = recoveryAttempts;
     }
 
-    public Date started() {
+    public Instant started() {
       return started;
     }
 
-    public boolean startedBefore(final Date when) {
-      return started.before(when);
+    public boolean startedBefore(final Instant when) {
+      return started.isBefore(when);
     }
 
     public void incrementRecoveryAttempts() {
@@ -173,8 +172,7 @@ public class IgniteWAL implements WriteAheadLog {
     IgniteLock lock = ignite.reentrantLock(getClass().getName() + "-TxPrune", true, false, true);
     if (lock.tryLock(100, TimeUnit.MILLISECONDS)) {
       try {
-        Date rollbackTransactionsStartedBefore = Date.from(
-            Instant.now().minus(autoRollbackTimeout, ChronoUnit.SECONDS));
+        Instant rollbackTransactionsStartedBefore = Instant.now().minus(autoRollbackTimeout, ChronoUnit.SECONDS);
 
         // find transactions with a completion event...
         transactions //
