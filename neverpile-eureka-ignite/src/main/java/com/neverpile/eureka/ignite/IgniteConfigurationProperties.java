@@ -1,8 +1,11 @@
 package com.neverpile.eureka.ignite;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.ignite.configuration.CacheConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -53,12 +56,22 @@ public class IgniteConfigurationProperties {
      */
     private boolean enabled = true;
 
+    private Map<String, CacheConfiguration<Object, Object>> configurations = new HashMap<>();
+    
     public boolean isEnabled() {
       return enabled;
     }
 
     public void setEnabled(final boolean enabled) {
       this.enabled = enabled;
+    }
+
+    public Map<String, CacheConfiguration<Object, Object>> getConfigurations() {
+      return configurations;
+    }
+
+    public void setConfigurations(final Map<String, CacheConfiguration<Object, Object>> cacheConfigs) {
+      this.configurations = cacheConfigs;
     }
   }
   
