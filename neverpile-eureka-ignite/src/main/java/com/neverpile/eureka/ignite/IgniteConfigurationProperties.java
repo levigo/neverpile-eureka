@@ -47,6 +47,21 @@ public class IgniteConfigurationProperties {
     }
   }
 
+  public static class Cache {
+    /**
+     * Whether to enable the Ignite-based cache.
+     */
+    private boolean enabled = true;
+
+    public boolean isEnabled() {
+      return enabled;
+    }
+
+    public void setEnabled(final boolean enabled) {
+      this.enabled = enabled;
+    }
+  }
+  
   // This class hierarchy is mainly for configuration documentation purposes. The actual
   // Values are directly injected into the respective finder classes.
   public static class Finders {
@@ -408,6 +423,11 @@ public class IgniteConfigurationProperties {
   private WAL wal = new WAL();
 
   /**
+   * Cache-related settings.
+   */
+  private Cache cache = new Cache();
+
+  /**
    * Discovery-related settings.
    */
   private Finders finder = new Finders();
@@ -442,5 +462,13 @@ public class IgniteConfigurationProperties {
 
   public void setFinder(final Finders finder) {
     this.finder = finder;
+  }
+
+  public Cache getCache() {
+    return cache;
+  }
+
+  public void setCache(final Cache cache) {
+    this.cache = cache;
   }
 }

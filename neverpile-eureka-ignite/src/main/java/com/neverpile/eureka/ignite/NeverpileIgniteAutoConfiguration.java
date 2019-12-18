@@ -32,6 +32,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
+import com.neverpile.eureka.ignite.cachemanager.IgniteCacheManager;
 import com.neverpile.eureka.ignite.lock.IgniteLockFactory;
 import com.neverpile.eureka.ignite.queue.IgniteTaskQueue;
 import com.neverpile.eureka.ignite.wal.IgniteWAL;
@@ -177,5 +178,11 @@ public class NeverpileIgniteAutoConfiguration {
   @Scope("prototype")
   public TaskQueue<?> taskQueue(final InjectionPoint ip) {
     return new IgniteTaskQueue<>(ip.getAnnotation(DistributedPersistentQueueType.class).value());
+  }
+  
+  @Bean
+  @ConditionalOnProperty(name = "neverpile-eureka.ignite.cache.enabled", havingValue = "true", matchIfMissing = true)
+  public IgniteCacheManager igniteCacheManager() {
+    return new IgniteCacheManager();
   }
 }
