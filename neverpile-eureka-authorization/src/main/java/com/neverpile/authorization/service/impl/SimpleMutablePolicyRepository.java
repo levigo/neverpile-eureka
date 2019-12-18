@@ -18,6 +18,7 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -33,6 +34,8 @@ import com.neverpile.eureka.api.ObjectStoreService.StoreObject;
 import com.neverpile.eureka.model.ObjectName;
 
 public class SimpleMutablePolicyRepository implements MutablePolicyRepository {
+  private static final String CURRENT_AUTORIZATION_POLICY_KEY = "'current-autorization-policy'";
+
   private static final Logger LOGGER = LoggerFactory.getLogger(SimpleMutablePolicyRepository.class);
 
   @VisibleForTesting
@@ -58,6 +61,7 @@ public class SimpleMutablePolicyRepository implements MutablePolicyRepository {
   private TransactionTemplate housekeepingTransaction;
 
   @Override
+  @Cacheable(cacheNames = "authorization", key = CURRENT_AUTORIZATION_POLICY_KEY) // cache under static key 
   public AccessPolicy getCurrentPolicy() {
     ZonedDateTime now = Instant.now().atZone(ZoneOffset.UTC);
 
