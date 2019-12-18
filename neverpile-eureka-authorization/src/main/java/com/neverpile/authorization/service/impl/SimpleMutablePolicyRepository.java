@@ -3,6 +3,7 @@ package com.neverpile.authorization.service.impl;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -11,6 +12,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -18,7 +20,10 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.Cache.ValueWrapper;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -33,10 +38,28 @@ import com.neverpile.eureka.api.ObjectStoreService;
 import com.neverpile.eureka.api.ObjectStoreService.StoreObject;
 import com.neverpile.eureka.model.ObjectName;
 
+@CacheConfig(cacheNames = SimpleMutablePolicyRepository.CACHE_NAME)
 public class SimpleMutablePolicyRepository implements MutablePolicyRepository {
-  private static final String CURRENT_AUTORIZATION_POLICY_KEY = "'current-autorization-policy'";
+  public static final int MAX_CURRENT_POLICY_AGE = 600;
+
+  public static final String CACHE_NAME = "authorization-policies";
+
+  public static final String CURRENT_AUTORIZATION_POLICY_KEY = "current-autorization-policy";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SimpleMutablePolicyRepository.class);
+
+  @VisibleForTesting
+  static class CacheEntry implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    public final AccessPolicy policy;
+    public final Instant validUntil;
+
+    public CacheEntry(final AccessPolicy policy, final Instant validUntil) {
+      this.policy = policy;
+      this.validUntil = validUntil;
+    }
+  }
 
   @VisibleForTesting
   static final String OBJECT_NAME_PATTERN = "yyyyMMdd-HHmmss-SSS";
@@ -46,55 +69,89 @@ public class SimpleMutablePolicyRepository implements MutablePolicyRepository {
       .withZone(ZoneOffset.UTC);
 
   @VisibleForTesting
-  static final ObjectName POLICY_REPO_PREFIX = ObjectName.of("authorization", "policy");
+  static final ObjectName POLICY_REPO_PREFIX = ObjectName.of(CACHE_NAME, "policy");
 
   @VisibleForTesting
-  static final ObjectName EXPIRED_POLICY_REPO_PREFIX = ObjectName.of("authorization", "policy", "expired");
+  static final ObjectName EXPIRED_POLICY_REPO_PREFIX = ObjectName.of(CACHE_NAME, "policy", "expired");
 
   @Autowired
   private ObjectStoreService objectStore;
 
   @Autowired
   private ObjectMapper mapper;
-  
+
   @Autowired
   private TransactionTemplate housekeepingTransaction;
 
+  @Autowired
+  private CacheManager cacheManager;
+
   @Override
-  @Cacheable(cacheNames = "authorization", key = CURRENT_AUTORIZATION_POLICY_KEY) // cache under static key 
   public AccessPolicy getCurrentPolicy() {
-    ZonedDateTime now = Instant.now().atZone(ZoneOffset.UTC);
+    Instant now = Instant.now();
 
-    // fetch current and possibly past policies
-    List<StoreObject> policyObjects = objectStore.list(POLICY_REPO_PREFIX) //
-        .filter(s -> !s.getObjectName().equals(EXPIRED_POLICY_REPO_PREFIX)) //
-        .filter(s -> {
-          try {
-            return ZonedDateTime.parse(s.getObjectName().tail(), OBJECT_NAME_FORMATTER).isBefore(now);
-          } catch (Exception e) {
-            LOGGER.error("The object name {} is invalid and cannot be parsed", s.getObjectName(), e);
-            return false;
-          }
-        }) //
-        .sorted((a, b) -> a.getObjectName().compareTo(b.getObjectName())) //
-        .collect(Collectors.toList());
+    ValueWrapper cachedPolicy = cacheManager.getCache(CACHE_NAME).get(CURRENT_AUTORIZATION_POLICY_KEY);
 
-    // if we didn't find anything we return a fake policy denying everything
-    if (policyObjects.isEmpty()) {
+    // query cache - return cached value if all conditions are met
+    if (null != cachedPolicy && null != cachedPolicy.get() && cachedPolicy.get() instanceof CacheEntry
+        && ((CacheEntry) cachedPolicy.get()).validUntil.isAfter(now)) {
+      return ((CacheEntry) cachedPolicy.get()).policy;
+    }
+
+    List<StoreObject> policies = fetchNonArchivedPolicies();
+
+    // if we didn't find anything we return a fake policy denying everything except creating a new
+    // policy
+    if (policies.isEmpty()) {
       LOGGER.warn("There is not currently valid access policy - falling back to default policy");
 
       AccessPolicy denyAll = createDefaultPolicy();
 
-      denyAll.setValidFrom(Date.from(now.toInstant()));
+      denyAll.setValidFrom(Date.from(now));
 
       return denyAll;
     }
 
-    if(policyObjects.size() > 1)
-      archiveExpiredPolicies(policyObjects);
+    // archive expired policies while we're at it
+    if (policies.size() > 1)
+      archiveExpiredPolicies(policies);
 
-    // the last one is the currently valid one
-    return unmarshalPolicy(policyObjects.get(policyObjects.size() - 1));
+    // find the current policy
+    AccessPolicy currentAccessPolicy = unmarshalPolicy( //
+        policies.stream() //
+            .filter(s -> toInstant(s).isBefore(now)) // just active ones
+            .reduce((a, b) -> b) // reduce to last (i.e. the current) one
+            .get());
+
+    // find the first upcoming policy (if any)
+    Optional<StoreObject> upcoming = policies.stream().filter(s -> toInstant(s).isAfter(now)).findFirst(); //
+
+    // create cache entry and cache it
+    cacheManager.getCache(CACHE_NAME) //
+        .put(CURRENT_AUTORIZATION_POLICY_KEY, //
+            new CacheEntry(currentAccessPolicy, //
+                upcoming.map(this::toInstant) //
+                    .orElseGet(() -> Instant.now().plusSeconds(MAX_CURRENT_POLICY_AGE))));
+
+    return currentAccessPolicy;
+  }
+
+  private Instant toInstant(final StoreObject s) {
+    try {
+      return ZonedDateTime.parse(s.getObjectName().tail(), OBJECT_NAME_FORMATTER).toInstant();
+    } catch (Exception e) {
+      LOGGER.error("The object name {} is invalid and cannot be parsed", s.getObjectName(), e);
+      return Instant.MIN;
+    }
+  }
+
+  private List<StoreObject> fetchNonArchivedPolicies() {
+    // fetch current and possibly past policies
+    List<StoreObject> policyObjects = objectStore.list(POLICY_REPO_PREFIX) //
+        .filter(s -> !s.getObjectName().equals(EXPIRED_POLICY_REPO_PREFIX)) //
+        .sorted((a, b) -> a.getObjectName().compareTo(b.getObjectName())) //
+        .collect(Collectors.toList());
+    return policyObjects;
   }
 
   /**
@@ -140,7 +197,7 @@ public class SimpleMutablePolicyRepository implements MutablePolicyRepository {
       housekeepingTransaction.execute(txStatus -> {
         for (int i = 0; i < policyObjects.size() - 1; i++) {
           StoreObject s = policyObjects.get(i);
-  
+
           // copy...
           try (InputStream is = s.getInputStream()) {
             objectStore.put(EXPIRED_POLICY_REPO_PREFIX.append(s.getObjectName().tail()), ObjectStoreService.NEW_VERSION,
@@ -149,7 +206,7 @@ public class SimpleMutablePolicyRepository implements MutablePolicyRepository {
             // let TX management handle rollback and sort things out
             throw new RuntimeException("Can't archive expired policy", e);
           }
-  
+
           // ...and delete
           objectStore.delete(s.getObjectName());
         }
@@ -192,8 +249,7 @@ public class SimpleMutablePolicyRepository implements MutablePolicyRepository {
         // remove error-nulls from previous stage
         .filter(Objects::nonNull) //
         // apply limit
-        .limit(limit)
-        .collect(Collectors.toList());
+        .limit(limit).collect(Collectors.toList());
   }
 
   @Override
@@ -222,6 +278,7 @@ public class SimpleMutablePolicyRepository implements MutablePolicyRepository {
   }
 
   @Override
+  @CacheEvict(key = "'" + CURRENT_AUTORIZATION_POLICY_KEY + "'")
   public void save(final AccessPolicy policy) {
     // an access policy with a null valid-from-date means: make it active immediately
     if (null == policy.getValidFrom()) {
@@ -252,6 +309,7 @@ public class SimpleMutablePolicyRepository implements MutablePolicyRepository {
   }
 
   @Override
+  @CacheEvict(key = "'" + CURRENT_AUTORIZATION_POLICY_KEY + "'")
   public boolean delete(final Date startOfValidity) {
     // validate delete request
     if (startOfValidity.toInstant().isBefore(Instant.now()))

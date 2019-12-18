@@ -1,16 +1,29 @@
 package com.neverpile.authorization.service.impl;
 
-import static com.neverpile.authorization.service.impl.SimpleMutablePolicyRepository.*;
-import static com.neverpile.eureka.api.ObjectStoreService.*;
-import static java.nio.charset.StandardCharsets.*;
-import static java.time.Instant.*;
-import static java.time.temporal.ChronoUnit.*;
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.*;
+import static com.neverpile.authorization.service.impl.SimpleMutablePolicyRepository.EXPIRED_POLICY_REPO_PREFIX;
+import static com.neverpile.authorization.service.impl.SimpleMutablePolicyRepository.OBJECT_NAME_FORMATTER;
+import static com.neverpile.authorization.service.impl.SimpleMutablePolicyRepository.POLICY_REPO_PREFIX;
+import static com.neverpile.eureka.api.ObjectStoreService.NEW_VERSION;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.time.Instant.now;
+import static java.time.temporal.ChronoUnit.DAYS;
+import static java.time.temporal.ChronoUnit.HOURS;
+import static java.time.temporal.ChronoUnit.MINUTES;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -24,6 +37,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.support.NoOpCache;
+import org.springframework.cache.support.SimpleValueWrapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -31,7 +48,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.neverpile.authorization.policy.AccessPolicy;
 import com.neverpile.authorization.policy.Effect;
-import com.neverpile.authorization.service.impl.SimpleMutablePolicyRepository;
+import com.neverpile.authorization.service.impl.SimpleMutablePolicyRepository.CacheEntry;
 import com.neverpile.eureka.api.ObjectStoreService;
 import com.neverpile.eureka.model.ObjectName;
 
@@ -42,9 +59,11 @@ public class SimpleMutablePolicyRepositoryTest {
     private final ObjectName name;
     private final String version;
     private final Supplier<InputStream> contentSupplier;
+    private byte[] content;
 
     public SimpleStoreObject(final ObjectName name, final String version, final byte content[]) {
       this(name, version, () -> new ByteArrayInputStream(content));
+      this.content = content;
     }
 
     public SimpleStoreObject(final ObjectName name, final String version, final Supplier<InputStream> contentSupplier) {
@@ -67,6 +86,11 @@ public class SimpleMutablePolicyRepositoryTest {
     public InputStream getInputStream() {
       return contentSupplier.get();
     }
+
+    @Override
+    public String toString() {
+      return name.toString() + " -> " + new String(content);
+    }
   }
 
   @Configuration
@@ -81,12 +105,17 @@ public class SimpleMutablePolicyRepositoryTest {
   @MockBean
   ObjectStoreService mockObjectStore;
 
+  @MockBean
+  CacheManager cacheManager;
+
+  @MockBean
+  Cache cache;
+
   @Autowired
   SimpleMutablePolicyRepository policyRepository;
 
   @Autowired
   ObjectMapper objectMapper;
-
 
   String policyPattern = "{\"validFrom\" : \"2018-01-01\",\"description\": \"%s\",\"default_effect\": \"DENY\",\"rules\": []}";
 
@@ -136,7 +165,7 @@ public class SimpleMutablePolicyRepositoryTest {
     // update names to not use the expired prefix
     threeHoursAgoName = POLICY_REPO_PREFIX.append(OBJECT_NAME_FORMATTER.format(threeHoursAgo));
     oneHourAgoName = POLICY_REPO_PREFIX.append(OBJECT_NAME_FORMATTER.format(oneHourAgo));
-    
+
     // assume un-archived policies present
     given(mockObjectStore.list(POLICY_REPO_PREFIX)).willAnswer(i -> {
       return Stream.of( //
@@ -145,12 +174,12 @@ public class SimpleMutablePolicyRepositoryTest {
           new SimpleStoreObject(oneMinuteAgoName, "1", String.format(policyPattern, "current").getBytes(UTF_8)), //
           new SimpleStoreObject(inOneHourName, "1", String.format(policyPattern, "upcoming").getBytes(UTF_8)));
     });
-    
+
     policyRepository.getCurrentPolicy();
 
     System.out.println(threeHoursAgoName);
     System.out.println(oneHourAgoName);
-    
+
     verify(mockObjectStore).put(eq(EXPIRED_POLICY_REPO_PREFIX.append(threeHoursAgoName.tail())), eq(NEW_VERSION),
         any());
     verify(mockObjectStore).delete(eq(threeHoursAgoName));
@@ -165,7 +194,7 @@ public class SimpleMutablePolicyRepositoryTest {
             Date.from(now().minus(1, DAYS)), Date.from(now().plus(1, DAYS)), //
             Integer.MAX_VALUE //
         ).stream().map(AccessPolicy::getDescription) //
-    ).containsExactly("older", "old", "current", "upcoming");
+    ).containsExactly("older", "old", "past", "current", "upcoming", "later");
   }
 
   @Test
@@ -175,7 +204,7 @@ public class SimpleMutablePolicyRepositoryTest {
             Date.from(now().minus(2, HOURS)), Date.from(now().plus(1, DAYS)), //
             Integer.MAX_VALUE //
         ).stream().map(AccessPolicy::getDescription) //
-    ).containsExactly("old", "current", "upcoming");
+    ).containsExactly("old", "past", "current", "upcoming", "later");
   }
 
   @Test
@@ -185,7 +214,7 @@ public class SimpleMutablePolicyRepositoryTest {
             Date.from(now().minus(1, DAYS)), Date.from(now()), //
             Integer.MAX_VALUE //
         ).stream().map(AccessPolicy::getDescription) //
-    ).containsExactly("older", "old", "current");
+    ).containsExactly("older", "old", "past", "current");
   }
 
   @Test
@@ -193,7 +222,7 @@ public class SimpleMutablePolicyRepositoryTest {
     assertThat( //
         policyRepository.queryUpcoming(Integer.MAX_VALUE //
         ).stream().map(AccessPolicy::getDescription) //
-    ).containsExactly("upcoming");
+    ).containsExactly("upcoming", "later");
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -255,22 +284,109 @@ public class SimpleMutablePolicyRepositoryTest {
     verify(mockObjectStore).delete(eq(inOneHourName));
   }
 
+  @Test
+  public void testThat_getCurrentPolicy_populatesCache() throws Exception {
+    ArgumentCaptor<CacheEntry> valueCaptor = ArgumentCaptor.forClass(CacheEntry.class);
+    reset(cacheManager);
+    given(cacheManager.getCache(any())).will((n) -> cache);
+    given(cache.get(SimpleMutablePolicyRepository.CURRENT_AUTORIZATION_POLICY_KEY)).willReturn(null);
+    doNothing().when(cache).put(eq(SimpleMutablePolicyRepository.CURRENT_AUTORIZATION_POLICY_KEY),
+        valueCaptor.capture());
+
+    // no cached value
+    policyRepository.getCurrentPolicy();
+
+    verify(cacheManager, atLeastOnce()).getCache(SimpleMutablePolicyRepository.CACHE_NAME);
+    verify(cache).get(SimpleMutablePolicyRepository.CURRENT_AUTORIZATION_POLICY_KEY);
+
+    // verify cache entry
+    assertThat(valueCaptor.getValue().policy.getDescription()).isEqualTo("current");
+    // must use fuzzy match as marshaling/unmarshaling may produce sub-second differences  
+    assertThat(valueCaptor.getValue().validUntil).isCloseTo(inOneHour, within(1, ChronoUnit.SECONDS));
+  }
+
+  @Test
+  public void testThat_getCurrentPolicy_populatesCacheNoUpcomingPolicy() throws Exception {
+    ArgumentCaptor<CacheEntry> valueCaptor = ArgumentCaptor.forClass(CacheEntry.class);
+    reset(cacheManager);
+    given(cacheManager.getCache(any())).will((n) -> cache);
+    given(cache.get(SimpleMutablePolicyRepository.CURRENT_AUTORIZATION_POLICY_KEY)).willReturn(null);
+    doNothing().when(cache).put(eq(SimpleMutablePolicyRepository.CURRENT_AUTORIZATION_POLICY_KEY),
+        valueCaptor.capture());
+
+    // in contrast to above, there is no upcoming policy
+    given(mockObjectStore.list(POLICY_REPO_PREFIX)).willAnswer(i -> Stream.of(
+        new SimpleStoreObject(oneMinuteAgoName, "1", String.format(policyPattern, "current").getBytes(UTF_8))));
+
+    // no cached value
+    policyRepository.getCurrentPolicy();
+
+    verify(cacheManager, atLeastOnce()).getCache(SimpleMutablePolicyRepository.CACHE_NAME);
+    verify(cache).get(SimpleMutablePolicyRepository.CURRENT_AUTORIZATION_POLICY_KEY);
+
+    // verify cache entry - should use default entry validity of
+    // SimpleMutablePolicyRepository.MAX_CURRENT_POLICY_AGE seconds
+    assertThat(valueCaptor.getValue().validUntil).isCloseTo(
+        Instant.now().plusSeconds(SimpleMutablePolicyRepository.MAX_CURRENT_POLICY_AGE), within(5, ChronoUnit.SECONDS));
+  }
+
+  @Test
+  public void testThat_getCurrentPolicy_usesCache() throws Exception {
+    reset(cacheManager);
+    given(cacheManager.getCache(any())).will(n -> cache);
+    AccessPolicy thePolicy = new AccessPolicy();
+    given(cache.get(SimpleMutablePolicyRepository.CURRENT_AUTORIZATION_POLICY_KEY)).willReturn(
+        new SimpleValueWrapper(new CacheEntry(thePolicy, inOneHour)));
+
+    // cache contains valid entry
+    assertThat(policyRepository.getCurrentPolicy()).isSameAs(thePolicy);
+
+    verify(cacheManager).getCache(SimpleMutablePolicyRepository.CACHE_NAME);
+    verify(cache).get(SimpleMutablePolicyRepository.CURRENT_AUTORIZATION_POLICY_KEY);
+    verifyNoMoreInteractions(cache);
+    verifyNoMoreInteractions(mockObjectStore);
+  }
+
+  @Test
+  public void testThat_getCurrentPolicy_ignoresExpiredEntries() throws Exception {
+    reset(cacheManager);
+    given(cacheManager.getCache(any())).will(n -> cache);
+    given(cache.get(SimpleMutablePolicyRepository.CURRENT_AUTORIZATION_POLICY_KEY)).willReturn(
+        new SimpleValueWrapper(new CacheEntry(new AccessPolicy(), oneHourAgo)));
+
+    // cache contains expired entry
+    assertThat(policyRepository.getCurrentPolicy().getDescription()).isEqualTo("current");
+
+    verify(cache).get(SimpleMutablePolicyRepository.CURRENT_AUTORIZATION_POLICY_KEY);
+    verify(mockObjectStore).list(any());
+  }
+
   @Before
   public void initMocks() {
     now = now();
-    oneMinuteAgo = now.minus(1, MINUTES);
-    oneMinuteAgoName = POLICY_REPO_PREFIX.append(OBJECT_NAME_FORMATTER.format(oneMinuteAgo));
-    inOneHour = now.plus(1, HOURS);
-    inOneHourName = POLICY_REPO_PREFIX.append(OBJECT_NAME_FORMATTER.format(inOneHour));
+
     threeHoursAgo = now.minus(3, HOURS);
     threeHoursAgoName = EXPIRED_POLICY_REPO_PREFIX.append(OBJECT_NAME_FORMATTER.format(threeHoursAgo));
+
     oneHourAgo = now.minus(1, HOURS);
     oneHourAgoName = EXPIRED_POLICY_REPO_PREFIX.append(OBJECT_NAME_FORMATTER.format(oneHourAgo));
 
+    ObjectName twoMinutesAgoName = POLICY_REPO_PREFIX.append(OBJECT_NAME_FORMATTER.format(now.minus(2, MINUTES)));
+
+    oneMinuteAgo = now.minus(1, MINUTES);
+    oneMinuteAgoName = POLICY_REPO_PREFIX.append(OBJECT_NAME_FORMATTER.format(oneMinuteAgo));
+
+    inOneHour = now.plus(1, HOURS);
+    inOneHourName = POLICY_REPO_PREFIX.append(OBJECT_NAME_FORMATTER.format(inOneHour));
+
+    ObjectName inTwoHoursName = POLICY_REPO_PREFIX.append(OBJECT_NAME_FORMATTER.format(now.plus(2, HOURS)));
+
     given(mockObjectStore.list(POLICY_REPO_PREFIX)).willAnswer(i -> {
       return Stream.of( //
+          new SimpleStoreObject(twoMinutesAgoName, "1", String.format(policyPattern, "past").getBytes(UTF_8)), //
           new SimpleStoreObject(oneMinuteAgoName, "1", String.format(policyPattern, "current").getBytes(UTF_8)), //
-          new SimpleStoreObject(inOneHourName, "1", String.format(policyPattern, "upcoming").getBytes(UTF_8)));
+          new SimpleStoreObject(inOneHourName, "1", String.format(policyPattern, "upcoming").getBytes(UTF_8)), //
+          new SimpleStoreObject(inTwoHoursName, "1", String.format(policyPattern, "later").getBytes(UTF_8)));
     });
 
     // must also consider expired ones!
@@ -284,5 +400,8 @@ public class SimpleMutablePolicyRepositoryTest {
     given(mockObjectStore.get(inOneHourName)).willAnswer(i -> {
       return new SimpleStoreObject(inOneHourName, "1", String.format(policyPattern, "upcoming").getBytes(UTF_8));
     });
+
+    // caching
+    given(cacheManager.getCache(any())).will((n) -> new NoOpCache(n.getArgument(0)));
   }
 }
