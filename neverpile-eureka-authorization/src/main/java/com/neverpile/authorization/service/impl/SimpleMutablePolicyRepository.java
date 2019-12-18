@@ -38,6 +38,24 @@ import com.neverpile.eureka.api.ObjectStoreService;
 import com.neverpile.eureka.api.ObjectStoreService.StoreObject;
 import com.neverpile.eureka.model.ObjectName;
 
+/**
+ * A mutable policy repository implementation that stores {@link AccessPolicy}ies in an object
+ * store. Individual policies are stored as separate objects, where each object's key is derived
+ * from the policy's {@link AccessPolicy#getValidFrom()} instant. The current and upcoming policies
+ * are stored under the key {@code authorization/policy/active/yyyyMMdd-HHmmss-SSS}. The valid-from
+ * instant is interpreted as UTC.
+ * <p>
+ * Past (expired) policies are kept around but moved to a separate prefix in order to improve
+ * efficiency. They are stored under the key
+ * {@code authorization/policy/expired/yyyyMMdd-HHmmss-SSS}.
+ * <p>
+ * The current policy is cached in the cache named {@value #CACHE_NAME} and the key
+ * {@value #CURRENT_AUTORIZATION_POLICY_KEY}. The caching is performed in a way, that a seamless
+ * switch over to a new policy is guaranteed, once it is valid. This works, however, only when all
+ * changes to the policies are applied through this repository implementation. Changes applied
+ * directly to the backend object store are only visible after some {@value #MAX_CURRENT_POLICY_AGE}
+ * seconds in the worst case.
+ */
 @CacheConfig(cacheNames = SimpleMutablePolicyRepository.CACHE_NAME)
 public class SimpleMutablePolicyRepository implements MutablePolicyRepository {
   public static final int MAX_CURRENT_POLICY_AGE = 600;
