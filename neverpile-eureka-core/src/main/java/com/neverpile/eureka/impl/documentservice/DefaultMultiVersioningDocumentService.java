@@ -22,6 +22,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
@@ -50,6 +51,7 @@ import com.neverpile.eureka.util.CompositeKey;
  * Optimistic concurrency control is implemented based on object store object version tracking as
  * well as document version timestamp checking.
  */
+@Transactional
 public class DefaultMultiVersioningDocumentService
     implements
       MultiVersioningDocumentService,

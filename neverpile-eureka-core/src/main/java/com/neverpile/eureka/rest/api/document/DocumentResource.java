@@ -56,6 +56,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
     MediaType.APPLICATION_JSON_VALUE
 })
 @OpenAPIDefinition(tags = @Tag(name = "Document"))
+@Transactional
 public class DocumentResource {
 
   @Autowired
@@ -105,7 +106,6 @@ public class DocumentResource {
           + "otherwise generated automatically.")
   @ApiResponse(responseCode = "201", description = "Document created")
   @ApiResponse(responseCode = "409", description = "Document with the given id already exists")
-  @Transactional
   @Timed(description = "create document", extraTags = {
       "operation", "create", "target", "document"
   }, value = "eureka.document.create")
@@ -178,7 +178,6 @@ public class DocumentResource {
       @ApiResponse(responseCode = "400", description = "Invalid documentID supplied"),
       @ApiResponse(responseCode = "404", description = "Document not found")
   })
-  @Transactional
   @Timed(description = "update document", extraTags = {
       "operation", "update", "target", "document"
   }, value = "eureka.document.update")
@@ -229,7 +228,6 @@ public class DocumentResource {
       @ApiResponse(responseCode = "404", description = "Document not found"),
       @ApiResponse(responseCode = "409", description = "The request could not be completed due to a conflict with the current state of the target resource.")
   })
-  @Transactional
   @Timed(description = "delete document", extraTags = {"operation", "delete", "target", "document"}, value="eureka.document.delete")
   public void delete(
       @Parameter(description = "The ID of the document to be deleted") @PathVariable("documentID") final String documentId) {
