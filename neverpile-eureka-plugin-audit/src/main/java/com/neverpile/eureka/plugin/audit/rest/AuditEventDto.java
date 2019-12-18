@@ -1,6 +1,6 @@
 package com.neverpile.eureka.plugin.audit.rest;
 
-import java.util.Date;
+import java.time.Instant;
 
 import org.springframework.hateoas.RepresentationModel;
 
@@ -26,18 +26,18 @@ public class AuditEventDto extends RepresentationModel<AuditEventDto> implements
   }
 
   private String auditId;
-  private Date timestamp;
+  private Instant timestamp;
   private String userID;
   private Type type;
   private String description;
   private String documentId;
 
   @Schema(description = "The time at which the event occurred")
-  public Date getTimestamp() {
+  public Instant getTimestamp() {
     return timestamp;
   }
 
-  public void setTimestamp(final Date timestamp) {
+  public void setTimestamp(final Instant timestamp) {
     this.timestamp = timestamp;
   }
 

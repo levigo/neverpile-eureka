@@ -1,7 +1,7 @@
 package com.neverpile.eureka.plugin.metadata.service;
 
+import java.time.Instant;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.Objects;
 
 import javax.ws.rs.core.MediaType;
@@ -21,9 +21,9 @@ public class MetadataElement extends EncryptableElement {
 
   private byte[] content;
 
-  private Date dateCreated;
+  private Instant dateCreated;
 
-  private Date dateModified;
+  private Instant dateModified;
   
   public String getSchema() {
     return schema;
@@ -78,19 +78,19 @@ public class MetadataElement extends EncryptableElement {
     return true;
   }
 
-  public Date getDateCreated() {
+  public Instant getDateCreated() {
     return dateCreated;
   }
 
-  public void setDateCreated(final Date dateCreated) {
+  public void setDateCreated(final Instant dateCreated) {
     this.dateCreated = dateCreated;
   }
 
-  public Date getDateModified() {
+  public Instant getDateModified() {
     return dateModified;
   }
 
-  public void setDateModified(final Date dateModified) {
+  public void setDateModified(final Instant dateModified) {
     this.dateModified = dateModified;
   }
 }

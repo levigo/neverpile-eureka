@@ -1,7 +1,7 @@
 package com.neverpile.eureka.test;
 
 import java.lang.reflect.Type;
-import java.util.Date;
+import java.time.Instant;
 
 import org.junit.Before;
 import org.modelmapper.ModelMapper;
@@ -70,8 +70,8 @@ public abstract class AbstractRestAssuredTest {
   protected Document createTestDocument() {
     Document doc = new Document();
 
-    doc.setDateCreated(new Date());
-    doc.setDateModified(new Date());
+    doc.setDateCreated(Instant.now());
+    doc.setDateModified(Instant.now());
 
     return doc;
   }

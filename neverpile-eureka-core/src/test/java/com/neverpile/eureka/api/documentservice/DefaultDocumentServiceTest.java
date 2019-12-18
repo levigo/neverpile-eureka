@@ -16,7 +16,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
-import java.util.Date;
 
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.junit.Test;
@@ -177,7 +176,7 @@ public class DefaultDocumentServiceTest {
   public void testThat_documentDataCanBeAssociatedUponUpdate() throws Exception {
     given(objectStoreService.get(any())).will(i -> new DocObject(mapper, prepareEmptyDocument(), i.getArgument(0)));
   
-    Date now = new Date();
+    Instant now = Instant.now();
   
     transactionTemplate.execute(status -> {
       Document toBeUpdated = documentService.getDocument(D).get();

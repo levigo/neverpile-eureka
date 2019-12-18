@@ -24,7 +24,6 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -117,7 +116,7 @@ public class SimpleMutablePolicyRepositoryTest {
   @Autowired
   ObjectMapper objectMapper;
 
-  String policyPattern = "{\"validFrom\" : \"2018-01-01\",\"description\": \"%s\",\"default_effect\": \"DENY\",\"rules\": []}";
+  String policyPattern = "{\"validFrom\" : \"2018-01-01T00:00:00.000Z\",\"description\": \"%s\",\"default_effect\": \"DENY\",\"rules\": []}";
 
   private Instant now;
 
@@ -146,7 +145,7 @@ public class SimpleMutablePolicyRepositoryTest {
 
     assertThat(currentPolicy.getDefaultEffect()).isEqualTo(Effect.DENY);
     assertThat(currentPolicy.getDescription()).contains("default");
-    assertThat(currentPolicy.getValidFrom()).isBefore(new Date());
+    assertThat(currentPolicy.getValidFrom()).isBefore(Instant.now());
     assertThat(currentPolicy.getRules()).hasSize(1);
   }
 
@@ -191,7 +190,7 @@ public class SimpleMutablePolicyRepositoryTest {
   public void testThat_queryRepositoryReturnsOldCurrentAndUpcomingPolicies() throws Exception {
     assertThat( //
         policyRepository.queryRepository( //
-            Date.from(now().minus(1, DAYS)), Date.from(now().plus(1, DAYS)), //
+            now().minus(1, DAYS), now().plus(1, DAYS), //
             Integer.MAX_VALUE //
         ).stream().map(AccessPolicy::getDescription) //
     ).containsExactly("older", "old", "past", "current", "upcoming", "later");
@@ -201,7 +200,7 @@ public class SimpleMutablePolicyRepositoryTest {
   public void testThat_queryRepositoryHonorsRangeLowerBound() throws Exception {
     assertThat( //
         policyRepository.queryRepository( //
-            Date.from(now().minus(2, HOURS)), Date.from(now().plus(1, DAYS)), //
+           now().minus(2, HOURS), now().plus(1, DAYS), //
             Integer.MAX_VALUE //
         ).stream().map(AccessPolicy::getDescription) //
     ).containsExactly("old", "past", "current", "upcoming", "later");
@@ -211,7 +210,7 @@ public class SimpleMutablePolicyRepositoryTest {
   public void testThat_queryRepositoryHonorsRangeUpperBound() throws Exception {
     assertThat( //
         policyRepository.queryRepository( //
-            Date.from(now().minus(1, DAYS)), Date.from(now()), //
+           now().minus(1, DAYS), now(), //
             Integer.MAX_VALUE //
         ).stream().map(AccessPolicy::getDescription) //
     ).containsExactly("older", "old", "past", "current");
@@ -229,7 +228,7 @@ public class SimpleMutablePolicyRepositoryTest {
   public void testThat_saveIsDeniedForCurrentPolicy() throws Exception {
     policyRepository.save(new AccessPolicy() //
         .withDefaultEffect(Effect.DENY) //
-        .withValidFrom(Date.from(oneMinuteAgo)) // "current"
+        .withValidFrom(oneMinuteAgo) // "current"
     );
   }
 
@@ -237,7 +236,7 @@ public class SimpleMutablePolicyRepositoryTest {
   public void testThat_saveIsDeniedForOldPolicies() throws Exception {
     policyRepository.save(new AccessPolicy() //
         .withDefaultEffect(Effect.DENY) //
-        .withValidFrom(Date.from(oneHourAgo)) // "old"
+        .withValidFrom(oneHourAgo) // "old"
     );
   }
 
@@ -248,7 +247,7 @@ public class SimpleMutablePolicyRepositoryTest {
     policyRepository.save(new AccessPolicy() //
         .withDefaultEffect(Effect.DENY) //
         .withDescription("new") //
-        .withValidFrom(Date.from(inOneMinute)));
+        .withValidFrom(inOneMinute));
 
     ArgumentCaptor<InputStream> c = ArgumentCaptor.forClass(InputStream.class);
     verify(mockObjectStore).put( //
@@ -264,7 +263,7 @@ public class SimpleMutablePolicyRepositoryTest {
     policyRepository.save(new AccessPolicy() //
         .withDefaultEffect(Effect.DENY) //
         .withDescription("new") //
-        .withValidFrom(Date.from(inOneHour)));
+        .withValidFrom(inOneHour));
 
     ArgumentCaptor<InputStream> c = ArgumentCaptor.forClass(InputStream.class);
     verify(mockObjectStore).put(eq(inOneHourName), eq("1"), c.capture());
@@ -274,12 +273,12 @@ public class SimpleMutablePolicyRepositoryTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void testThat_deletePolicyDeniesDeleteOfOldPolicy() throws Exception {
-    policyRepository.delete(Date.from(oneHourAgo));
+    policyRepository.delete(oneHourAgo);
   }
 
   @Test
   public void testThat_deletePolicyDeletesFuturePolicies() throws Exception {
-    policyRepository.delete(Date.from(inOneHour));
+    policyRepository.delete(inOneHour);
 
     verify(mockObjectStore).delete(eq(inOneHourName));
   }

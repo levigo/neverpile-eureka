@@ -1,8 +1,8 @@
 package com.neverpile.authorization.policy;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -55,7 +55,7 @@ public class AccessPolicy implements Serializable {
   @JsonProperty(value = "valid_from", required = false)
   @JsonAlias("validFrom")
   @JsonInclude(Include.NON_NULL)
-  private Date validFrom;
+  private Instant validFrom;
 
   @Schema(description = "A description of this access policy")
   private String description;
@@ -72,11 +72,11 @@ public class AccessPolicy implements Serializable {
    * 
    * @return the start date
    */
-  public Date getValidFrom() {
+  public Instant getValidFrom() {
     return validFrom;
   }
 
-  public void setValidFrom(final Date validFrom) {
+  public void setValidFrom(final Instant validFrom) {
     this.validFrom = Objects.requireNonNull(validFrom);
   }
 
@@ -148,7 +148,7 @@ public class AccessPolicy implements Serializable {
    * @param from the start date
    * @return this policy
    */
-  public AccessPolicy withValidFrom(final Date from) {
+  public AccessPolicy withValidFrom(final Instant from) {
     setValidFrom(from);
     return this;
   }

@@ -3,10 +3,10 @@ package com.neverpile.authorization.rest;
 import static java.util.Collections.singleton;
 import static java.util.stream.Collectors.toList;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -106,14 +106,14 @@ public class PolicyRepositoryResource {
       "operation", "retrieve", "target", "policy"
   }, value = "eureka.authorization.policy.get-current")
   public List<AccessPolicy> query(
-      @Parameter(description = "The start of the date range to query for") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final Optional<Date> from,
-      @Parameter(description = "The end of the date range to query for") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final Optional<Date> to,
+      @Parameter(description = "The start of the date range to query for") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final Optional<Instant> from,
+      @Parameter(description = "The end of the date range to query for") @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final Optional<Instant> to,
       @Parameter(description = "The maximum number if policies to return") @RequestParam(required = false) final Optional<Integer> limit) {
     if (!authService.isAccessAllowed(POLICY_RESOURCE_SPECIFIER, singleton(CoreActions.QUERY),
         createAuthorizationContext()))
       throw new AccessDeniedException("Retrieval of authorization policy denied");
 
-    return policyRepository.queryRepository(from.orElse(new Date(0)), to.orElse(new Date(Long.MAX_VALUE)),
+    return policyRepository.queryRepository(from.orElse(Instant.ofEpochMilli(0)), to.orElse(Instant.ofEpochMilli(Long.MAX_VALUE)),
         limit.orElse(Integer.MAX_VALUE));
   }
 
@@ -128,7 +128,7 @@ public class PolicyRepositoryResource {
       "operation", "retrieve", "target", "policy"
   }, value = "eureka.authorization.policy.get")
   public AccessPolicy get(
-      @Parameter(description = "The start-of-validity date of the policy to be fetched", schema = @Schema(format = "date-time")) @PathVariable("startOfValidity") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final Date startOfValidity) {
+      @Parameter(description = "The start-of-validity date of the policy to be fetched", schema = @Schema(format = "date-time")) @PathVariable("startOfValidity") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final Instant startOfValidity) {
     if (!authService.isAccessAllowed(POLICY_RESOURCE_SPECIFIER, Collections.singleton(CoreActions.GET),
         createAuthorizationContext()))
       throw new AccessDeniedException("Retrieval of authorization policy denied");
@@ -144,7 +144,7 @@ public class PolicyRepositoryResource {
   }, value = "eureka.authorization.policy.put")
   @Transactional
   public void put(
-      @Parameter(description = "The start-of-validity date of the policy to be created/updated", schema = @Schema(format = "date-time")) @PathVariable("startOfValidity") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final Date startOfValidity,
+      @Parameter(description = "The start-of-validity date of the policy to be created/updated", schema = @Schema(format = "date-time")) @PathVariable("startOfValidity") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final Instant startOfValidity,
       @Parameter @RequestBody final AccessPolicy policy) {
     policy.setValidFrom(startOfValidity);
 
@@ -159,7 +159,7 @@ public class PolicyRepositoryResource {
   }, value = "eureka.authorization.policy.delete")
   @Transactional
   public void delete(
-      @Parameter(description = "The start-of-validity date of the policy to be deleted", schema = @Schema(format = "date-time")) @PathVariable("startOfValidity") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final Date startOfValidity) {
+      @Parameter(description = "The start-of-validity date of the policy to be deleted", schema = @Schema(format = "date-time")) @PathVariable("startOfValidity") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final Instant startOfValidity) {
     if (!authService.isAccessAllowed(POLICY_RESOURCE_SPECIFIER, Collections.singleton(CoreActions.DELETE),
         createAuthorizationContext()))
       throw new AccessDeniedException("Deletion of authorization policy denied");

@@ -9,7 +9,6 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -125,7 +124,7 @@ public class SimpleMutablePolicyRepository implements MutablePolicyRepository {
 
       AccessPolicy denyAll = createDefaultPolicy();
 
-      denyAll.setValidFrom(Date.from(now));
+      denyAll.setValidFrom(now);
 
       return denyAll;
     }
@@ -234,9 +233,9 @@ public class SimpleMutablePolicyRepository implements MutablePolicyRepository {
   }
 
   @Override
-  public List<AccessPolicy> queryRepository(final Date from, final Date to, final int limit) {
-    ZonedDateTime fromUTC = from.toInstant().atZone(ZoneOffset.UTC);
-    ZonedDateTime toUTC = to.toInstant().atZone(ZoneOffset.UTC);
+  public List<AccessPolicy> queryRepository(final Instant from, final Instant to, final int limit) {
+    ZonedDateTime fromUTC = from.atZone(ZoneOffset.UTC);
+    ZonedDateTime toUTC = to.atZone(ZoneOffset.UTC);
 
     // fetch current and possibly past policies
     // query both expired and current/upcoming policy prefixes
@@ -272,11 +271,11 @@ public class SimpleMutablePolicyRepository implements MutablePolicyRepository {
 
   @Override
   public List<AccessPolicy> queryUpcoming(final int limit) {
-    return queryRepository(new Date(), new Date(Long.MAX_VALUE), limit);
+    return queryRepository(Instant.now(), Instant.ofEpochMilli(Long.MAX_VALUE), limit);
   }
 
   @Override
-  public AccessPolicy get(final Date startOfValidity) {
+  public AccessPolicy get(final Instant startOfValidity) {
     String name = makeObjectNameTail(startOfValidity);
 
     StoreObject storeObject = objectStore.get(POLICY_REPO_PREFIX.append(name));
@@ -291,8 +290,8 @@ public class SimpleMutablePolicyRepository implements MutablePolicyRepository {
     return unmarshalPolicy(storeObject);
   }
 
-  private String makeObjectNameTail(final Date startOfValidity) {
-    return OBJECT_NAME_FORMATTER.format(startOfValidity.toInstant());
+  private String makeObjectNameTail(final Instant startOfValidity) {
+    return OBJECT_NAME_FORMATTER.format(startOfValidity);
   }
 
   @Override
@@ -300,10 +299,10 @@ public class SimpleMutablePolicyRepository implements MutablePolicyRepository {
   public void save(final AccessPolicy policy) {
     // an access policy with a null valid-from-date means: make it active immediately
     if (null == policy.getValidFrom()) {
-      policy.setValidFrom(new Date());
+      policy.setValidFrom(Instant.now());
     } else {
       // validate save request
-      if (policy.getValidFrom().toInstant().isBefore(Instant.now()))
+      if (policy.getValidFrom().isBefore(Instant.now()))
         throw new IllegalArgumentException("Creating or updating a policy in the past is not permitted");
     }
 
@@ -316,7 +315,7 @@ public class SimpleMutablePolicyRepository implements MutablePolicyRepository {
       StoreObject existingStoreObject = objectStore.get(objectName);
 
       LOGGER.info("{} access policy {} ({})", null != existingStoreObject ? "Updating" : "Saving",
-          OBJECT_NAME_FORMATTER.format(policy.getValidFrom().toInstant()), objectName);
+          OBJECT_NAME_FORMATTER.format(policy.getValidFrom()), objectName);
 
       objectStore.put(objectName,
           null != existingStoreObject ? existingStoreObject.getVersion() : ObjectStoreService.NEW_VERSION,
@@ -328,15 +327,15 @@ public class SimpleMutablePolicyRepository implements MutablePolicyRepository {
 
   @Override
   @CacheEvict(key = "'" + CURRENT_AUTORIZATION_POLICY_KEY + "'")
-  public boolean delete(final Date startOfValidity) {
+  public boolean delete(final Instant startOfValidity) {
     // validate delete request
-    if (startOfValidity.toInstant().isBefore(Instant.now()))
+    if (startOfValidity.isBefore(Instant.now()))
       throw new IllegalArgumentException("Creating or updating a policy in the past is not permitted");
 
     ObjectName objectName = POLICY_REPO_PREFIX.append(makeObjectNameTail(startOfValidity));
 
     if (null != objectStore.get(objectName)) {
-      LOGGER.info("Deleting access policy {} ({})", OBJECT_NAME_FORMATTER.format(startOfValidity.toInstant()),
+      LOGGER.info("Deleting access policy {} ({})", OBJECT_NAME_FORMATTER.format(startOfValidity),
           objectName);
 
       objectStore.delete(objectName);

@@ -1,8 +1,9 @@
 package com.neverpile.eureka.rest.api.document;
 
-import static com.neverpile.eureka.rest.api.document.MatchesPattern.*;
-import static io.restassured.RestAssured.*;
-import static org.junit.Assert.*;
+import static com.neverpile.eureka.rest.api.document.MatchesPattern.matchesPattern;
+import static io.restassured.RestAssured.given;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

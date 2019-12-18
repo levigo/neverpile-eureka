@@ -24,7 +24,6 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import org.junit.Before;
@@ -137,6 +136,14 @@ public class PolicyRepositoryResourceTest extends AbstractRestAssuredTest {
     inOneHour = now.plus(1, HOURS);
     threeHoursAgo = now.minus(3, HOURS);
     oneHourAgo = now.minus(1, HOURS);
+
+    // Fix date precision to match used date fromat:
+    now = Instant.parse(formatter.format(now));
+    oneMinuteAgo = Instant.parse(formatter.format(oneMinuteAgo));
+    inOneHour = Instant.parse(formatter.format(inOneHour));
+    threeHoursAgo = Instant.parse(formatter.format(threeHoursAgo));
+    oneHourAgo = Instant.parse(formatter.format(oneHourAgo));
+
   }
 
   @Test
@@ -187,10 +194,10 @@ public class PolicyRepositoryResourceTest extends AbstractRestAssuredTest {
   public void testThat_policyListingWorks() throws JsonProcessingException {
     given(mockPolicyRepository.queryRepository(any(), any(), anyInt())).willReturn( //
         Arrays.asList( //
-            new AccessPolicy().withDescription("older").withValidFrom(Date.from(threeHoursAgo)), //
-            new AccessPolicy().withDescription("old").withValidFrom(Date.from(oneHourAgo)), //
-            new AccessPolicy().withDescription("current").withValidFrom(Date.from(oneMinuteAgo)), //
-            new AccessPolicy().withDescription("upcoming").withValidFrom(Date.from(inOneHour)) //
+            new AccessPolicy().withDescription("older").withValidFrom(threeHoursAgo), //
+            new AccessPolicy().withDescription("old").withValidFrom(oneHourAgo), //
+            new AccessPolicy().withDescription("current").withValidFrom(oneMinuteAgo), //
+            new AccessPolicy().withDescription("upcoming").withValidFrom(inOneHour) //
         ));
 
     // @formatter:off
@@ -217,7 +224,7 @@ public class PolicyRepositoryResourceTest extends AbstractRestAssuredTest {
 
     verify(mockAuthService).isAccessAllowed(eq("authorization.policy"), eq(singleton(QUERY)), any());
 
-    verify(mockPolicyRepository).queryRepository(eq(Date.from(threeHoursAgo)), eq(Date.from(inOneHour)), eq(4711));
+    verify(mockPolicyRepository).queryRepository(eq(threeHoursAgo), eq(inOneHour), eq(4711));
   }
 
   @Test
@@ -228,7 +235,7 @@ public class PolicyRepositoryResourceTest extends AbstractRestAssuredTest {
       .given()
         .accept(ContentType.JSON)
         .contentType(ContentType.JSON)
-        .body(new AccessPolicy().withValidFrom(Date.from(now)).withDescription("new").withRule(testAR))
+        .body(new AccessPolicy().withValidFrom(now).withDescription("new").withRule(testAR))
         .auth().preemptive().basic("user", "password")
         .log().all()
       .when()
@@ -275,24 +282,24 @@ public class PolicyRepositoryResourceTest extends AbstractRestAssuredTest {
     verify(mockPolicyRepository).save(c.capture());
 
     // date must have been corrected/set to the one from the url path
-    assertThat(c.getValue().getValidFrom()).isEqualTo(Date.from(now));
+    assertThat(c.getValue().getValidFrom()).isEqualTo(now);
     // Condition has ben set.
     assertThat(c.getValue().getRules().size()).isEqualTo(1);
   }
 
   @Test
   public void testThat_policyUpdateWorks() throws JsonProcessingException {
-    given(mockPolicyRepository.get(Date.from(now))).willReturn( //
+    given(mockPolicyRepository.get(now)).willReturn( //
         new AccessPolicy() //
             .withDescription("current") //
-            .withValidFrom(Date.from(now)));
+            .withValidFrom(now));
 
     // @formatter:off
     RestAssured
       .given()
         .accept(ContentType.JSON)
         .contentType(ContentType.JSON)
-        .body(new AccessPolicy().withValidFrom(Date.from(now)).withDescription("new"))
+        .body(new AccessPolicy().withValidFrom(now).withDescription("new"))
         .auth().preemptive().basic("user", "password")
         .log().all()
       .when()
@@ -311,17 +318,17 @@ public class PolicyRepositoryResourceTest extends AbstractRestAssuredTest {
 
   @Test
   public void testThat_policyDeletionWorks() throws JsonProcessingException {
-    given(mockPolicyRepository.get(Date.from(now))).willReturn( //
+    given(mockPolicyRepository.get(now)).willReturn( //
         new AccessPolicy() //
             .withDescription("current") //
-            .withValidFrom(Date.from(now)));
+            .withValidFrom(now));
 
     // @formatter:off
     RestAssured
       .given()
         .accept(ContentType.JSON)
         .contentType(ContentType.JSON)
-        .body(new AccessPolicy().withValidFrom(Date.from(now)).withDescription("new"))
+        .body(new AccessPolicy().withValidFrom(now).withDescription("new"))
         .auth().preemptive().basic("user", "password")
         .log().all()
       .when()
@@ -335,7 +342,7 @@ public class PolicyRepositoryResourceTest extends AbstractRestAssuredTest {
 
     verify(mockAuthService).isAccessAllowed(eq("authorization.policy"), eq(singleton(DELETE)), any());
 
-    verify(mockPolicyRepository).delete(eq(Date.from(now)));
+    verify(mockPolicyRepository).delete(eq(now));
   }
 
   @Test

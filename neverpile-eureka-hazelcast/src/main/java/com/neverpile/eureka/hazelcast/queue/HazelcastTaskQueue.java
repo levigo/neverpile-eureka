@@ -42,7 +42,7 @@ public class HazelcastTaskQueue<T> implements TaskQueue<T> {
 
     private void notify(final EntryEvent<String, CacheData<T>> event) {
       if (event.getValue().getState() == State.OPEN)
-        notifyListeners(name, event.getValue());
+        notifyListeners();
     }
   }
 
@@ -133,10 +133,10 @@ public class HazelcastTaskQueue<T> implements TaskQueue<T> {
     queueCache.addEntryListener(new TaskListener(), true);
 
     if (!queueCache.isEmpty())
-      notifyListeners(name, null);
+      notifyListeners();
   }
 
-  private void notifyListeners(final String key, final CacheData<T> value) {
+  private void notifyListeners() {
     for (QueueListener<T> listener : listeners) {
       notificationExecutor.submit(() -> listener.notifyUpdate());
     }

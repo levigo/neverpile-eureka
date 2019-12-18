@@ -13,7 +13,6 @@ import static org.mockito.Mockito.when;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Date;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -92,7 +91,7 @@ public class MultiVersioningDocumentAPITest extends AbstractRestAssuredTest {
 
   @Test
   public void testThat_documentVersionCanBeRetrievedAsJSON() throws Exception {
-    Date then = new Date();
+    Instant then = Instant.now();
 
     Document doc = createTestDocumentWithContent();
     Instant versionTimestamp = Instant.now();
@@ -121,7 +120,7 @@ public class MultiVersioningDocumentAPITest extends AbstractRestAssuredTest {
     // @formatter:on
 
     // verify returned document
-    Date now = new Date();
+    Instant now = Instant.now();
     assertThat(returnedDocument.getDocumentId(), equalTo(D));
     assertThat(returnedDocument.getVersionTimestamp(), equalTo(versionTimestamp));
     assertThat(returnedDocument.getDateCreated(), allOf(greaterThanOrEqualTo(then), lessThanOrEqualTo(now)));

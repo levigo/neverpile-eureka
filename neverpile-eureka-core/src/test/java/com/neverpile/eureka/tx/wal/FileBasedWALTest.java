@@ -1,7 +1,7 @@
 package com.neverpile.eureka.tx.wal;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.lessThan;
+import static org.junit.Assert.assertThat;
 
 import java.io.File;
 

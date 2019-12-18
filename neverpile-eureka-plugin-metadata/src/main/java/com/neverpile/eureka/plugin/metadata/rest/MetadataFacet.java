@@ -1,6 +1,6 @@
 package com.neverpile.eureka.plugin.metadata.rest;
 
-import static com.neverpile.eureka.plugin.metadata.rest.MetadataUtils.*;
+import static com.neverpile.eureka.plugin.metadata.rest.MetadataUtils.linkify;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
