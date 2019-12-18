@@ -69,10 +69,10 @@ public class SimpleMutablePolicyRepository implements MutablePolicyRepository {
       .withZone(ZoneOffset.UTC);
 
   @VisibleForTesting
-  static final ObjectName POLICY_REPO_PREFIX = ObjectName.of(CACHE_NAME, "policy");
+  static final ObjectName POLICY_REPO_PREFIX = ObjectName.of("authorization", "policy", "active");
 
   @VisibleForTesting
-  static final ObjectName EXPIRED_POLICY_REPO_PREFIX = ObjectName.of(CACHE_NAME, "policy", "expired");
+  static final ObjectName EXPIRED_POLICY_REPO_PREFIX = ObjectName.of("authorization", "policy", "expired");
 
   @Autowired
   private ObjectStoreService objectStore;
