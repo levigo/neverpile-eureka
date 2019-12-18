@@ -29,8 +29,8 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.neverpile.eureka.api.ObjectStoreService;
 import com.neverpile.eureka.api.exception.VersionMismatchException;
 import com.neverpile.eureka.model.ObjectName;
-import com.neverpile.eureka.tracing.TraceInvocation;
 import com.neverpile.eureka.tracing.Tag;
+import com.neverpile.eureka.tracing.TraceInvocation;
 import com.neverpile.eureka.tx.wal.TransactionWAL;
 import com.neverpile.eureka.tx.wal.TransactionWAL.TransactionalAction;
 
@@ -121,6 +121,10 @@ public class S3ObjectStoreService implements ObjectStoreService {
   @Autowired
   private TransactionWAL writeAheadLog;
 
+  // Hack used to route calls from StoreObjects across an instrumented/intercepted method call  
+  @Autowired
+  private S3ObjectStoreService myself;
+  
   private AmazonS3 s3client;
 
   @PostConstruct
@@ -235,7 +239,8 @@ public class S3ObjectStoreService implements ObjectStoreService {
 
         @Override
         public InputStream getInputStream() {
-          return s3client.getObject(s.getBucketName(), s.getKey()).getObjectContent();
+          // route this call across an instrumented invocation to let @TraceInvocation do its thing
+          return myself.get(getObjectName()).getInputStream();
         }
       };
     }
@@ -284,7 +289,6 @@ public class S3ObjectStoreService implements ObjectStoreService {
     try {
       final S3Object object = s3client.getObject(connectionConfiguration.getDefaultBucketName(), toKey(objectName));
 
-      // FIXME: eagerly fetch the data into a buffered stream?
       return new StoreObject() {
         @Override
         public String getVersion() {
