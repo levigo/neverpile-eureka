@@ -32,7 +32,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
-import com.neverpile.eureka.ignite.cachemanager.IgniteCacheManager;
+import com.neverpile.eureka.ignite.cache.IgniteCacheManager;
 import com.neverpile.eureka.ignite.lock.IgniteLockFactory;
 import com.neverpile.eureka.ignite.queue.IgniteTaskQueue;
 import com.neverpile.eureka.ignite.wal.IgniteWAL;

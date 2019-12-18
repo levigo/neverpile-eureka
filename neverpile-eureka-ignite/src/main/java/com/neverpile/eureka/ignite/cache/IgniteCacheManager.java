@@ -1,4 +1,4 @@
-package com.neverpile.eureka.ignite.cachemanager;
+package com.neverpile.eureka.ignite.cache;
 
 import java.util.Collection;
 import java.util.concurrent.Callable;
