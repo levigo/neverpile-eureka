@@ -6,7 +6,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 
+import com.neverpile.common.openapi.DefaultOpenApiFragment;
+import com.neverpile.common.openapi.OpenApiFragment;
 import com.neverpile.eureka.api.ObjectStoreService;
 import com.neverpile.eureka.model.Document;
 import com.neverpile.eureka.plugin.audit.rest.AuditLogFacet;
@@ -64,4 +67,9 @@ public class AuditLogPluginAutoConfiguration {
     return new DefaultAuditIdGenerationStrategy();
   }
 
+  
+  @Bean
+  public OpenApiFragment auditLogOpenApiFragment() {
+    return new DefaultOpenApiFragment("eureka", "audit", new ClassPathResource("com/neverpile/eureka/plugin/audit/openapi.yaml"));
+  }
 }

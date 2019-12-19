@@ -19,8 +19,6 @@ tags:
   description: Document related APIs
 - name: Content
   description: Document content element related APIs
-- name: Metadata
-  description: Document metadata related APIs
 - name: Audit
   description: Audit-log related APIs
 - name: Authorization
@@ -585,165 +583,6 @@ paths:
         404:
           description: Document/Content not found
           
-  /api/v1/documents/{documentID}/metadata:
-    get:
-      tags:
-      - Metadata
-      summary: Fetches a document's metadata
-
-      parameters:
-      - name: documentID
-        in: path
-        description: The ID of the document for which metadata shall be fetched
-        required: true
-        schema:
-          type: string
-
-      responses:
-        200:
-          description: Document metadata found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Metadata'
-        404:
-          description: Document not found
-          
-    put:
-      tags:
-      - Metadata
-      summary: Updates a document's metadata
-
-      parameters:
-      - name: documentID
-        in: path
-        description: The ID of the document for which metadata shall be fetched
-        required: true
-        schema:
-          type: string
-
-      requestBody:
-        description: The new document metadata
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Metadata'
-        required: false
-
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Metadata'
-        202:
-          description: Metadata updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Metadata'
-        404:
-          description: Document not found
-      
-  /api/v1/documents/{documentID}/metadata/{name}:
-    get:
-      tags:
-      - Metadata
-      summary: Fetches a document metadata element by ID and element name
-
-      parameters:
-      - name: documentID
-        in: path
-        description: The ID of the document's metadata to be fetched
-        required: true
-        schema:
-          type: string
-      - name: name
-        in: path
-        description: The name of the metadata element to be fetched
-        required: true
-        schema:
-          type: string
-
-      responses:
-        200:
-          description: Metadata element found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MetadataElement'
-        404:
-          description: Document or element not found
-          
-    put:
-      tags:
-      - Metadata
-      summary: Create or update a single metatadata element of a document
-
-      parameters:
-      - name: documentID
-        in: path
-        description: The ID of the document's metadata to be fetched
-        required: true
-        schema:
-          type: string
-      - name: name
-        in: path
-        description: The name of the metadata element to be fetched
-        required: true
-        schema:
-          type: string
-
-      requestBody:
-        description: The new metadata element
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/MetadataElement'
-        required: false
-
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MetadataElement'
-        202:
-          description: metadata updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MetadataElement'
-        404:
-          description: Document not found
-          
-    delete:
-      tags:
-      - Metadata
-      summary: Delete a single metatadata element of a document
-
-      parameters:
-      - name: documentID
-        in: path
-        description: The ID of the document's metadata to be fetched
-        required: true
-        schema:
-          type: string
-      - name: name
-        in: path
-        description: The name of the metadata element to be fetched
-        required: true
-        schema:
-          type: string
-
-      responses:
-        204:
-          description: Metadata element deleted
-        404:
-          description: Document or element not found
-          
   /api/v1/documents/{documentId}/audit:
     get:
       tags:
@@ -1066,8 +905,6 @@ components:
         documentId:
           type: string
           description: The document's unique ID
-        metadata:
-          $ref: '#/components/schemas/Metadata'
         versionTimestamp:
           type: string
           format: date-time
@@ -1096,49 +933,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Hint'
-    Metadata:
-      title: Metadata
-      type: object
-      additionalProperties:
-        $ref: '#/components/schemas/MetadataElement'
-      description: A set of metadata elements associated with a document
-    MetadataElement:
-      title: MetadataElement
-      type: object
-      properties:
-        content:
-          pattern: ^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$
-          type: string
-          description: The content (payload) of the metadata element
-          format: byte
-        contentType:
-          type: string
-          description: The MIME-Type of the metadata element as specified in RFC 2045
-            without parameters
-        dateCreated:
-          type: string
-          description: The timestamp at which the element was created
-          format: date-time
-        dateModified:
-          type: string
-          description: The timestamp at which the element was last modified
-          format: date-time
-        encryption:
-          type: string
-          description: The type of encryption the content element is subject to
-          enum:
-          - shared
-          - private
-        keyHint:
-          type: string
-          description: A key hint may be used by a client to store information about
-            which key was used to encrypt the element
-        schema:
-          type: string
-          description: A reference to a schema which the element is supposed to conform
-            to, e.g. an XML namespace definition, an XSD reference, a JSON schema
-            reference etc.
-      description: A metadata element associated with a document
     ValidationResult:
       title: ValidationResult
       type: object

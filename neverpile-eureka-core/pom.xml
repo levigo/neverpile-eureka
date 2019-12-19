@@ -77,6 +77,11 @@
       <artifactId>json-path</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-yaml</artifactId>
+    </dependency>
+
     <!-- Tracing -->
     <dependency>
       <groupId>io.opentracing</groupId>

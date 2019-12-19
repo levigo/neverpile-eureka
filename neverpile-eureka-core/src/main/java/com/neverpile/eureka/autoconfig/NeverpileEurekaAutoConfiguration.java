@@ -11,10 +11,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.context.annotation.RequestScope;
 
 import com.neverpile.authorization.api.AuthorizationService;
 import com.neverpile.authorization.basic.AllowAllAuthorizationService;
+import com.neverpile.common.openapi.DefaultOpenApiFragment;
+import com.neverpile.common.openapi.OpenApiFragment;
 import com.neverpile.eureka.api.ContentElementIdGenerationStrategy;
 import com.neverpile.eureka.api.ContentElementService;
 import com.neverpile.eureka.api.DocumentAuthorizationService;
@@ -40,6 +43,7 @@ import com.neverpile.eureka.rest.api.document.core.CreationDateFacet;
 import com.neverpile.eureka.rest.api.document.core.IdFacet;
 import com.neverpile.eureka.rest.api.document.core.ModificationDateFacet;
 import com.neverpile.eureka.rest.api.exception.ExceptionHandlers;
+import com.neverpile.eureka.rest.api.openapi.OpenApiDefinitionResource;
 import com.neverpile.eureka.rest.configuration.FacetedDocumentDtoModule;
 import com.neverpile.eureka.rest.configuration.JacksonConfiguration;
 import com.neverpile.eureka.tracing.aspect.OpentracingAspect;
@@ -68,12 +72,18 @@ public class NeverpileEurekaAutoConfiguration {
   @Import({
       DocumentResource.class, CreationDateFacet.class, IdFacet.class, ModificationDateFacet.class,
       ExceptionHandlers.class, ContentElementFacet.class, ContentElementResource.class, IndexResource.class,
+      OpenApiDefinitionResource.class
   })
   public static class RestResourceConfiguration {
     @Bean
     @ConditionalOnBean(value = MultiVersioningDocumentService.class)
     public MultiVersioningDocumentResource multiVersioningDocumentResource() {
       return new MultiVersioningDocumentResource();
+    }
+    
+    @Bean
+    public OpenApiFragment coreOpenApiFragment() {
+      return new DefaultOpenApiFragment("eureka", "core", new ClassPathResource("com/neverpile/eureka/eureka-core.yaml"));
     }
   }
 

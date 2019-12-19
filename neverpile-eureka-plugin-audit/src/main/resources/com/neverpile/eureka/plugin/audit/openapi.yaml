@@ -1,0 +1,142 @@
+openapi: 3.0.1
+
+info:
+  title: Neverpile eureka API
+  contact:
+    name: levigo solutions gmbh
+    url: https://levigo.de
+    email: solutions@levigo.de
+  version: 1.0.0
+  
+servers:
+- url: //localhost:8080/
+
+tags:
+- name: Audit
+  description: Audit-log related APIs
+
+paths:
+  /api/v1/documents/{documentId}/audit:
+    get:
+      tags:
+      - Audit
+      summary: Fetches a document's audit log
+
+      parameters:
+      - name: documentId
+        in: path
+        description: The ID of the document
+        required: true
+        schema:
+          type: string
+
+      responses:
+        200:
+          description: Audit log found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AuditEvent'
+        404:
+          description: Document not found
+          
+    post:
+      tags:
+      - Audit
+      summary: Appends an event to a document's audit log
+
+      parameters:
+      - name: documentId
+        in: path
+        description: The ID of the document
+        required: true
+        schema:
+          type: string
+
+      requestBody:
+        description: the audit event to append
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditEvent'
+        required: true
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditEvent'
+        201:
+          description: Event logged
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditEvent'
+        400:
+          description: Invalid input, object invalid
+        404:
+          description: Document not found
+          
+  /api/v1/documents/{documentId}/audit/{auditId}:
+    get:
+      tags:
+      - Audit
+      summary: Fetches a single audit event
+
+      parameters:
+      - name: documentId
+        in: path
+        description: The ID of the document
+        required: true
+        schema:
+          type: string
+      - name: auditId
+        in: path
+        description: The ID of the audit event to be fetched
+        required: true
+        schema:
+          type: string
+
+      responses:
+        200:
+          description: Audit event found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditEvent'
+        404:
+          description: AuditEvent not found
+          
+components:
+  schemas:
+    AuditEvent:
+      title: AuditEvent
+      type: object
+      properties:
+        auditId:
+          type: string
+          description: The ID of this event
+        description:
+          type: string
+          description: A textual desription of the event
+        timestamp:
+          type: string
+          description: The time at which the event occurred
+          format: date-time
+        type:
+          type: string
+          description: The type of event
+          enum:
+          - CREATE
+          - UPDATE
+          - DELETE
+          - CUSTOM
+        userID:
+          type: string
+          description: The ID of the used which triggered the event; may be null if
+            the event wasn't triggered by a user
+      description: An audit event associated with a document

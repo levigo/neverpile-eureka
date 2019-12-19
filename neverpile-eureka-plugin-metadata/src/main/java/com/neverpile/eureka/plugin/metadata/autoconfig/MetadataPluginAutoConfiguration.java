@@ -6,7 +6,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 
+import com.neverpile.common.openapi.DefaultOpenApiFragment;
+import com.neverpile.common.openapi.OpenApiFragment;
 import com.neverpile.eureka.api.ObjectStoreService;
 import com.neverpile.eureka.model.Document;
 import com.neverpile.eureka.plugin.metadata.rest.MetadataFacet;
@@ -36,5 +39,10 @@ public class MetadataPluginAutoConfiguration {
   @ConditionalOnMissingBean
   MetadataService simpleMetadataService() {
     return new SimpleMetadataService();
+  }
+  
+  @Bean
+  public OpenApiFragment metadataOpenApiFragment() {
+    return new DefaultOpenApiFragment("eureka", "metadata", new ClassPathResource("com/neverpile/eureka/plugin/metadata/openapi.yaml"));
   }
 }
