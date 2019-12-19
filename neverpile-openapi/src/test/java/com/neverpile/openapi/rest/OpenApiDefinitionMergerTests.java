@@ -1,4 +1,4 @@
-package com.neverpile.eureka.rest.api.openapi;
+package com.neverpile.openapi.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -14,8 +14,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import com.neverpile.common.openapi.DefaultOpenApiFragment;
+import com.neverpile.openapi.rest.OpenApiDefinitionMerger;
 
-public class BundlerTests {
+public class OpenApiDefinitionMergerTests {
   @Test
   public void testThat_scalarValueMergeWorks() throws IOException {
     String mergedYaml = performMerge( //
@@ -99,7 +100,7 @@ public class BundlerTests {
         .enable(YAMLGenerator.Feature.MINIMIZE_QUOTES) //
     ) //
         .writeValueAsString( //
-            new OpenAPIMerge().mergeFragments(Stream //
+            new OpenApiDefinitionMerger().mergeFragments(Stream //
                 .of(yaml) //
                 .map(y -> new DefaultOpenApiFragment("foo", new ByteArrayResource(y.getBytes()))) //
                 .collect(Collectors.toList()) //

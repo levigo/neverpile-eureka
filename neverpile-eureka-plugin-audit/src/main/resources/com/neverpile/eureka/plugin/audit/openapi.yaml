@@ -7,9 +7,6 @@ info:
     url: https://levigo.de
     email: solutions@levigo.de
   version: 1.0.0
-  
-servers:
-- url: //localhost:8080/
 
 tags:
 - name: Audit

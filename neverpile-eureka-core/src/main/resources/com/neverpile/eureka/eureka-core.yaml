@@ -8,12 +8,6 @@ info:
     email: solutions@levigo.de
   version: 1.0.0
   
-servers:
-- url: //localhost:8080/
-
-security:
-- oauth: []
-
 tags:
 - name: Document
   description: Document related APIs
@@ -945,12 +939,3 @@ components:
           - INFO
           - WARNING
           - ERROR
-  securitySchemes:
-    oauth:
-      type: oauth2
-      flows:
-        clientCredentials:
-          tokenUrl: http://$HOST/oauth/token
-          scopes:
-            public: for public operations
-            document: for document operations

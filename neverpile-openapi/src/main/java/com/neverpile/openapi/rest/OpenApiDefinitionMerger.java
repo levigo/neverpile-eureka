@@ -1,4 +1,4 @@
-package com.neverpile.eureka.rest.api.openapi;
+package com.neverpile.openapi.rest;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,8 +16,8 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.neverpile.common.openapi.OpenApiFragment;
 import com.neverpile.common.specifier.Specifier;
 
-public class OpenAPIMerge {
-  private static final Logger LOGGER = LoggerFactory.getLogger(OpenAPIMerge.class);
+public class OpenApiDefinitionMerger {
+  private static final Logger LOGGER = LoggerFactory.getLogger(OpenApiDefinitionMerger.class);
 
   ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
 

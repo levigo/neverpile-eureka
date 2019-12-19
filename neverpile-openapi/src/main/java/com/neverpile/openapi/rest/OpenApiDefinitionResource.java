@@ -1,4 +1,4 @@
-package com.neverpile.eureka.rest.api.openapi;
+package com.neverpile.openapi.rest;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -59,7 +59,7 @@ public class OpenApiDefinitionResource {
       return ResponseEntity.notFound().build();
 
     // merge fragments
-    ObjectNode merged = new OpenAPIMerge().mergeFragments(filteredFragments);
+    ObjectNode merged = new OpenApiDefinitionMerger().mergeFragments(filteredFragments);
 
     // do we want YAML?
     if ((!accept.contains(MediaType.APPLICATION_JSON_VALUE) && accept.contains("application/x-yaml"))
