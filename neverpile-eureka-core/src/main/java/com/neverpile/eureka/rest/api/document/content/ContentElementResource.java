@@ -51,6 +51,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.neverpile.eureka.api.ContentElementService;
 import com.neverpile.eureka.api.DocumentIdGenerationStrategy;
 import com.neverpile.eureka.api.DocumentService;
+import com.neverpile.eureka.api.NeverpileException;
 import com.neverpile.eureka.api.ObjectStoreService.StoreObject;
 import com.neverpile.eureka.model.ContentElement;
 import com.neverpile.eureka.model.Document;
@@ -288,7 +289,7 @@ public class ContentElementResource {
 
     return ResponseEntity//
         .created(URI.create(created.getLink(IanaLinkRelations.SELF)
-            .orElseThrow(() -> new RuntimeException("self rel not populated")).getHref())) //
+            .orElseThrow(() -> new NeverpileException("self rel not populated")).getHref())) //
         .lastModified(created.getFacetData(mdFacet).orElse(Instant.now()).toEpochMilli()) //
         .body(created);
   }

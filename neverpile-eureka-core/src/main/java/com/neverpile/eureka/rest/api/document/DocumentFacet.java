@@ -205,14 +205,37 @@ public interface DocumentFacet<V> {
     // do nothing
   }
 
+  /**
+   * Called when the Index schema is created an enables the facet to store its own indexed data according
+   * to this {@link Schema}.
+   * If null is returned, no data will be indexed for this facet.
+   *
+   * @return data Schema or null if ther is no dtat to be indexed.
+   */
   default Schema getIndexSchema() {
     return null;
   }
 
+  /**
+   * Called when a document is saved and the Index data gets created or updated. This method provides document
+   * specific data to be indexed by this facet. The data is formatted accoring to the provided {@link Schema}.
+   * If null is returned, no data will be indexed for this document.
+   *
+   * @param document document associated with the index data.
+   * @return JsonNode of index data.
+   */
   default JsonNode getIndexData(final Document document) {
     return null;
   }
-  
+
+  /**
+   * Can contribute contextual information for authorization checks related to some document by providing an
+   * implementation of {@link AuthorizationContext}.
+   * If null is returned, no AuthorizationContext will be appended.
+   *
+   * @param document document associated with the authorization.
+   * @return AuthorizationContext to be appended.
+   */
   default AuthorizationContext getAuthorizationContextContribution(final Document document) {
     return null;
   }

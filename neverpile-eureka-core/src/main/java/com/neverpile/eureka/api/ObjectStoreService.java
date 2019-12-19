@@ -3,30 +3,53 @@ package com.neverpile.eureka.api;
 import java.io.InputStream;
 import java.util.stream.Stream;
 
+import com.neverpile.eureka.model.Document;
 import com.neverpile.eureka.model.ObjectName;
 
-
+/**
+ * The Object Store service provides generic access to a document store and therefore opertations like
+ * put/get/list/delete within a eureka instance. Data is stored with {@link StoreObject}s which hold an
+ * {@link InputStream} with the actual data, an {@link ObjectName} as an Identifier and a version String to support
+ * versioning.
+ */
 public interface ObjectStoreService {
 
+  /**
+   * Generic data object to store and retrvive data from the {@link ObjectStoreService}.
+   * The Data contains an {@link InputStream} with the actual data, an {@link ObjectName} as an Identifier
+   * and a version String to support versioning.
+   */
   interface StoreObject {
     /**
+     * Unique Object identifier.
+     *
      * @return fully-qualified object name(= key) - example:
-     *         tenant/collection/document/content/object-0
+     * tenant/collection/document/content/object-0
      */
     ObjectName getObjectName();
 
     /**
+     * Actual object data as a stream.
+     *
      * @return initialized stream of the object's payload
      */
     InputStream getInputStream();
 
+    /**
+     * version String to destinguish between versions of the same object
+     *
+     * @return Object version String.
+     */
     String getVersion();
   }
 
-  public class ObjectStoreException extends RuntimeException {
+  /**
+   * Generic exception thrown when an error occured while executing an operation on the object store.
+   */
+  public class ObjectStoreException extends NeverpileException {
     private static final long serialVersionUID = 1L;
 
-    private final ObjectName name;
+    protected final ObjectName name;
 
     public ObjectStoreException(final ObjectName name, final String message, final Throwable cause) {
       super(message, cause);
@@ -47,24 +70,19 @@ public interface ObjectStoreService {
       return name;
     }
   }
-  
+
+  /**
+   * Exception thrown when trying to access an object with an {@link ObjectName} that does not exists.
+   */
   public class ObjectNotFoundException extends ObjectStoreException {
     private static final long serialVersionUID = 1L;
 
-    private final ObjectName name;
-
     public ObjectNotFoundException(final ObjectName name, final Throwable cause) {
       super(name, "Object not found", cause);
-      this.name = name;
     }
 
     public ObjectNotFoundException(final ObjectName name) {
       super(name, "Object not found");
-      this.name = name;
-    }
-
-    public ObjectName getName() {
-      return name;
     }
   }
 
@@ -77,9 +95,9 @@ public interface ObjectStoreService {
    * Stores the stream data under the specified object name.
    *
    * @param objectName identifier (possibly with multiple name components) which will be used for
-   *          storing this object
-   * @param version Version of object to put. {@value #NEW_VERSION} for new objects
-   * @param content stream with the payload to store
+   *                   storing this object
+   * @param version    Version of object to put. {@value #NEW_VERSION} for new objects
+   * @param content    stream with the payload to store
    */
   default void put(final ObjectName objectName, final String version, final InputStream content) {
     put(objectName, version, content, -1L);
@@ -89,10 +107,10 @@ public interface ObjectStoreService {
    * Stores the stream data under the specified object name.
    *
    * @param objectName identifier (possibly with multiple name components) which will be used for
-   *          storing this object
-   * @param version Version of object to put. {@value #NEW_VERSION} for new objects
-   * @param content stream with the payload to store
-   * @param length expected estimated length of the stream
+   *                   storing this object
+   * @param version    Version of object to put. {@value #NEW_VERSION} for new objects
+   * @param content    stream with the payload to store
+   * @param length     expected estimated length of the stream
    */
   void put(ObjectName objectName, String version, InputStream content, long length);
 
@@ -106,19 +124,22 @@ public interface ObjectStoreService {
   Stream<StoreObject> list(ObjectName prefix);
 
   /**
+   * Retrieve a single object by its fully qualified {@link ObjectName}.
+   *
    * @param objectName identifier (possibly with multiple name components) which will be used for
-   *          retrieving this object
+   *                   retrieving this object
    * @return Storage Bridge-specific object containing i.a. name and stream. Return
-   *         <code>null</code> if the object cannot be found.
+   * <code>null</code> if the object cannot be found.
    */
   StoreObject get(ObjectName objectName);
 
   // FIXME: version checking?
+
   /**
    * Deletes an object identified by the supplied objectName without any confirmation/warning.
    *
    * @param objectName identifier (possibly with multiple name components) which will be used for
-   *          deleting this object
+   *                   deleting this object
    */
   void delete(ObjectName objectName);
 
@@ -129,7 +150,7 @@ public interface ObjectStoreService {
    * default.
    *
    * @param objectName identifier (possibly with multiple name components) which will be used for
-   *          deleting this object
+   *                   deleting this object
    * @return false if the document does not exist or the method has not yet been fully implemented
    */
   boolean checkObjectExists(ObjectName objectName);
