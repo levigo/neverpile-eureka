@@ -43,14 +43,14 @@ public interface ContentElementService {
   ObjectName createObjectName(final String documentId, final String contentId);
 
   /**
-   * Get a {@link ContentElement} as an generic {@link StoreObject}.
+   * Get a {@link ContentElement} as an generic {@link InputStream}.
    *
    * @param documentId {@link Document#documentId} of the associated
    *                   {@link Document}.
    * @param contentId  {@link ContentElement#id} of the requested {@link ContentElement}.
-   * @return {@link StoreObject} of the {@link ContentElement}
+   * @return {@link InputStream} of the {@link ContentElement}
    */
-  StoreObject getContentElement(final String documentId, final String contentId);
+  InputStream getContentElement(final String documentId, final String contentId);
 
   /**
    * Delete a existing {@link ContentElement}.

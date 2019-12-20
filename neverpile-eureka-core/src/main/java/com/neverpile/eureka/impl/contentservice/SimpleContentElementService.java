@@ -56,8 +56,9 @@ public class SimpleContentElementService implements ContentElementService {
   }
 
   @Override
-  public StoreObject getContentElement(final String documentId, final String contentId) {
-    return objectStore.get(createObjectName(documentId, contentId));
+  public InputStream getContentElement(final String documentId, final String contentId) {
+    StoreObject storeObject = objectStore.get(createObjectName(documentId, contentId));
+    return storeObject == null ? null : storeObject.getInputStream();
   }
 
   @Override
