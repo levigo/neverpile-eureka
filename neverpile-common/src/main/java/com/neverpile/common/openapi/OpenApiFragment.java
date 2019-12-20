@@ -8,7 +8,7 @@ public interface OpenApiFragment {
 
   /**
    * Return the name of the application, service, etc. to which the fragment belongs. Return
-   * {@value #GLOBAL} for fragments that belong to <em>all</all> applications within the container.
+   * {@value #GLOBAL} for fragments that belong to <em>all</em> applications within the container.
    * This can be used e.g. for authentication-related information that applies to all endpoints.
    * 
    * @return the name of the application
