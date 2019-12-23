@@ -1,11 +1,14 @@
 package com.neverpile.common.openapi;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 import org.springframework.core.io.Resource;
 
 /**
- * A simple default implementation of {@link OpenApiFragment}.
+ * A Spring-resource-based implementation of {@link OpenApiFragment}.
  */
-public class DefaultOpenApiFragment implements OpenApiFragment {
+public class ResourceOpenApiFragment implements OpenApiFragment {
   private final String application;
 
   private final String name;
@@ -18,7 +21,7 @@ public class DefaultOpenApiFragment implements OpenApiFragment {
    * @param name the fragment name
    * @param resource the resource
    */
-  public DefaultOpenApiFragment(final String name, final Resource resource) {
+  public ResourceOpenApiFragment(final String name, final Resource resource) {
     this(GLOBAL, name, resource);
   }
 
@@ -29,7 +32,7 @@ public class DefaultOpenApiFragment implements OpenApiFragment {
    * @param name the fragment name
    * @param resource the resource
    */
-  public DefaultOpenApiFragment(final String application, final String name, final Resource resource) {
+  public ResourceOpenApiFragment(final String application, final String name, final Resource resource) {
     this.application = application;
     this.name = name;
     this.resource = resource;
@@ -46,7 +49,7 @@ public class DefaultOpenApiFragment implements OpenApiFragment {
   }
 
   @Override
-  public Resource getResource() {
-    return resource;
+  public InputStream getFragmentStream() throws IOException {
+    return resource.getInputStream();
   }
 }

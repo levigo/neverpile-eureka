@@ -26,7 +26,7 @@ public class OpenApiDefinitionMerger {
     Specifier path = Specifier.from("");
 
     for (OpenApiFragment fragment : fragments) {
-      try (InputStream is = fragment.getResource().getInputStream()) {
+      try (InputStream is = fragment.getFragmentStream()) {
         JsonNode fragmentContent = yamlMapper.readTree(is);
         fragmentContent.fields().forEachRemaining(e -> mergeField(e, merged, path));
       }

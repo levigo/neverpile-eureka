@@ -13,16 +13,14 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.context.annotation.RequestScope;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.neverpile.authorization.api.AuthorizationService;
 import com.neverpile.authorization.basic.AllowAllAuthorizationService;
-import com.neverpile.common.openapi.DefaultOpenApiFragment;
 import com.neverpile.common.openapi.OpenApiFragment;
+import com.neverpile.common.openapi.ResourceOpenApiFragment;
+import com.neverpile.common.openapi.ServersFragment;
 import com.neverpile.eureka.api.ContentElementIdGenerationStrategy;
 import com.neverpile.eureka.api.ContentElementService;
 import com.neverpile.eureka.api.DocumentAuthorizationService;
@@ -86,18 +84,13 @@ public class NeverpileEurekaAutoConfiguration {
 
     @Bean
     public OpenApiFragment coreOpenApiFragment() {
-      return new DefaultOpenApiFragment("eureka", "core",
+      return new ResourceOpenApiFragment("eureka", "core",
           new ClassPathResource("com/neverpile/eureka/eureka-core.yaml"));
     }
 
     @Bean
     public OpenApiFragment serversOpenApiFragment() throws IOException {
-      ObjectMapper mapper = new ObjectMapper();
-      ObjectNode root = mapper.createObjectNode();
-      root.withArray("servers").addObject().put("url", "/").put("description", "neverpile eureka");
-      String fragment = mapper.writeValueAsString(root);
-      
-      return new DefaultOpenApiFragment("servers", new ByteArrayResource(fragment.getBytes()));
+      return new ServersFragment("servers").withServer("/", "neverpile eureka");
     }
   }
 

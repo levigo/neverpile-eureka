@@ -8,7 +8,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
-import com.neverpile.common.openapi.DefaultOpenApiFragment;
+import com.neverpile.common.openapi.ResourceOpenApiFragment;
 import com.neverpile.common.openapi.OpenApiFragment;
 import com.neverpile.eureka.api.ObjectStoreService;
 import com.neverpile.eureka.model.Document;
@@ -70,6 +70,6 @@ public class AuditLogPluginAutoConfiguration {
   
   @Bean
   public OpenApiFragment auditLogOpenApiFragment() {
-    return new DefaultOpenApiFragment("eureka", "audit", new ClassPathResource("com/neverpile/eureka/plugin/audit/openapi.yaml"));
+    return new ResourceOpenApiFragment("eureka", "audit", new ClassPathResource("com/neverpile/eureka/plugin/audit/openapi.yaml"));
   }
 }

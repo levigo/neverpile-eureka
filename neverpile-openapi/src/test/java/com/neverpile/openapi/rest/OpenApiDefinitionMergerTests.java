@@ -13,7 +13,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
-import com.neverpile.common.openapi.DefaultOpenApiFragment;
+import com.neverpile.common.openapi.ResourceOpenApiFragment;
 import com.neverpile.openapi.rest.OpenApiDefinitionMerger;
 
 public class OpenApiDefinitionMergerTests {
@@ -102,7 +102,7 @@ public class OpenApiDefinitionMergerTests {
         .writeValueAsString( //
             new OpenApiDefinitionMerger().mergeFragments(Stream //
                 .of(yaml) //
-                .map(y -> new DefaultOpenApiFragment("foo", new ByteArrayResource(y.getBytes()))) //
+                .map(y -> new ResourceOpenApiFragment("foo", new ByteArrayResource(y.getBytes()))) //
                 .collect(Collectors.toList()) //
             ) //
         );

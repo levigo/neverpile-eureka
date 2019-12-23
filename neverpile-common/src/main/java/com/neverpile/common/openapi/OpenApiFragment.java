@@ -1,6 +1,7 @@
 package com.neverpile.common.openapi;
 
-import org.springframework.core.io.Resource;
+import java.io.IOException;
+import java.io.InputStream;
 
 
 public interface OpenApiFragment {
@@ -23,10 +24,11 @@ public interface OpenApiFragment {
   String getName();
 
   /**
-   * Return the resource from which the OpenAPI stream can be loaded.
+   * Return the stream from which the OpenAPI stream can be loaded.
    * 
-   * @return the resource
+   * @return the fragment stream
+   * @throws IOException 
    */
-  Resource getResource();
+  InputStream getFragmentStream() throws IOException;
 
 }
