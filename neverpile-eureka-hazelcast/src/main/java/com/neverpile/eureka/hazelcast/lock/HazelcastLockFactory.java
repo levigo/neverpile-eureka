@@ -13,8 +13,6 @@ import org.springframework.stereotype.Component;
 import com.hazelcast.core.HazelcastInstance;
 import com.neverpile.eureka.tx.lock.ClusterLockFactory;
 
-@Component
-@Lazy
 public class HazelcastLockFactory implements ClusterLockFactory {
   protected static final Logger logger = LoggerFactory.getLogger(HazelcastLockFactory.class);
 

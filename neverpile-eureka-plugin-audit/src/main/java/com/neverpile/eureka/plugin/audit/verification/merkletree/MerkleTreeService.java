@@ -70,7 +70,7 @@ public class MerkleTreeService implements HashStrategyService {
       nextProofSet = currentProof.alterAndGet(input -> {
         // Add single new element.
         MerkleTree merkleTree = new MerkleTree();
-        merkleTree.addLeaf(new MerkleNode(new AuditHash(auditEvent), auditEvent.getTimestamp().getTime()));
+        merkleTree.addLeaf(new MerkleNode(new AuditHash(auditEvent), auditEvent.getTimestamp().toEpochMilli()));
         // Get Proof for new element.
         merkleTree.buildTreeWithProof(input.getProofNodes());
         return new ProofSet(merkleTree.getProofNodes(), input.getAuditId(), auditEvent.getAuditId());
@@ -109,7 +109,7 @@ public class MerkleTreeService implements HashStrategyService {
 
     // recreate proof to validate
     MerkleTree merkleTree = new MerkleTree();
-    merkleTree.addLeaf(new MerkleNode(new AuditHash(auditEvent), auditEvent.getTimestamp().getTime()));
+    merkleTree.addLeaf(new MerkleNode(new AuditHash(auditEvent), auditEvent.getTimestamp().toEpochMilli()));
     merkleTree.buildTreeWithProof(parentProof.getProofNodes());
     List<ProofNode> checkProof = merkleTree.getProofNodes();
 
@@ -132,7 +132,7 @@ public class MerkleTreeService implements HashStrategyService {
       AuditEvent curEvent = auditLogService.getEvent(curProof.getAuditId());
       ProofSet parentProof = getProofOf(getObjectNameOf(curProof.getParentId()));
       MerkleTree merkleTree = new MerkleTree();
-      merkleTree.addLeaf(new MerkleNode(new AuditHash(curEvent), curEvent.getTimestamp().getTime()));
+      merkleTree.addLeaf(new MerkleNode(new AuditHash(curEvent), curEvent.getTimestamp().toEpochMilli()));
       merkleTree.buildTreeWithProof(parentProof.getProofNodes());
       if (!val.validateTreeAgainstProofNodes(merkleTree, curProof.getProofNodes())) {
         return false; // tampered audit event found.

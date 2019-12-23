@@ -24,7 +24,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.stream.Stream;
 
@@ -152,7 +151,7 @@ public class DefaultMultiversioningDocumentServiceTest {
       // associate some facet data
       entityStore.store(update, "foo", mapper.createObjectNode().put("bar", "baz"));
 
-      update.setDateModified(new Date());
+      update.setDateModified(Instant.now());
       return documentService.update(update).get();
     });
 
@@ -217,7 +216,7 @@ public class DefaultMultiversioningDocumentServiceTest {
 
       // update
       update.setVersionTimestamp(null);
-      update.setDateModified(new Date(123456L)); // some arbitrary marker date to check which
+      update.setDateModified(Instant.ofEpochMilli(123456L)); // some arbitrary marker date to check which
                                                  // version went through
       documentService.update(update);
 
@@ -230,7 +229,7 @@ public class DefaultMultiversioningDocumentServiceTest {
       // start second update
       update = prepareEmptyDocument();
       update.setVersionTimestamp(null);
-      update.setDateModified(new Date(345678L)); // some arbitrary marker date to check which
+      update.setDateModified(Instant.ofEpochMilli(345678L)); // some arbitrary marker date to check which
                                                  // version went through
       return documentService.update(update).get();
     });
@@ -242,7 +241,7 @@ public class DefaultMultiversioningDocumentServiceTest {
     DocumentPdo readBack = readBackFromStream(verifyStorePut());
     assertThat(readBack.getDocumentId(), equalTo(D));
     assertThat(readBack.getVersionTimestamp(), equalTo(updated.getVersionTimestamp()));
-    assertThat(readBack.getDateModified(), equalTo(new Date(345678L)));
+    assertThat(readBack.getDateModified(), equalTo(Instant.ofEpochMilli(345678L)));
 
     // must have both facet data sets
     assertThat(readBack.getSidecarElement("foo"), equalTo(mapper.createObjectNode().put("bar", "baz2")));
@@ -326,7 +325,7 @@ public class DefaultMultiversioningDocumentServiceTest {
   public void testThat_documentExistsIsCorrect() throws IOException {
     Document doc = anEmptyDocument();
 
-    ObjectName name = mockExistingVersion(doc);
+    mockExistingVersion(doc);
 
     assertThat(documentService.documentExists(D), equalTo(true));
     assertThat(documentService.documentExists("someNonexistingId"), equalTo(false));
@@ -582,7 +581,7 @@ public class DefaultMultiversioningDocumentServiceTest {
   public void testThat_documentDataCanBeAssociatedUponUpdate() throws Exception {
     mockExistingVersion(prepareEmptyDocument());
 
-    Date now = new Date();
+    Instant now = Instant.now();
 
     transactionTemplate.execute(status -> {
       Document toBeUpdated = documentService.getDocument(D).get();

@@ -1,6 +1,6 @@
 package com.neverpile.eureka.plugin.audit.service.impl;
 
-import java.util.Date;
+import java.time.Instant;
 
 import com.neverpile.eureka.plugin.audit.service.TimeBasedAuditIdGenerationStrategy;
 
@@ -9,13 +9,13 @@ public class DefaultAuditIdGenerationStrategy implements TimeBasedAuditIdGenerat
   private String delimiter = "$";
 
   @Override
-  public String createAuditId(Date timestamp, String documentId) {
-    return Long.toString(timestamp.getTime()) + delimiter + documentId;
+  public String createAuditId(Instant timestamp, String documentId) {
+    return Long.toString(timestamp.toEpochMilli()) + delimiter + documentId;
   }
 
   @Override
   public String createAuditId(String documentId) {
-    return createAuditId(new Date(), documentId);
+    return createAuditId(Instant.now(), documentId);
   }
 
   @Override

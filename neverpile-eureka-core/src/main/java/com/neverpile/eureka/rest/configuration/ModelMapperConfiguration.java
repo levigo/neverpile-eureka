@@ -1,7 +1,7 @@
 package com.neverpile.eureka.rest.configuration;
 
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.modelmapper.AbstractConverter;
@@ -69,8 +69,8 @@ public class ModelMapperConfiguration {
         }
         doc.setContentElements(contentElemnts);
 
-        doc.setDateCreated((Date) source.getFacets().get("dateCreated"));
-        doc.setDateModified((Date) source.getFacets().get("dateModified"));
+        doc.setDateCreated((Instant) source.getFacets().get("dateCreated"));
+        doc.setDateModified((Instant) source.getFacets().get("dateModified"));
         return doc;
       }
     };

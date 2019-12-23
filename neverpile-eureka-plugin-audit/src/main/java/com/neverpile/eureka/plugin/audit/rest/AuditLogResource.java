@@ -4,8 +4,8 @@ package com.neverpile.eureka.plugin.audit.rest;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 import java.security.Principal;
+import java.time.Instant;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -82,13 +82,13 @@ public class AuditLogResource {
       return auditDto;
     }).collect(Collectors.toList());
 
-    Date mostRecentEvent = auditLog.stream() //
+    Instant mostRecentEvent = auditLog.stream() //
         .map(AuditEventDto::getTimestamp) //
         .max(Comparator.naturalOrder()) //
-        .orElse(new Date());
+        .orElse(Instant.now());
 
     return ResponseEntity.ok() //
-        .lastModified(mostRecentEvent.getTime()) //
+        .lastModified(mostRecentEvent.toEpochMilli()) //
         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE) //
         .body(auditLog);
   }

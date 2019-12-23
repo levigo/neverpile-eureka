@@ -131,18 +131,6 @@ public class AllRequestPartsMethodArgumentResolver implements HandlerMethodArgum
     return AllRequestParts.class.isAssignableFrom(parameter.getParameterType());
   }
 
-  @Nullable
-  private static Class<?> getCollectionParameterType(final MethodParameter methodParam) {
-    Class<?> paramType = methodParam.getNestedParameterType();
-    if (Collection.class == paramType || List.class.isAssignableFrom(paramType)) {
-      Class<?> valueType = ResolvableType.forMethodParameter(methodParam).asCollection().resolveGeneric();
-      if (valueType != null) {
-        return valueType;
-      }
-    }
-    return null;
-  }
-
   private List<MultipartFile> parseRequest(final HttpServletRequest request) throws IOException, ServletException {
     Collection<Part> parts = request.getParts();
     List<MultipartFile> files = new ArrayList<>();

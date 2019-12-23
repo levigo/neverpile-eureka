@@ -1,16 +1,22 @@
 package com.neverpile.eureka.rest.api.document;
 
-import static io.restassured.RestAssured.*;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Date;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -138,7 +144,7 @@ public class DocumentAPITest extends AbstractRestAssuredTest {
 
   @Test
   public void testThat_documentCanBeRetrievedAsJSON() throws Exception {
-    Date then = new Date();
+    Instant then = Instant.now();
 
     Document doc = createTestDocumentWithContent();
 
@@ -188,7 +194,7 @@ public class DocumentAPITest extends AbstractRestAssuredTest {
     // @formatter:on
 
     // verify returned document
-    Date now = new Date();
+    Instant now = Instant.now();
     assertThat(returnedDocument.getDocumentId(), equalTo(D));
     assertThat(returnedDocument.getDateCreated(), allOf(greaterThanOrEqualTo(then), lessThanOrEqualTo(now)));
 

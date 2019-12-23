@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.context.annotation.RequestScope;
 
-import com.neverpile.eureka.hazelcast.lock.HazelcastLockFactory;
+import com.neverpile.eureka.hazelcast.lock.HazelcastSimpleLockFactory;
 import com.neverpile.eureka.tx.wal.TransactionWAL;
 import com.neverpile.eureka.tx.wal.WriteAheadLog;
 import com.neverpile.eureka.tx.wal.local.DefaultTransactionWAL;
@@ -30,8 +30,9 @@ public class TestConfig {
     return new DefaultTransactionWAL();
   }
 
+  // TODO: has to be repaced with a propper read-write lock wehn implementation is done.
   @Bean
-  HazelcastLockFactory igniteReadWriteLock() {
-    return new HazelcastLockFactory();
+  HazelcastSimpleLockFactory hazelcastReadWriteLock() {
+    return new HazelcastSimpleLockFactory();
   }
 }
