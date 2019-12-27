@@ -10,6 +10,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.neverpile.eureka.plugin.audit.service.AuditEvent;
+import com.neverpile.eureka.plugin.audit.service.AuditIdGenerationStrategy;
+import com.neverpile.eureka.plugin.audit.service.impl.DefaultAuditIdGenerationStrategy;
+import com.neverpile.eureka.plugin.audit.storage.AuditObjectStoreBridge;
 import com.neverpile.eureka.plugin.audit.verification.AbstractHashStrategyServiceTest;
 import com.neverpile.eureka.plugin.audit.verification.AuditHash;
 import com.neverpile.eureka.plugin.audit.verification.HashStrategyService;
@@ -57,6 +60,16 @@ class Config {
   @Bean
   HashStrategyService hashStrategyService() {
     return new HashChainService();
+  }
+
+  @Bean
+  AuditObjectStoreBridge auditObjectStoreBridge() {
+    return new AuditObjectStoreBridge();
+  }
+
+  @Bean
+  AuditIdGenerationStrategy auditIdGenerationStrategy() {
+    return new DefaultAuditIdGenerationStrategy();
   }
 
 }

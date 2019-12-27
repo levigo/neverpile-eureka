@@ -15,6 +15,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.Optional;
 
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -205,7 +206,7 @@ public abstract class AbstractHashStrategyServiceTest {
 
     given(this.objectStore.get(currentProofObjectNameC.capture())).willReturn(so1, so2);
 
-    given(this.auditLogService.getEvent(anyString())).willReturn(event);
+    given(this.auditLogService.getEvent(anyString())).willReturn(Optional.of(event));
 
     assertTrue(hashStrategyService.completeVerification());
   }

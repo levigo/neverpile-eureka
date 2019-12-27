@@ -7,6 +7,7 @@ import java.security.Principal;
 import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.neverpile.eureka.api.DocumentService;
 import com.neverpile.eureka.plugin.audit.service.AuditEvent;
 import com.neverpile.eureka.plugin.audit.service.AuditLogService;
+import com.neverpile.eureka.plugin.audit.verification.VerificationService;
 import com.neverpile.eureka.rest.api.document.content.ContentElementResource;
 import com.neverpile.eureka.rest.api.exception.NotFoundException;
 import com.neverpile.urlcrypto.PreSignedUrlEnabled;
@@ -57,6 +59,9 @@ public class AuditLogResource {
 
   @Autowired
   private AuditLogService auditLogService;
+
+  @Autowired
+  private VerificationService verificationService;
 
   @Autowired
   @Qualifier("document")
@@ -106,11 +111,11 @@ public class AuditLogResource {
       value = "eureka.audit.event.get")
   public ResponseEntity<AuditEventDto> getEvent(
       @Parameter(description = "The ID of the audit event to be fetched") @PathVariable("auditId") final String auditId) {
-    AuditEvent auditEvent = auditLogService.getEvent(auditId);
-    if (null == auditEvent)
+    Optional<AuditEvent> auditEvent = auditLogService.getEvent(auditId);
+    if (!auditEvent.isPresent())
       throw new NotFoundException("AuditEventLog not found");
 
-    AuditEventDto res = documentMapper.map(auditEvent, AuditEventDto.class);
+    AuditEventDto res = documentMapper.map(auditEvent.get(), AuditEventDto.class);
 
     return ResponseEntity.ok() //
         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE) //
@@ -129,11 +134,11 @@ public class AuditLogResource {
       value = "eureka.audit.event.verify")
   public ResponseEntity<String> verifyEvent(
       @Parameter(description = "The ID of the audit event to be verified") @PathVariable("auditId") final String auditId) {
-    AuditEvent auditEvent = auditLogService.getEvent(auditId);
-    if (null == auditEvent) {
+    Optional<AuditEvent> auditEvent = auditLogService.getEvent(auditId);
+    if (!auditEvent.isPresent()) {
       throw new NotFoundException("AuditEvent not found");
     }
-    boolean res = auditLogService.verifyEvent(auditEvent);
+    boolean res = verificationService.verifyEvent(auditEvent.get());
     return ResponseEntity.ok() //
         .header(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE) //
         .body(Boolean.toString(res));
@@ -156,7 +161,7 @@ public class AuditLogResource {
     }
     boolean res = auditLog.size() > 0;
     for (AuditEvent auditEvent : auditLog) {
-      res = auditLogService.verifyEvent(auditEvent);
+      res = verificationService.verifyEvent(auditEvent);
       if (!res) {
         break;
       }

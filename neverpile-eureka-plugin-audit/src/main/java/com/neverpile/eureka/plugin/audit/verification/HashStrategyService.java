@@ -4,6 +4,10 @@ import java.util.List;
 
 import com.neverpile.eureka.plugin.audit.service.AuditEvent;
 
+/**
+ * Service to handle Cryptographic security layer for AuditLogs. This Service is responsible for createing the
+ * appropriate data structure to ensure the conistancy of audit log data.
+ */
 public interface HashStrategyService {
 
   /**
@@ -26,14 +30,14 @@ public interface HashStrategyService {
    * Verifies the integrity of the given event in context of all verified audit logs.
    *
    * @param auditEvent Event to get verification for.
-   * @return true if hash has successfully been verified, false otherwise.
+   * @return {@code true} if hash has successfully been verified - {@code false} otherwise.
    */
   public boolean verifyHash(AuditEvent auditEvent);
 
   /**
    * Verifies the integrity of all audit events.
    *
-   * @return true if all Audit Events were successfully verified, false otherwise.
+   * @return {@code true} if all Audit Events were successfully verified - {@code false} otherwise.
    */
   public boolean completeVerification();
 

@@ -67,8 +67,7 @@ public class AuditEventDto extends RepresentationModel<AuditEventDto> implements
   public void setDescription(final String description) {
     this.description = description;
   }
-
-  // FIXME: do we really need this?
+  
   @Schema(description = "The ID of this event")
   public String getAuditId() {
     return auditId;
