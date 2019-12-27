@@ -22,8 +22,8 @@ import com.neverpile.eureka.plugin.audit.verification.HashStrategyService;
 public class HashChainServiceTest extends AbstractHashStrategyServiceTest {
   @Override
   protected TestProofSet getSomeProof() {
-    ProofChainLink proof = new ProofChainLink();
-    ProofChainLink parent = (ProofChainLink) getParentOfSomeProof();
+    HashChainStoreObject proof = new HashChainStoreObject();
+    HashChainStoreObject parent = (HashChainStoreObject) getParentOfSomeProof();
 
     AuditEvent ae = new AuditEvent();
     ae.setAuditId("audit1");
@@ -42,7 +42,7 @@ public class HashChainServiceTest extends AbstractHashStrategyServiceTest {
   }
 
   protected Object getParentOfSomeProof() {
-    ProofChainLink proof = new ProofChainLink();
+    HashChainStoreObject proof = new HashChainStoreObject();
     proof.setAuditId("audit0");
     proof.setParentId(null);
     proof.setLinkHash(new AuditHash("audit0".getBytes(), "audit0".getBytes()));

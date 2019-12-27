@@ -38,17 +38,17 @@ public class HashChainService implements HashStrategyService {
   private AuditLogService auditLogService;
 
   @DistributedAtomicType("neverpile-audit-currentProof")
-  DistributedAtomicReference<ProofChainLink> currentProof;
+  DistributedAtomicReference<HashChainStoreObject> currentProof;
 
   private final ObjectName currentHashName = getObjectNameOf("current_hash");
 
   @Value("${neverpile-eureka.audit.verification.seed:NotSoSecretSeed}")
   private String rootNodeHashSeed = "NotSoSecretSeed";
 
-  private ProofChainLink rootProof;
+  private HashChainStoreObject rootProof;
 
   public HashChainService() {
-    this.rootProof = new ProofChainLink(new HashChainLink("root", new AuditHash(rootNodeHashSeed.getBytes())));
+    this.rootProof = new HashChainStoreObject(new HashChainLink("root", new AuditHash(rootNodeHashSeed.getBytes())));
   }
 
   @Override
@@ -63,13 +63,13 @@ public class HashChainService implements HashStrategyService {
     }
     initCurrentProof();
     // Insert all new events as link into chain
-    ProofChainLink nextProofLink = null;
+    HashChainStoreObject nextProofLink = null;
     ByteArrayOutputStream baos = null;
     InputStream is = null;
 
     for (AuditEvent auditEvent : newLogEvents) {
       nextProofLink = currentProof.alterAndGet(input -> {
-        ProofChainLink nextProof = new ProofChainLink();
+        HashChainStoreObject nextProof = new HashChainStoreObject();
         nextProof.setAuditId(auditEvent.getAuditId());
         nextProof.setParentId(input.getAuditId());
         nextProof.setLinkHash(new AuditHash(input.getLinkHash(), new AuditHash(auditEvent)));
@@ -97,7 +97,7 @@ public class HashChainService implements HashStrategyService {
 
   private void initCurrentProof() {
     // Get current proof
-    Optional<ProofChainLink> initProof = Optional.ofNullable(currentProof.get());
+    Optional<HashChainStoreObject> initProof = Optional.ofNullable(currentProof.get());
     // If distributed atomic is not jet set.
     if (!initProof.isPresent()) {
       // Get current hash from db.
@@ -106,7 +106,7 @@ public class HashChainService implements HashStrategyService {
       if (is.isPresent()) {
         try {
           initProof = Optional.ofNullable(
-              objectMapper.readValue(is.get(), objectMapper.getTypeFactory().constructType(ProofChainLink.class)));
+              objectMapper.readValue(is.get(), objectMapper.getTypeFactory().constructType(HashChainStoreObject.class)));
         } catch (IOException e) {
           LOGGER.error("Failed to serialize auditLog HashChainHead", e);
           e.printStackTrace();
@@ -123,11 +123,11 @@ public class HashChainService implements HashStrategyService {
 
   @Override
   public boolean verifyHash(AuditEvent auditEvent) {
-    Optional<ProofChainLink> link = getHashChainLink(getObjectNameOf(auditEvent.getAuditId()));
+    Optional<HashChainStoreObject> link = getHashChainLink(getObjectNameOf(auditEvent.getAuditId()));
     if (!link.isPresent() || null == link.get().getParentId()) {
       return false;
     }
-    Optional<ProofChainLink> proofLink = getHashChainLink(getObjectNameOf(link.get().getParentId()));
+    Optional<HashChainStoreObject> proofLink = getHashChainLink(getObjectNameOf(link.get().getParentId()));
     if (proofLink.isPresent()) {
       return link.get().getLinkHash().equals(new AuditHash(proofLink.get().getLinkHash(), new AuditHash(auditEvent)));
     } else {
@@ -137,11 +137,11 @@ public class HashChainService implements HashStrategyService {
 
   @Override
   public boolean completeVerification() {
-    Optional<ProofChainLink> curProof = getHashChainLink(currentHashName);
+    Optional<HashChainStoreObject> curProof = getHashChainLink(currentHashName);
     while (curProof.isPresent() && null != curProof.get().getParentId()) {
       Optional<AuditEvent> curEvent = auditLogService.getEvent(curProof.get().getAuditId());
       if (curEvent.isPresent()) {
-        Optional<ProofChainLink> parentProof = getHashChainLink(getObjectNameOf(curProof.get().getParentId()));
+        Optional<HashChainStoreObject> parentProof = getHashChainLink(getObjectNameOf(curProof.get().getParentId()));
         if (!curProof.get().getLinkHash().equals(
             new AuditHash(parentProof.get().getLinkHash(), new AuditHash(curEvent.get())))) {
           return false; // tampered audit event found.
@@ -155,12 +155,12 @@ public class HashChainService implements HashStrategyService {
   }
 
 
-  private Optional<ProofChainLink> getHashChainLink(ObjectName auditHashObjectName) {
-    ProofChainLink link = null;
+  private Optional<HashChainStoreObject> getHashChainLink(ObjectName auditHashObjectName) {
+    HashChainStoreObject link = null;
     Optional<InputStream> is = auditStorageBridge.getVerificationElement(auditHashObjectName);
     if (is.isPresent()) {
       try {
-        link = objectMapper.readValue(is.get(), objectMapper.getTypeFactory().constructType(ProofChainLink.class));
+        link = objectMapper.readValue(is.get(), objectMapper.getTypeFactory().constructType(HashChainStoreObject.class));
       } catch (IOException e) {
         LOGGER.error("Failed to serialize auditLog Verification @{}", auditHashObjectName, e);
         e.printStackTrace();
