@@ -165,7 +165,6 @@ public class SimpleMutablePolicyRepository implements MutablePolicyRepository {
   private List<StoreObject> fetchNonArchivedPolicies() {
     // fetch current and possibly past policies
     List<StoreObject> policyObjects = objectStore.list(POLICY_REPO_PREFIX) //
-        .filter(s -> !s.getObjectName().equals(EXPIRED_POLICY_REPO_PREFIX)) //
         .sorted((a, b) -> a.getObjectName().compareTo(b.getObjectName())) //
         .collect(Collectors.toList());
     return policyObjects;
