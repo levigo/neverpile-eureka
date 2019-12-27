@@ -1,8 +1,11 @@
 package com.neverpile.eureka.ignite;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.ignite.configuration.CacheConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -47,6 +50,31 @@ public class IgniteConfigurationProperties {
     }
   }
 
+  public static class Cache {
+    /**
+     * Whether to enable the Ignite-based cache.
+     */
+    private boolean enabled = true;
+
+    private Map<String, CacheConfiguration<Object, Object>> configurations = new HashMap<>();
+    
+    public boolean isEnabled() {
+      return enabled;
+    }
+
+    public void setEnabled(final boolean enabled) {
+      this.enabled = enabled;
+    }
+
+    public Map<String, CacheConfiguration<Object, Object>> getConfigurations() {
+      return configurations;
+    }
+
+    public void setConfigurations(final Map<String, CacheConfiguration<Object, Object>> cacheConfigs) {
+      this.configurations = cacheConfigs;
+    }
+  }
+  
   // This class hierarchy is mainly for configuration documentation purposes. The actual
   // Values are directly injected into the respective finder classes.
   public static class Finders {
@@ -408,6 +436,11 @@ public class IgniteConfigurationProperties {
   private WAL wal = new WAL();
 
   /**
+   * Cache-related settings.
+   */
+  private Cache cache = new Cache();
+
+  /**
    * Discovery-related settings.
    */
   private Finders finder = new Finders();
@@ -442,5 +475,13 @@ public class IgniteConfigurationProperties {
 
   public void setFinder(final Finders finder) {
     this.finder = finder;
+  }
+
+  public Cache getCache() {
+    return cache;
+  }
+
+  public void setCache(final Cache cache) {
+    this.cache = cache;
   }
 }

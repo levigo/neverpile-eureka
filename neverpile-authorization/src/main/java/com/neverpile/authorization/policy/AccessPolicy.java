@@ -1,5 +1,6 @@
 package com.neverpile.authorization.policy;
 
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +41,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * editors, log output etc. to describe the policy in human-readable form.
  */
 @Schema(description = "An access policy descibes access rights users can exercise within the system")
-public class AccessPolicy {
+public class AccessPolicy implements Serializable {
+  private static final long serialVersionUID = 1L;
+
   private static final String VERISON_1 = "2018-09-26";
 
   @Schema(description = "The version of this policy's schema. There is currently only one valid version: '" + VERISON_1
