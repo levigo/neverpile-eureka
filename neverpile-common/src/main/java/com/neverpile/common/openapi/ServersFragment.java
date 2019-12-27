@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 /**
  * An {@link OpenApiFragment} used to declare {@code servers}s at which the endpoints are exposed.
  * See {@link #withServer(String, String)} and <a
- * href="https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#serverObject>the
+ * href="https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#serverObject">the
  * specification</a> for details.
  */
 public class ServersFragment extends JsonOpenApiFragment {

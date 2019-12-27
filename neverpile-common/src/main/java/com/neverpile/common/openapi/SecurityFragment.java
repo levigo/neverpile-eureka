@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 /**
  * An {@link OpenApiFragment} used to declare {@code securityScheme}s and endpoint {@code security}.
  * See {@link #withBasicAuth()} and <a
- * href="https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#securitySchemeObject>the
+ * href="https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#securitySchemeObject">the
  * specification</a> for usage details.
  */
 public class SecurityFragment extends JsonOpenApiFragment {

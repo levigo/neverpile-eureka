@@ -37,7 +37,7 @@ public interface OpenApiFragment {
    * (but possibly partial) OpenAPI specification in YAML or JSON form.
    * 
    * @return the fragment stream
-   * @throws IOException
+   * @throws IOException upon problems reading or parsing the OpenAPI fragment
    */
   InputStream getFragmentStream() throws IOException;
 

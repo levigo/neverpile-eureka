@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -20,7 +19,7 @@ public class JsonOpenApiFragment implements OpenApiFragment {
 
   /**
    * Create a global fragment with the given name. Add contents to it by setting the root node
-   * ({@link #setRoot(JsonNode)}) or {@link #getRoot()} and adding children.
+   * ({@link #setRoot(ObjectNode)}) or {@link #getRoot()} and adding children.
    * 
    * @param name the fragment name
    */
@@ -30,7 +29,7 @@ public class JsonOpenApiFragment implements OpenApiFragment {
 
   /**
    * Create a fragment with the given application, and name. Add contents to it by setting the root
-   * node ({@link #setRoot(JsonNode)}) or {@link #getRoot()} and adding children.
+   * node ({@link #setRoot(ObjectNode)}) or {@link #getRoot()} and adding children.
    * 
    * @param application the application name
    * @param name the fragment name
