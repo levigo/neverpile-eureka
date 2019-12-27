@@ -32,8 +32,6 @@ public class OpenApiDefinitionMerger {
       }
     }
 
-    // resolveRefs(merged, merged, path);
-
     return merged;
   }
 
