@@ -85,40 +85,4 @@ public class OpenApiDefinitionMerger {
         break;
     }
   }
-  //
-  // private void resolveRefs(final JsonNode node, final ObjectNode root, final Specifier path) {
-  // switch (node.getNodeType()){
-  // case ARRAY :
-  // ArrayNode a = (ArrayNode) node;
-  // for (int i = 0; i < a.size(); i++) {
-  // JsonNode element = a.path(i);
-  // if (isRef(element))
-  // a.set(i, resolveRef(element, root, path.append("[" + i + "]")));
-  // }
-  // break;
-  //
-  // case OBJECT :
-  // ((ObjectNode) node).fields().forEachRemaining(e -> {
-  // String name = e.getKey();
-  // JsonNode value = e.getValue();
-  // if (isRef(value))
-  // e.setValue(resolveRef(value, root, path.append(name)));
-  // });
-  // break;
-  //
-  // default :
-  // // nothing to do
-  // }
-  // }
-  //
-  // private JsonNode resolveRef(final JsonNode refNode, final ObjectNode root, final Specifier
-  // path) {
-  // // TODO Auto-generated method stub
-  // return refNode;
-  // }
-  //
-  // private boolean isRef(final JsonNode child) {
-  // // TODO Auto-generated method stub
-  // return false;
-  // }
 }
