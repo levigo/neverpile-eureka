@@ -6,6 +6,7 @@ import java.io.InputStream;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * A JSON-node-based implementation of {@link OpenApiFragment}.
@@ -14,11 +15,12 @@ public class JsonOpenApiFragment implements OpenApiFragment {
   private final String application;
 
   private final String name;
-  
-  private JsonNode root = new ObjectMapper().createObjectNode();
+
+  private ObjectNode root = new ObjectMapper().createObjectNode();
 
   /**
-   * Create a global fragment with the given name and resource.
+   * Create a global fragment with the given name. Add contents to it by setting the root node
+   * ({@link #setRoot(JsonNode)}) or {@link #getRoot()} and adding children.
    * 
    * @param name the fragment name
    */
@@ -27,7 +29,8 @@ public class JsonOpenApiFragment implements OpenApiFragment {
   }
 
   /**
-   * Create a fragment with the given application, name and resource.
+   * Create a fragment with the given application, and name. Add contents to it by setting the root
+   * node ({@link #setRoot(JsonNode)}) or {@link #getRoot()} and adding children.
    * 
    * @param application the application name
    * @param name the fragment name
@@ -52,11 +55,22 @@ public class JsonOpenApiFragment implements OpenApiFragment {
     return new ByteArrayInputStream(new ObjectMapper().writeValueAsBytes(root));
   }
 
-  public JsonNode getRoot() {
+  /**
+   * Get the root node of the fragment. The root node is initially just and {@link ObjectNode} with
+   * no children.
+   * 
+   * @return the root node
+   */
+  public ObjectNode getRoot() {
     return root;
   }
 
-  public void setRoot(final JsonNode root) {
+  /**
+   * Set the root node of the fragment to the given {@link ObjectNode}.
+   * 
+   * @param root the root node
+   */
+  public void setRoot(final ObjectNode root) {
     this.root = root;
   }
 }
