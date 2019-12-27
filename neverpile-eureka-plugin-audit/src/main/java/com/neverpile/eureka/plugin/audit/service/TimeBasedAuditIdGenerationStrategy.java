@@ -4,7 +4,7 @@ import java.time.Instant;
 
 /**
  * This interfaces defines functions to create and validate such Audit IDs. The Id will be generated using using the
- * Document ID in combination with a given hig precision timestamp. the timestamp will bes used to destinguish audit
+ * Document ID in combination with a given hig precision timestamp. the timestamp will bes used to distinguish audit
  * events within a single document and to generate the corresponding Block ID.
  */
 public interface TimeBasedAuditIdGenerationStrategy extends AuditIdGenerationStrategy {

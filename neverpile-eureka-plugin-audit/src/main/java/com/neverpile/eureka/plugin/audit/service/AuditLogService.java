@@ -5,7 +5,7 @@ import java.util.Optional;
 
 /**
  * An Audit Log service manages Incoming audits and provides an implementation to provide requested events.
- * Verification can be reqested for a single Event or the Complete Log including
+ * Verification can be requested for a single Event or the Complete Log including
  */
 public interface AuditLogService {
 

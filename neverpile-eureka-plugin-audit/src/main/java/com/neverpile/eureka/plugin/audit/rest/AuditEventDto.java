@@ -59,7 +59,7 @@ public class AuditEventDto extends RepresentationModel<AuditEventDto> implements
     this.type = type;
   }
 
-  @Schema(description = "A textual desription of the event")
+  @Schema(description = "A textual description of the event")
   public String getDescription() {
     return description;
   }

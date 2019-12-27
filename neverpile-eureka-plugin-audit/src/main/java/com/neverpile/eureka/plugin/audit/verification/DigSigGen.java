@@ -3,7 +3,7 @@ package com.neverpile.eureka.plugin.audit.verification;
 import java.security.SignatureException;
 
 /**
- * Dgital Signature Generator.
+ * Digital Signature Generator.
  */
 public interface DigSigGen {
 
@@ -12,14 +12,14 @@ public interface DigSigGen {
    *
    * @param data the data to create the signature for.
    * @return the signature in bytes.
-   * @throws SignatureException Error occured while creating the signature.
+   * @throws SignatureException Error occurred while creating the signature.
    */
   byte[] signData(byte[] data) throws SignatureException;
 
   /**
    * Get the public Key to verify the signature with.
    *
-   * @return the bublic key for all creatd signature.
+   * @return the public key for all created signature.
    */
   byte[] getPubKey();
 }

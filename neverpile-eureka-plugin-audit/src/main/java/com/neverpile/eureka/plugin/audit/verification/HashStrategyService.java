@@ -5,8 +5,8 @@ import java.util.List;
 import com.neverpile.eureka.plugin.audit.service.AuditEvent;
 
 /**
- * Service to handle Cryptographic security layer for AuditLogs. This Service is responsible for createing the
- * appropriate data structure to ensure the conistancy of audit log data.
+ * Service to handle Cryptographic security layer for AuditLogs. This Service is responsible for creating the
+ * appropriate data structure to ensure the consistency of audit log data.
  */
 public interface HashStrategyService {
 

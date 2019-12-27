@@ -1,7 +1,7 @@
 package com.neverpile.eureka.plugin.audit.verification;
 
 /**
- * Dgital Signature Verifier.
+ * Digital Signature Verifier.
  */
 public interface DigSigVer {
 
