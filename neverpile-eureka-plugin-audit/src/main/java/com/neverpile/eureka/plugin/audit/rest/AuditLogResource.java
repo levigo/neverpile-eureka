@@ -111,11 +111,9 @@ public class AuditLogResource {
       value = "eureka.audit.event.get")
   public ResponseEntity<AuditEventDto> getEvent(
       @Parameter(description = "The ID of the audit event to be fetched") @PathVariable("auditId") final String auditId) {
-    Optional<AuditEvent> auditEvent = auditLogService.getEvent(auditId);
-    if (!auditEvent.isPresent())
-      throw new NotFoundException("AuditEventLog not found");
+    AuditEvent auditEvent = auditLogService.getEvent(auditId).orElseThrow(() -> new NotFoundException("AuditEventLog not found"));
 
-    AuditEventDto res = documentMapper.map(auditEvent.get(), AuditEventDto.class);
+    AuditEventDto res = documentMapper.map(auditEvent, AuditEventDto.class);
 
     return ResponseEntity.ok() //
         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE) //
@@ -134,14 +132,11 @@ public class AuditLogResource {
       value = "eureka.audit.event.verify")
   public ResponseEntity<String> verifyEvent(
       @Parameter(description = "The ID of the audit event to be verified") @PathVariable("auditId") final String auditId) {
-    Optional<AuditEvent> auditEvent = auditLogService.getEvent(auditId);
-    if (!auditEvent.isPresent()) {
-      throw new NotFoundException("AuditEvent not found");
-    }
-    boolean res = verificationService.verifyEvent(auditEvent.get());
+    AuditEvent auditEvent = auditLogService.getEvent(auditId).orElseThrow(() -> new NotFoundException("AuditEvent not found"));
+    boolean res = verificationService.verifyEvent(auditEvent);
     return ResponseEntity.ok() //
         .header(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE) //
-        .body(Boolean.toString(res));
+        .body("Verificaton result: " + (res ? "OK" : ("Error" + "\n" + auditEvent.toString())));
   }
 
   @PreSignedUrlEnabled
@@ -160,15 +155,17 @@ public class AuditLogResource {
       throw new NotFoundException("AuditEventLog not found");
     }
     boolean res = auditLog.size() > 0;
+    AuditEvent errorEvent = null;
     for (AuditEvent auditEvent : auditLog) {
       res = verificationService.verifyEvent(auditEvent);
       if (!res) {
+        errorEvent = auditEvent;
         break;
       }
     }
     return ResponseEntity.ok() //
         .header(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE) //
-        .body(Boolean.toString(res));
+        .body("Verificaton result: " + (res ? "OK" : ("Error" + "\n" + errorEvent.toString())));
   }
 
   @PostMapping
