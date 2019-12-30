@@ -44,7 +44,7 @@ public class SimpleContentElementService implements ContentElementService {
   private ContentElementIdGenerationStrategy idGenerationStrategy;
 
   /**
-   * Generates a ContentElentKey from the supplied documentId, as well as the ContentId.
+   * Generates a ContentElementKey from the supplied documentId, as well as the ContentId.
    *
    * @param documentId the id of the document
    * @param contentId id of the content element

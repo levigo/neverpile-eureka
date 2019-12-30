@@ -21,7 +21,7 @@ public interface DocumentAssociatedEntityStore {
   void store(Document document, String key, JsonNode value);
 
   /**
-   * Retriev previously stored data from a {@link Document} as {@link JsonNode}. If no data is found an empty
+   * Retrieve previously stored data from a {@link Document} as {@link JsonNode}. If no data is found an empty
    * {@link Optional} will be returned.
    *
    * @param document {@link Document} to get the data from.
@@ -31,7 +31,7 @@ public interface DocumentAssociatedEntityStore {
   Optional<JsonNode> retrieve(Document document, String key);
 
   /**
-   * Delete accociated data from a {@link Document}.
+   * Delete associated data from a {@link Document}.
    *
    * @param document {@link Document} to delete the data from.
    * @param key      unique key for the data to delete.

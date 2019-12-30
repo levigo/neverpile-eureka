@@ -21,7 +21,7 @@ public interface DocumentAuthorizationService {
    *                        arguments.
    * @return the access decision: <code>true</code> if the access shall be allowed
    */
-  boolean authorizeSubresourceAction(Document document, Action action, String... subResourcePath);
+  boolean authorizeSubResourceAction(Document document, Action action, String... subResourcePath);
 
   /**
    * Authorize a create action on the given document sub-resource. Implementations typically
@@ -33,8 +33,8 @@ public interface DocumentAuthorizationService {
    *                        arguments.
    * @return the access decision: <code>true</code> if the access shall be allowed
    */
-  default boolean authorizeSubresourceCreate(final Document document, final String... subResourcePath) {
-    return authorizeSubresourceAction(document, CoreActions.CREATE, subResourcePath);
+  default boolean authorizeSubResourceCreate(final Document document, final String... subResourcePath) {
+    return authorizeSubResourceAction(document, CoreActions.CREATE, subResourcePath);
   }
 
   /**
@@ -47,8 +47,8 @@ public interface DocumentAuthorizationService {
    *                        arguments.
    * @return the access decision: <code>true</code> if the access shall be allowed
    */
-  default boolean authorizeSubresourceGet(final Document document, final String... subResourcePath) {
-    return authorizeSubresourceAction(document, CoreActions.GET, subResourcePath);
+  default boolean authorizeSubResourceGet(final Document document, final String... subResourcePath) {
+    return authorizeSubResourceAction(document, CoreActions.GET, subResourcePath);
   }
 
   /**
@@ -61,8 +61,8 @@ public interface DocumentAuthorizationService {
    *                        arguments.
    * @return the access decision: <code>true</code> if the access shall be allowed
    */
-  default boolean authorizeSubresourceUpdate(final Document document, final String... subResourcePath) {
-    return authorizeSubresourceAction(document, CoreActions.UPDATE, subResourcePath);
+  default boolean authorizeSubResourceUpdate(final Document document, final String... subResourcePath) {
+    return authorizeSubResourceAction(document, CoreActions.UPDATE, subResourcePath);
   }
 
   /**
@@ -75,8 +75,8 @@ public interface DocumentAuthorizationService {
    *                        arguments.
    * @return the access decision: <code>true</code> if the access shall be allowed
    */
-  default boolean authorizeSubresourceDelete(final Document document, final String... subResourcePath) {
-    return authorizeSubresourceAction(document, CoreActions.DELETE, subResourcePath);
+  default boolean authorizeSubResourceDelete(final Document document, final String... subResourcePath) {
+    return authorizeSubResourceAction(document, CoreActions.DELETE, subResourcePath);
   }
 
 }

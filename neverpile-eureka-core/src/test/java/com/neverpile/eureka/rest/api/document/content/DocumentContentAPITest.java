@@ -685,8 +685,7 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
   }
 
   /**
-   * TODO - Fragt nur ob die Funktion aufgerufen wurde Tests if the deleteDocument method is called
-   * on the HTTP delete call.
+   * TODO - Tests if the deleteDocument method is called on the HTTP delete call.
    *
    * @throws Exception
    */

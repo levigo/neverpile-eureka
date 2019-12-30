@@ -62,7 +62,7 @@ import com.neverpile.eureka.rest.api.exception.NotFoundException;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class DefaultMultiversioningDocumentServiceTest {
+public class DefaultMultiVersioningDocumentServiceTest {
   private static final String D = "aDocument";
 
   @TestConfiguration
@@ -99,7 +99,7 @@ public class DefaultMultiversioningDocumentServiceTest {
   
   @Test
   public void testThat_documentCanBeCreated() throws Exception {
-    mockNonexistingDocument();
+    mockNonexistentDocument();
 
     Document doc = anEmptyDocument();
 
@@ -328,7 +328,7 @@ public class DefaultMultiversioningDocumentServiceTest {
     mockExistingVersion(doc);
 
     assertThat(documentService.documentExists(D), equalTo(true));
-    assertThat(documentService.documentExists("someNonexistingId"), equalTo(false));
+    assertThat(documentService.documentExists("someNonexistentId"), equalTo(false));
   }
   
   @Test
@@ -385,7 +385,7 @@ public class DefaultMultiversioningDocumentServiceTest {
 
   @Test
   public void testThat_cachedVersionListIsInvalidatedOnCreate() throws IOException {
-    mockNonexistingDocument();
+    mockNonexistentDocument();
     
     // prime cache
     assertThat(documentService.getVersions(D), hasSize(0));
@@ -396,7 +396,7 @@ public class DefaultMultiversioningDocumentServiceTest {
     assertThat(documentService.getVersions(D), hasSize(0));
     
     // now simulate a create so that the list is invalidated
-    mockNonexistingDocument();
+    mockNonexistentDocument();
     transactionTemplate.execute(c -> documentService.createDocument(prepareEmptyDocument()));
     mockExistingVersion(prepareEmptyDocument());
     
@@ -449,7 +449,7 @@ public class DefaultMultiversioningDocumentServiceTest {
     // prime cache
     assertThat(documentService.getVersions(D), hasSize(1));
     
-    mockNonexistingDocument();
+    mockNonexistentDocument();
     
     // list supposed to be cached
     assertThat(documentService.getVersions(D), hasSize(1));
@@ -459,7 +459,7 @@ public class DefaultMultiversioningDocumentServiceTest {
     // now simulate a create so that the list is invalidated
     transactionTemplate.execute(c -> documentService.deleteDocument(D));
     
-    mockNonexistingDocument();
+    mockNonexistentDocument();
     
     // now the new size must be visible
     assertThat(documentService.getVersions(D), hasSize(0));
@@ -482,7 +482,7 @@ public class DefaultMultiversioningDocumentServiceTest {
   }
 
   @Test
-  public void testThat_nonExistingVersionCannotBeRetrieved() throws IOException {
+  public void testThat_nonexistentVersionCannotBeRetrieved() throws IOException {
     mockThreeVersions();
     documentService.getDocumentVersion(D, Instant.ofEpochMilli(2345678L)).get();
   }
@@ -545,7 +545,7 @@ public class DefaultMultiversioningDocumentServiceTest {
 
   @Test
   public void testThat_documentDataCanBeAssociatedBeforeCreate() throws Exception {
-    mockNonexistingDocument();
+    mockNonexistentDocument();
 
     transactionTemplate.execute(status -> {
       Document doc = prepareEmptyDocument();
@@ -556,14 +556,14 @@ public class DefaultMultiversioningDocumentServiceTest {
     assertSchemaF(verifyPersistOnce());
   }
 
-  private void mockNonexistingDocument() {
+  private void mockNonexistentDocument() {
     given(objectStoreService.get(any())).willReturn(null);
     given(objectStoreService.list(any())).will(i -> Stream.of());
   }
 
   @Test
   public void testThat_documentDataCanBeAssociatedAfterCreate() throws Exception {
-    mockNonexistingDocument();
+    mockNonexistentDocument();
 
     transactionTemplate.execute(status -> {
       Document doc = prepareEmptyDocument();

@@ -15,7 +15,7 @@ import com.neverpile.eureka.model.Document;
  */
 public interface DocumentService {
   /**
-   * Generic exception thrown when an error occured while executing an operation on {@link Document}s.
+   * Generic exception thrown when an error occurred while executing an operation on {@link Document}s.
    */
   public class DocumentServiceException extends NeverpileException {
     private static final long serialVersionUID = 1L;
@@ -30,7 +30,7 @@ public interface DocumentService {
   }
 
   /**
-   * Exception thrown when trying to create an {@link Document} with an ID that alerady exists.
+   * Exception thrown when trying to create an {@link Document} with an ID that already exists.
    */
   public class DocumentAlreadyExistsException extends DocumentServiceException {
     private static final long serialVersionUID = 1L;

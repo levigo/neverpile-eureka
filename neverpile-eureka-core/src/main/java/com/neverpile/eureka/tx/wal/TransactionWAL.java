@@ -3,9 +3,9 @@ package com.neverpile.eureka.tx.wal;
 import java.io.Serializable;
 
 /**
- * Transaction WAL (write ahead log). This WAL ensures transactional security be definging undo and commit actions in
+ * Transaction WAL (write ahead log). This WAL ensures transactional security be defining undo and commit actions in
  * case of an unexpected shutdown or similar. {@link TransactionalAction}s can be registered on the WAL and ensure that
- * ater each transaction, sucessful or not, the Data model is in a consistant state.
+ * after each transaction, successful or not, the Data model is in a consistent state.
  */
 public interface TransactionWAL {
 
@@ -19,15 +19,15 @@ public interface TransactionWAL {
 
   /**
    * Append an Undo Action to be executed on an failure state.
-   * This reverts all transaction changes to a consistant state before the failed transaction occured.
+   * This reverts all transaction changes to a consistent state before the failed transaction occurred.
    *
    * @param action action to be executed.
    */
   public void appendUndoAction(TransactionalAction action);
 
   /**
-   * Append commit Action to be ececuted on an successful transaction.
-   * Used to clean up after an transcation to leave a consistant state without sideeffects.
+   * Append commit Action to be executed on an successful transaction.
+   * Used to clean up after an transaction to leave a consistent state without side effects.
    *
    * @param action action to be executed.
    */

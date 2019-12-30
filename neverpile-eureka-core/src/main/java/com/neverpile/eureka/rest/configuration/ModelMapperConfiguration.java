@@ -39,13 +39,13 @@ public class ModelMapperConfiguration {
         dto.setDocumentId(source.getDocumentId());
         dto.setVersionTimestamp(source.getVersionTimestamp());
 
-        ArrayList<ContentElementDto> contentElemntDtos = new ArrayList<>();
+        ArrayList<ContentElementDto> contentElementDtos = new ArrayList<>();
         if (source.getContentElements() != null) {
           for (ContentElement ce : source.getContentElements()) {
-            contentElemntDtos.add(m.map(ce, ContentElementDto.class));
+            contentElementDtos.add(m.map(ce, ContentElementDto.class));
           }
         }
-        dto.setFacet("contentElements", contentElemntDtos);
+        dto.setFacet("contentElements", contentElementDtos);
 
         dto.setFacet("dateCreated", source.getDateCreated());
         dto.setFacet("dateModified", source.getDateModified());
@@ -61,13 +61,13 @@ public class ModelMapperConfiguration {
         doc.setDocumentId(source.getDocumentId());
         doc.setVersionTimestamp(source.getVersionTimestamp());
 
-        ArrayList<ContentElement> contentElemnts = new ArrayList<>();
+        ArrayList<ContentElement> contentElements = new ArrayList<>();
         if (source.getFacets().get("contentElements") != null) {
           for (ContentElementDto dto : (List<ContentElementDto>) source.getFacets().get("contentElements")) {
-            contentElemnts.add(m.map(dto, ContentElement.class));
+            contentElements.add(m.map(dto, ContentElement.class));
           }
         }
-        doc.setContentElements(contentElemnts);
+        doc.setContentElements(contentElements);
 
         doc.setDateCreated((Instant) source.getFacets().get("dateCreated"));
         doc.setDateModified((Instant) source.getFacets().get("dateModified"));

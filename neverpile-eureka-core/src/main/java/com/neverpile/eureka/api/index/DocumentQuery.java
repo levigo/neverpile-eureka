@@ -34,8 +34,8 @@ public class DocumentQuery {
       return this;
     }
 
-    public SortOrderBuilder orderBy(final String sortkey) {
-      query.setSortKey(sortkey);
+    public SortOrderBuilder orderBy(final String sortKey) {
+      query.setSortKey(sortKey);
       return new SortOrderBuilder(this);
     }
     

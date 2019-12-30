@@ -32,6 +32,11 @@ import com.neverpile.eureka.tx.wal.WriteAheadLog;
  * @param <V> the type of value associated with the facet
  */
 public interface DocumentFacet<V> {
+  /**
+   * Constraint violation is a way to veto a transaction during the validation phase. Every Facet has the opportunity
+   * to veto a operation during its validation phase. tu use this veto return this ConstraintViolation during the
+   * validate* lifecycle event (e.g. {@link DocumentFacet#validateCreate(DocumentDto)}).
+   */
   public static class ConstraintViolation {
     public static <V> Set<ConstraintViolation> none() {
       return Collections.emptySet();
@@ -210,7 +215,7 @@ public interface DocumentFacet<V> {
    * to this {@link Schema}.
    * If null is returned, no data will be indexed for this facet.
    *
-   * @return data Schema or null if ther is no dtat to be indexed.
+   * @return data schema or null if there is no data to be indexed.
    */
   default Schema getIndexSchema() {
     return null;
@@ -218,7 +223,7 @@ public interface DocumentFacet<V> {
 
   /**
    * Called when a document is saved and the Index data gets created or updated. This method provides document
-   * specific data to be indexed by this facet. The data is formatted accoring to the provided {@link Schema}.
+   * specific data to be indexed by this facet. The data is formatted according to the provided {@link Schema}.
    * If null is returned, no data will be indexed for this document.
    *
    * @param document document associated with the index data.

@@ -4,12 +4,12 @@ import com.neverpile.eureka.tx.wal.TransactionWAL.TransactionalAction;
 
 /**
  * Generic WAL (write ahead log). This class handles logging and applying actions.
- * These Actions ares stored with some sort of perisstence or distribution to ensure fault tolerance.
+ * These Actions ares stored with some sort of persistence or distribution to ensure fault tolerance.
  */
 public interface WriteAheadLog {
 
   /**
-   * Action type to specify an usecase of a given action. Used in conjunction with
+   * Action type to specify an use case of a given action. Used in conjunction with
    * {@link com.neverpile.eureka.tx.wal.util.ActionEntry}.
    */
   public enum ActionType {
@@ -53,7 +53,7 @@ public interface WriteAheadLog {
   void applyLoggedActions(String id, ActionType type, boolean reverseOrder);
 
   /**
-   * Force synchronizes the log with distributed instances and/or forces synchronisation with persistance medium.
+   * Force synchronizes the log with distributed instances and/or forces synchronisation with persistence medium.
    */
   void sync();
 

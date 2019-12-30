@@ -70,7 +70,7 @@ public class IdGenerationTest extends AbstractRestAssuredTest {
    * prescribed pattern (regex)
    */
   @Test
-  public void testThat_documentCanBeCreatedwithUuidldGeneratedId() {
+  public void testThat_documentCanBeCreatedWithGeneratedUUID() {
     DocumentDto dto = new DocumentDto();
 
     // @formatter:off

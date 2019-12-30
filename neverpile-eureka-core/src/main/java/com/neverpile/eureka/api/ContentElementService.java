@@ -18,7 +18,7 @@ import com.neverpile.eureka.model.ObjectName;
  */
 public interface ContentElementService {
   /**
-   * Generic exception thrown when an error occured while executing an operation on {@link ContentElement}s.
+   * Generic exception thrown when an error occurred while executing an operation on {@link ContentElement}s.
    */
   public class ContentElementException extends NeverpileException {
     private static final long serialVersionUID = 1L;
@@ -78,7 +78,7 @@ public interface ContentElementService {
    * @param documentId       {@link Document#documentId} of the associated
    *                         {@link Document}.
    * @param contentId        {@link ContentElement#id} of the {@link ContentElement} to check. If null the ID will be generated.
-   * @param is               inputstream with the actual data.
+   * @param is               InputStream with the actual data.
    * @param role             {@link ContentElement#role} of the {@link ContentElement}.
    * @param filename         {@link ContentElement#fileName} of the {@link ContentElement}.
    * @param contentType      String representation of the {@link MediaType} for {@link ContentElement#type} of the {@link ContentElement}.

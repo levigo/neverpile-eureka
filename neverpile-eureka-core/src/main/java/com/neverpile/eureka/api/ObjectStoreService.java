@@ -7,7 +7,7 @@ import com.neverpile.eureka.model.Document;
 import com.neverpile.eureka.model.ObjectName;
 
 /**
- * The Object Store service provides generic access to a document store and therefore opertations like
+ * The Object Store service provides generic access to a document store and therefore operations like
  * put/get/list/delete within a eureka instance. Data is stored with {@link StoreObject}s which hold an
  * {@link InputStream} with the actual data, an {@link ObjectName} as an Identifier and a version String to support
  * versioning.
@@ -15,7 +15,7 @@ import com.neverpile.eureka.model.ObjectName;
 public interface ObjectStoreService {
 
   /**
-   * Generic data object to store and retrvive data from the {@link ObjectStoreService}.
+   * Generic data object to store and retrieve data from the {@link ObjectStoreService}.
    * The Data contains an {@link InputStream} with the actual data, an {@link ObjectName} as an Identifier
    * and a version String to support versioning.
    */
@@ -36,7 +36,7 @@ public interface ObjectStoreService {
     InputStream getInputStream();
 
     /**
-     * version String to destinguish between versions of the same object
+     * version String to distinguish between versions of the same object
      *
      * @return Object version String.
      */
@@ -44,7 +44,7 @@ public interface ObjectStoreService {
   }
 
   /**
-   * Generic exception thrown when an error occured while executing an operation on the object store.
+   * Generic exception thrown when an error occurred while executing an operation on the object store.
    */
   public class ObjectStoreException extends NeverpileException {
     private static final long serialVersionUID = 1L;

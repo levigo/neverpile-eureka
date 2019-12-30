@@ -5,7 +5,7 @@ import com.neverpile.eureka.model.Document;
 /**
  * Service to maintain an index. This services provides access to operations like index/delete/update on single
  * documents and updates the Index accordingly with all relevant document and document facet data.
- * Administrative functionallity to rebuld or reset the index are also provided.
+ * Administrative functionality to rebuild or reset the index are also provided.
  */
 public interface IndexMaintenanceService {
 

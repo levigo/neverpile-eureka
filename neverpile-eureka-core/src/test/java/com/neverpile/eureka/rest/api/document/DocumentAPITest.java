@@ -247,8 +247,8 @@ public class DocumentAPITest extends AbstractRestAssuredTest {
   }
 
   @Test
-  public void testThat_nonexistingDocumentYields404() throws Exception {
-    // retrieve nonexisting
+  public void testThat_nonexistentDocumentYields404() throws Exception {
+    // retrieve nonexistent
     // @formatter:off
     given()
       .accept(ContentType.JSON)
@@ -263,7 +263,7 @@ public class DocumentAPITest extends AbstractRestAssuredTest {
 
   @Test
   public void testThat_unauthorizedAccessYields401() throws Exception {
-    // retrieve nonexisting
+    // retrieve nonexistent
     // @formatter:off
     given()
       .accept(ContentType.JSON)
@@ -275,8 +275,7 @@ public class DocumentAPITest extends AbstractRestAssuredTest {
   }
 
   /**
-   * TODO - Fragt nur ob die Funktion aufgerufen wurde Tests if the deleteDocument method is called
-   * on the HTTP delete call.
+   * TODO - Tests if the deleteDocument method is called on the HTTP delete call.
    *
    * @throws Exception
    */

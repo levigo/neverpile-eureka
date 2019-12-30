@@ -50,7 +50,7 @@ public class IndexResource {
 
   @PostMapping(value = "/hard-reset")
   @Operation(summary = "Hard resets index", description = "All index data will be lost and index gets reinitialized.")
-  @ApiResponse(responseCode = "200", description = "Index successfully resetted")
+  @ApiResponse(responseCode = "200", description = "Index successfully reseted")
   @Timed(description = "hard reset index", value = "eureka.index.hardReset")
   public void hardReset() {
     LOGGER.warn("Performing manual hard reset for index!");
