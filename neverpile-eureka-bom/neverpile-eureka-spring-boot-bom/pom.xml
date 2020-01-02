@@ -16,7 +16,6 @@
   </modules>
 
   <properties>
-    <spring-boot.version>2.1.7.RELEASE</spring-boot.version>
     <dropwizard.version>3.2.2</dropwizard.version>
     <elasticsearch.version>7.3.1</elasticsearch.version>
   </properties>
