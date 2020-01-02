@@ -68,7 +68,7 @@ public class AuditLogPluginAutoConfiguration {
    * @return
    */
   @Bean
-  @ConditionalOnBean(value = AuditObjectStoreBridge.class)
+  @ConditionalOnBean(value = AuditStorageBridge.class)
   @ConditionalOnMissingBean
   HashStrategyService simpleHashStrategyService() {
     return new HashChainService();
@@ -81,7 +81,7 @@ public class AuditLogPluginAutoConfiguration {
    * @return a AuditLogService implementation
    */
   @Bean
-  @ConditionalOnBean(value = AuditObjectStoreBridge.class)
+  @ConditionalOnBean(value = AuditStorageBridge.class)
   @ConditionalOnMissingBean
   AuditLogService simpleAuditLogService() {
     return new DefaultAuditLogService();

@@ -68,7 +68,6 @@ public class HashChainService implements HashStrategyService {
     // Insert all new events as link into chain
     HashChainStoreObject nextProofLink = null;
     ByteArrayOutputStream baos = null;
-    InputStream is = null;
 
     for (AuditEvent auditEvent : newLogEvents) {
       nextProofLink = currentProof.alterAndGet(input -> {
@@ -88,13 +87,11 @@ public class HashChainService implements HashStrategyService {
         e.printStackTrace();
       }
 
-      is = new ByteArrayInputStream(baos.toByteArray());
-
-      auditStorageBridge.putVerificationElement(getObjectNameOf(auditEvent.getAuditId()), is, baos.size());
+      auditStorageBridge.putVerificationElement(getObjectNameOf(auditEvent.getAuditId()), new ByteArrayInputStream(baos.toByteArray()), baos.size());
       LOGGER.info("Proof persisted for auditId: @{}", auditEvent.getAuditId());
     }
     if (!(null == nextProofLink) && currentProof.get().getAuditId().equals(nextProofLink.getAuditId())) {
-      auditStorageBridge.updateHeadVerificationElement(is, baos.size());
+      auditStorageBridge.updateHeadVerificationElement(new ByteArrayInputStream(baos.toByteArray()), baos.size());
     }
   }
 

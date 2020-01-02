@@ -92,6 +92,14 @@ public class AuditObjectStoreBridge implements AuditStorageBridge {
   @Override
   public void updateHeadVerificationElement(InputStream verificationElement, int length) {
     try {
+      Optional<InputStream> is = getHeadVerificationElement(); // To update currentVerificationVersion.
+      is.ifPresent(i -> {
+        try {
+          i.close();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      });
       objectStoreService.put(currentVerificationName, currentVerificationVersion, verificationElement, length);
     } catch (ObjectStoreService.ObjectStoreException e) {
       LOGGER.error("Failed to store verification Head for auditLog", e);
@@ -106,6 +114,7 @@ public class AuditObjectStoreBridge implements AuditStorageBridge {
       currentVerificationVersion = so.getVersion();
       return Optional.ofNullable(so.getInputStream());
     }
+    currentVerificationVersion = ObjectStoreService.NEW_VERSION;
     return Optional.empty();
   }
 
