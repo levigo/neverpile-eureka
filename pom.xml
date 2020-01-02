@@ -365,6 +365,7 @@
     <module>neverpile-eureka-plugin-metadata</module>
     <module>neverpile-eureka-plugin-audit</module>
     <module>neverpile-common</module>
+    <module>neverpile-openapi</module>
     <module>neverpile-eureka-bom</module>
   </modules>
 

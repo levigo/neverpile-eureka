@@ -1,5 +1,7 @@
 package com.neverpile.eureka.autoconfig;
 
+import java.io.IOException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -11,10 +13,14 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.context.annotation.RequestScope;
 
 import com.neverpile.authorization.api.AuthorizationService;
 import com.neverpile.authorization.basic.AllowAllAuthorizationService;
+import com.neverpile.common.openapi.OpenApiFragment;
+import com.neverpile.common.openapi.ResourceOpenApiFragment;
+import com.neverpile.common.openapi.ServersFragment;
 import com.neverpile.eureka.api.ContentElementIdGenerationStrategy;
 import com.neverpile.eureka.api.ContentElementService;
 import com.neverpile.eureka.api.DocumentAuthorizationService;
@@ -56,8 +62,8 @@ import com.neverpile.eureka.tx.wal.local.FileBasedWAL;
      * declare a @ComponentScan for the Jackson et. al. configuration. Instead we import
      * JacksonConfiguration as an anchor and let it do the dirty work of @ComponentScanning.
      */
-  FacetedDocumentDtoModule.class, JacksonConfiguration.class, EventPublisher.class, UpdateEventAggregator.class,
-  OpentracingAspect.class
+    FacetedDocumentDtoModule.class, JacksonConfiguration.class, EventPublisher.class, UpdateEventAggregator.class,
+    OpentracingAspect.class
 })
 @AutoConfigureOrder(AutoConfigureOrder.DEFAULT_ORDER + 1)
 public class NeverpileEurekaAutoConfiguration {
@@ -67,13 +73,24 @@ public class NeverpileEurekaAutoConfiguration {
   @ConditionalOnBean(value = DocumentService.class)
   @Import({
       DocumentResource.class, CreationDateFacet.class, IdFacet.class, ModificationDateFacet.class,
-      ExceptionHandlers.class, ContentElementFacet.class, ContentElementResource.class, IndexResource.class,
+      ExceptionHandlers.class, ContentElementFacet.class, ContentElementResource.class, IndexResource.class
   })
   public static class RestResourceConfiguration {
     @Bean
     @ConditionalOnBean(value = MultiVersioningDocumentService.class)
     public MultiVersioningDocumentResource multiVersioningDocumentResource() {
       return new MultiVersioningDocumentResource();
+    }
+
+    @Bean
+    public OpenApiFragment coreOpenApiFragment() {
+      return new ResourceOpenApiFragment("eureka", "core",
+          new ClassPathResource("com/neverpile/eureka/eureka-core.yaml"));
+    }
+
+    @Bean
+    public OpenApiFragment serversOpenApiFragment() throws IOException {
+      return new ServersFragment("servers").withServer("/", "neverpile eureka");
     }
   }
 
