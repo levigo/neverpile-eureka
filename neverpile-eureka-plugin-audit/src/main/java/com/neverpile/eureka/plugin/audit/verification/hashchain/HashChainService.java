@@ -48,7 +48,10 @@ public class HashChainService implements HashStrategyService {
   private HashChainStoreObject rootProof;
 
   public HashChainService() {
-    this.rootProof = new HashChainStoreObject(new HashChainLink("root", new AuditHash(rootNodeHashSeed.getBytes())));
+    AuditHash rootHash = new AuditHash(rootNodeHashSeed.getBytes());
+    HashChainStoreObject root = new HashChainStoreObject(new HashChainLink("root", rootHash));
+    root.setLinkHash(new AuditHash(rootHash, rootHash));
+    this.rootProof = root;
   }
 
   @Override
