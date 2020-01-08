@@ -65,11 +65,6 @@ public class BaseTestConfiguration {
   }
 
   @Bean
-  ClusterLockFactory noOpLock() {
-    return new LocalLockFactory();
-  }
-
-  @Bean
   AuthorizationService authorizationService() {
     return new AllowAllAuthorizationService();
   }
@@ -87,7 +82,4 @@ public class BaseTestConfiguration {
 
   @MockBean
   VerificationService mockVerificationService;
-
-  @MockBean
-  DistributedAtomicReference distributedAtomicReference;
 }
