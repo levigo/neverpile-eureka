@@ -272,7 +272,7 @@ public class NeverpileEurekaAutoConfiguration {
   @Bean
   @Scope("prototype")
   @ConditionalOnMissingBean
-  public DistributedAtomicReference<?> hazelcastDistributedReference(final InjectionPoint ip) {
+  public DistributedAtomicReference<?> localAtomicReference(final InjectionPoint ip) {
     return new LocalAtomicReference<>(ip.getAnnotation(DistributedAtomicType.class).value());
   }
 }
