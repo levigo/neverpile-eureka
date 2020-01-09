@@ -36,7 +36,7 @@
 
     <cassandra-driver-core.version>3.7.2</cassandra-driver-core.version>
 
-    <eureka-webjar.version>1.0.15</eureka-webjar.version>
+    <eureka-webjar.version>1.0.19</eureka-webjar.version>
 
     <opentracing.version>0.32.0</opentracing.version>
 

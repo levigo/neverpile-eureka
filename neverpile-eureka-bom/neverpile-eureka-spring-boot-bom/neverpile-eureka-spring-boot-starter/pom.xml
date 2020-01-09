@@ -42,5 +42,9 @@
       <groupId>com.neverpile.eureka.client</groupId>
       <artifactId>neverpile-eureka-client-webjar</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.neverpile.eureka</groupId>
+      <artifactId>neverpile-openapi</artifactId>
+    </dependency>
   </dependencies>
 </project>
