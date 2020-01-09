@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import com.neverpile.eureka.plugin.audit.verification.AuditHash;
 
-public class ProofChainLink implements Serializable {
+public class HashChainStoreObject implements Serializable {
 
   private String parentId = null;
 
@@ -14,10 +14,10 @@ public class ProofChainLink implements Serializable {
 
   private byte[] signature = null;
 
-  public ProofChainLink() {
+  public HashChainStoreObject() {
   }
 
-  public ProofChainLink(HashChainLink node) {
+  public HashChainStoreObject(HashChainLink node) {
     this.auditId = node.getAuditId();
     this.linkHash = node.getLinkHash();
     if (null != node.getParent()) {

@@ -19,7 +19,7 @@ public class DefaultAuditIdGenerationStrategy implements TimeBasedAuditIdGenerat
   }
 
   @Override
-  public boolean validateDocumentId(String id) {
+  public boolean validateAuditId(String id) {
     return id.matches("^\\d+\\" + delimiter + ".+");
   }
 
