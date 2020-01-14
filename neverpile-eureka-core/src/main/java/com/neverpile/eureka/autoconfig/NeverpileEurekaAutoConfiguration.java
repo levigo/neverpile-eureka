@@ -1,7 +1,10 @@
 package com.neverpile.eureka.autoconfig;
 
+import java.io.IOException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InjectionPoint;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -11,10 +14,15 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Scope;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.context.annotation.RequestScope;
 
 import com.neverpile.authorization.api.AuthorizationService;
 import com.neverpile.authorization.basic.AllowAllAuthorizationService;
+import com.neverpile.common.openapi.OpenApiFragment;
+import com.neverpile.common.openapi.ResourceOpenApiFragment;
+import com.neverpile.common.openapi.ServersFragment;
 import com.neverpile.eureka.api.ContentElementIdGenerationStrategy;
 import com.neverpile.eureka.api.ContentElementService;
 import com.neverpile.eureka.api.DocumentAuthorizationService;
@@ -31,6 +39,7 @@ import com.neverpile.eureka.impl.documentservice.DefaultDocumentService;
 import com.neverpile.eureka.impl.documentservice.DefaultMultiVersioningDocumentService;
 import com.neverpile.eureka.impl.documentservice.UuidContentElementIdGenerationStrategy;
 import com.neverpile.eureka.impl.documentservice.UuidDocumentIdGenerationStrategy;
+import com.neverpile.eureka.impl.tx.atomic.LocalAtomicReference;
 import com.neverpile.eureka.impl.tx.lock.LocalLockFactory;
 import com.neverpile.eureka.rest.api.document.DocumentResource;
 import com.neverpile.eureka.rest.api.document.MultiVersioningDocumentResource;
@@ -43,6 +52,8 @@ import com.neverpile.eureka.rest.api.exception.ExceptionHandlers;
 import com.neverpile.eureka.rest.configuration.FacetedDocumentDtoModule;
 import com.neverpile.eureka.rest.configuration.JacksonConfiguration;
 import com.neverpile.eureka.tracing.aspect.OpentracingAspect;
+import com.neverpile.eureka.tx.atomic.DistributedAtomicReference;
+import com.neverpile.eureka.tx.atomic.DistributedAtomicType;
 import com.neverpile.eureka.tx.lock.ClusterLockFactory;
 import com.neverpile.eureka.tx.wal.TransactionWAL;
 import com.neverpile.eureka.tx.wal.WriteAheadLog;
@@ -61,8 +72,8 @@ import com.neverpile.eureka.tx.wal.local.FileBasedWAL;
      * declare a @ComponentScan for the Jackson et. al. configuration. Instead we import
      * JacksonConfiguration as an anchor and let it do the dirty work of @ComponentScanning.
      */
-  FacetedDocumentDtoModule.class, JacksonConfiguration.class, EventPublisher.class, UpdateEventAggregator.class,
-  OpentracingAspect.class
+    FacetedDocumentDtoModule.class, JacksonConfiguration.class, EventPublisher.class, UpdateEventAggregator.class,
+    OpentracingAspect.class
 })
 @AutoConfigureOrder(AutoConfigureOrder.DEFAULT_ORDER + 1)
 public class NeverpileEurekaAutoConfiguration {
@@ -72,13 +83,24 @@ public class NeverpileEurekaAutoConfiguration {
   @ConditionalOnBean(value = DocumentService.class)
   @Import({
       DocumentResource.class, CreationDateFacet.class, IdFacet.class, ModificationDateFacet.class,
-      ExceptionHandlers.class, ContentElementFacet.class, ContentElementResource.class, IndexResource.class,
+      ExceptionHandlers.class, ContentElementFacet.class, ContentElementResource.class, IndexResource.class
   })
   public static class RestResourceConfiguration {
     @Bean
     @ConditionalOnBean(value = MultiVersioningDocumentService.class)
     public MultiVersioningDocumentResource multiVersioningDocumentResource() {
       return new MultiVersioningDocumentResource();
+    }
+
+    @Bean
+    public OpenApiFragment coreOpenApiFragment() {
+      return new ResourceOpenApiFragment("eureka", "core",
+          new ClassPathResource("com/neverpile/eureka/eureka-core.yaml"));
+    }
+
+    @Bean
+    public OpenApiFragment serversOpenApiFragment() throws IOException {
+      return new ServersFragment("servers").withServer("/", "neverpile eureka");
     }
   }
 
@@ -239,5 +261,23 @@ public class NeverpileEurekaAutoConfiguration {
   public ClusterLockFactory localLockFactory() {
     LOGGER.warn("Using a purely local, non-clustered lock factory. Do not use in multi-instance setups!");
     return new LocalLockFactory();
+  }
+
+  /**
+   * Provide a default implementation of {@link DistributedAtomicReference} which is based on a purely local
+   * implementation.
+   * Has To be annotated with {@link DistributedAtomicType} to work, which represents a unique name, to distingusch
+   * between references.
+   * <p>
+   * Back off if any other implementation is present.
+   *
+   * @param ip injectionpoint with varable annotations.
+   * @return a LocalAtomicReference
+   */
+  @Bean
+  @Scope("prototype")
+  @ConditionalOnMissingBean
+  public DistributedAtomicReference<?> localAtomicReference(final InjectionPoint ip) {
+    return new LocalAtomicReference<>(ip.getAnnotation(DistributedAtomicType.class).value());
   }
 }

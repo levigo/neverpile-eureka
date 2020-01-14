@@ -32,6 +32,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
     MediaType.APPLICATION_JSON_VALUE
 })
 @OpenAPIDefinition(tags = @Tag(name = "Metadata"))
+@Transactional
 public class MetadataResource {
   @Autowired
   private DocumentService documentService;
@@ -64,7 +65,6 @@ public class MetadataResource {
   @Operation(summary = "Updates a document's metadata")
   @ApiResponse(responseCode = "202", description = "Metadata updated")
   @ApiResponse(responseCode = "404", description = "Document not found")
-  @Transactional
   @Timed(description = "update document metadata", extraTags = {
       "operation", "update", "target", "metadata"
   }, value = "eureka.metadata.update")
@@ -95,7 +95,6 @@ public class MetadataResource {
   }
 
   @PutMapping(value = "{name}", consumes = MediaType.APPLICATION_JSON_VALUE)
-  @Transactional
   @Operation(summary = "Create or update a single metatadata element of a document")
   @ApiResponse(responseCode = "202", description = "Metadata updated")
   @ApiResponse(responseCode = "404", description = "Document not found")
@@ -114,7 +113,6 @@ public class MetadataResource {
   @ApiResponse(responseCode = "204", description = "Metadata element deleted")
   @ApiResponse(responseCode = "404", description = "Document or element not found")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  @Transactional
   @Timed(description = "delete document metadata element", extraTags = {
       "operation", "delete", "target", "metadata-element"
   }, value = "eureka.metadata.element.delete")

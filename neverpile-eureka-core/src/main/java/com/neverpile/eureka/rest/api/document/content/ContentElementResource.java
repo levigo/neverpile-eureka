@@ -79,6 +79,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 })
 @OpenAPIDefinition(tags = @Tag(name = "Content"))
 @Import(ContentElementResourceConfiguration.class)
+@Transactional
 public class ContentElementResource {
   public static final String DOCUMENT_FORM_ELEMENT_NAME = "__DOC";
 
@@ -254,7 +255,6 @@ public class ContentElementResource {
       + "present, otherwise generated automatically")
   @ApiResponse(responseCode = "201", description = "Document created. Return the document JSON")
   @ApiResponse(responseCode = "409", description = "Document already exists")
-  @Transactional
   public ResponseEntity<DocumentDto> createDocumentFromMultipart(
       final AllRequestParts files, // mapped using AllRequestPartsMethodArgumentResolver
       @Parameter(description = "The list of facets to be included in the response; return all facets if empty") @RequestParam(name = "facets", required = false) final List<String> requestedFacets)
@@ -319,7 +319,6 @@ public class ContentElementResource {
   @ApiResponse(responseCode = "200", description = "Content element(s) added")
   @ApiResponse(responseCode = "400", description = "Invalid documentID supplied")
   @ApiResponse(responseCode = "404", description = "Document not found")
-  @Transactional
   @Timed(description = "create document with content", extraTags = {
       "operation", "create", "target", "document-with-content"
   }, value = "eureka.document.create-with-content")
@@ -354,7 +353,6 @@ public class ContentElementResource {
   @ApiResponse(responseCode = "202", description = "Content element updated")
   @ApiResponse(responseCode = "400", description = "Invalid documentID supplied")
   @ApiResponse(responseCode = "404", description = "Content element not found")
-  @Transactional
   @Timed(description = "update content element", extraTags = {
       "operation", "update", "target", "content"
   }, value = "eureka.content.update")
@@ -400,7 +398,6 @@ public class ContentElementResource {
   @ApiResponse(responseCode = "204", description = "Content element deleted")
   @ApiResponse(responseCode = "400", description = "Invalid documentID supplied")
   @ApiResponse(responseCode = "404", description = "Document/Content not found")
-  @Transactional
   @Timed(description = "delete content element", extraTags = {
       "operation", "delete", "target", "content"
   }, value = "eureka.content.delete")

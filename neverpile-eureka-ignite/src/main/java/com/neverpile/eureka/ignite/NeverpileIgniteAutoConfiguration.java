@@ -4,9 +4,11 @@ import java.io.File;
 import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteSpringBean;
+import org.apache.ignite.configuration.CacheConfiguration;
 import org.apache.ignite.configuration.DataRegionConfiguration;
 import org.apache.ignite.configuration.DataStorageConfiguration;
 import org.apache.ignite.configuration.IgniteConfiguration;
@@ -32,6 +34,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
+import com.neverpile.eureka.ignite.cache.IgniteCacheManager;
 import com.neverpile.eureka.ignite.lock.IgniteLockFactory;
 import com.neverpile.eureka.ignite.queue.IgniteTaskQueue;
 import com.neverpile.eureka.ignite.wal.IgniteWAL;
@@ -85,10 +88,38 @@ public class NeverpileIgniteAutoConfiguration {
     
     i.setConfiguration(configuration);
     
-    TcpCommunicationSpi communicationSpi = new TcpCommunicationSpi();
-    communicationSpi.setConnectTimeout(1000);
-    configuration.setCommunicationSpi(communicationSpi);
+    configureCommunication(configuration);
     
+    configureDiscovery(finder, i, configuration);
+
+    configureCaches(configuration);
+    
+    /*
+     * Use the bean's own class loader for all ignite class-loading or we will get spurious
+     * ClassCastExceptions when running under Spring Devtools, as the latter uses its own class
+     * loader to enable hot reloads.
+     */
+    i.configuration().setClassLoader(getClass().getClassLoader());
+
+    i.configuration().setIncludeEventTypes(EventType.EVT_CACHE_OBJECT_PUT, EventType.EVT_CACHE_OBJECT_REMOVED);
+    
+    // silence noise
+    i.configuration().setMetricsLogFrequency(0);
+
+    return i;
+  }
+
+  private void configureCaches(final IgniteConfiguration configuration) {
+    Map<String, CacheConfiguration<Object, Object>> cacheConfigs = config.getCache().getConfigurations();
+    
+    // set cache names from configuration keys
+    cacheConfigs.forEach((name, config) -> config.setName(name));
+    
+    configuration.setCacheConfiguration(cacheConfigs.values().toArray(new CacheConfiguration[cacheConfigs.size()]));
+  }
+
+  private void configureDiscovery(final TcpDiscoveryIpFinder finder, final IgniteSpringBean i,
+      final IgniteConfiguration configuration) {
     TcpDiscoverySpi discovery = getDiscovery(finder);
     
     configuration.setDiscoverySpi(discovery);
@@ -104,20 +135,12 @@ public class NeverpileIgniteAutoConfiguration {
 
       i.configuration().setDataStorageConfiguration(dsc);
     }
+  }
 
-    /*
-     * Use the bean's own class loader for all ignite class-loading or we will get spurious
-     * ClassCastExceptions when running under Spring Devtools, as the latter uses its own class
-     * loader to enable hot reloads.
-     */
-    i.configuration().setClassLoader(getClass().getClassLoader());
-
-    i.configuration().setIncludeEventTypes(EventType.EVT_CACHE_OBJECT_PUT, EventType.EVT_CACHE_OBJECT_REMOVED);
-    
-    // silence noise
-    i.configuration().setMetricsLogFrequency(0);
-
-    return i;
+  private void configureCommunication(final IgniteConfiguration configuration) {
+    TcpCommunicationSpi communicationSpi = new TcpCommunicationSpi();
+    communicationSpi.setConnectTimeout(1000);
+    configuration.setCommunicationSpi(communicationSpi);
   }
 
   @Bean
@@ -177,5 +200,11 @@ public class NeverpileIgniteAutoConfiguration {
   @Scope("prototype")
   public TaskQueue<?> taskQueue(final InjectionPoint ip) {
     return new IgniteTaskQueue<>(ip.getAnnotation(DistributedPersistentQueueType.class).value());
+  }
+  
+  @Bean
+  @ConditionalOnProperty(name = "neverpile-eureka.ignite.cache.enabled", havingValue = "true", matchIfMissing = true)
+  public IgniteCacheManager igniteCacheManager() {
+    return new IgniteCacheManager();
   }
 }

@@ -59,7 +59,7 @@ public class AuditEventDto extends RepresentationModel<AuditEventDto> implements
     this.type = type;
   }
 
-  @Schema(description = "A textual desription of the event")
+  @Schema(description = "A textual description of the event")
   public String getDescription() {
     return description;
   }
@@ -67,8 +67,7 @@ public class AuditEventDto extends RepresentationModel<AuditEventDto> implements
   public void setDescription(final String description) {
     this.description = description;
   }
-
-  // FIXME: do we really need this?
+  
   @Schema(description = "The ID of this event")
   public String getAuditId() {
     return auditId;

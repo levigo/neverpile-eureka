@@ -15,7 +15,7 @@
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <spring-boot.version> 2.2.2.RELEASE</spring-boot.version>
+    <spring-boot.version>2.2.2.RELEASE</spring-boot.version>
 
     <spring-boot-admin.version>2.1.6</spring-boot-admin.version>
     <springfox.version>2.9.2</springfox.version>
@@ -36,7 +36,7 @@
 
     <cassandra-driver-core.version>3.7.2</cassandra-driver-core.version>
 
-    <eureka-webjar.version>1.0.11</eureka-webjar.version>
+    <eureka-webjar.version>1.0.19</eureka-webjar.version>
 
     <opentracing.version>0.32.0</opentracing.version>
 
@@ -365,6 +365,7 @@
     <module>neverpile-eureka-plugin-metadata</module>
     <module>neverpile-eureka-plugin-audit</module>
     <module>neverpile-common</module>
+    <module>neverpile-openapi</module>
     <module>neverpile-eureka-bom</module>
   </modules>
 

@@ -10,6 +10,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.neverpile.eureka.plugin.audit.service.AuditEvent;
+import com.neverpile.eureka.plugin.audit.service.AuditIdGenerationStrategy;
+import com.neverpile.eureka.plugin.audit.service.impl.DefaultAuditIdGenerationStrategy;
+import com.neverpile.eureka.plugin.audit.storage.AuditObjectStoreBridge;
 import com.neverpile.eureka.plugin.audit.verification.AbstractHashStrategyServiceTest;
 import com.neverpile.eureka.plugin.audit.verification.AuditHash;
 import com.neverpile.eureka.plugin.audit.verification.HashStrategyService;
@@ -19,8 +22,8 @@ import com.neverpile.eureka.plugin.audit.verification.HashStrategyService;
 public class HashChainServiceTest extends AbstractHashStrategyServiceTest {
   @Override
   protected TestProofSet getSomeProof() {
-    ProofChainLink proof = new ProofChainLink();
-    ProofChainLink parent = (ProofChainLink) getParentOfSomeProof();
+    HashChainStoreObject proof = new HashChainStoreObject();
+    HashChainStoreObject parent = (HashChainStoreObject) getParentOfSomeProof();
 
     AuditEvent ae = new AuditEvent();
     ae.setAuditId("audit1");
@@ -39,7 +42,7 @@ public class HashChainServiceTest extends AbstractHashStrategyServiceTest {
   }
 
   protected Object getParentOfSomeProof() {
-    ProofChainLink proof = new ProofChainLink();
+    HashChainStoreObject proof = new HashChainStoreObject();
     proof.setAuditId("audit0");
     proof.setParentId(null);
     proof.setLinkHash(new AuditHash("audit0".getBytes(), "audit0".getBytes()));
@@ -57,6 +60,16 @@ class Config {
   @Bean
   HashStrategyService hashStrategyService() {
     return new HashChainService();
+  }
+
+  @Bean
+  AuditObjectStoreBridge auditObjectStoreBridge() {
+    return new AuditObjectStoreBridge();
+  }
+
+  @Bean
+  AuditIdGenerationStrategy auditIdGenerationStrategy() {
+    return new DefaultAuditIdGenerationStrategy();
   }
 
 }

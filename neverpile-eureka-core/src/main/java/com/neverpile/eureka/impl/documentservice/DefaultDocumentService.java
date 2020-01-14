@@ -40,7 +40,7 @@ import com.neverpile.eureka.tracing.TraceInvocation;
  * store. It does not implement multi-versioning and thus updates are destructive.
  * <p>
  * Basic optimistic concurrency control is implemented based on object store object version
- * tracking.  
+ * tracking.
  */
 public class DefaultDocumentService implements DocumentService, DocumentAssociatedEntityStore {
   private static final Logger LOGGER = LoggerFactory.getLogger(DefaultDocumentService.class);
@@ -53,7 +53,7 @@ public class DefaultDocumentService implements DocumentService, DocumentAssociat
 
   @Autowired
   private ObjectMapper objectMapper;
-  
+
   @Autowired
   private ModelMapper modelMapper;
 
