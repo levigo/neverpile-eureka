@@ -1,0 +1,27 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Run a one-line script
+      run: echo Hello, world!
+    - name: Run a multi-line script
+      run: |
+        echo Add other actions to build,
+        echo test, and deploy your project.
+    - name: Semantic Releaser
+      uses: brpaz/action-semantic-release@v1
+      with:
+        # Specifies a list of extra plugins to install
+        install_plugins: # optional
+        # Run semantic release in dry-run mode
+        dry_run: # optional, default is false
+        # The branch to release from
+        branch: # optional, default is master   
+    
