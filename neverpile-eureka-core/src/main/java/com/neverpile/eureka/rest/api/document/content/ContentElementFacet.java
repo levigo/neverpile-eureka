@@ -67,13 +67,13 @@ public class ContentElementFacet implements DocumentFacet<List<ContentElementDto
   @Override
   public void beforeUpdate(final Document currentDocument, final Document updatedDocument,
       final DocumentDto updateDto) {
-    currentDocument.setContentElements( //
-        updateDto.getFacetData(this) //
-            .orElse(Collections.emptyList()) //
-            .stream() //
+    updateDto.getFacetData(this).ifPresent(
+        contentElementDtos -> updatedDocument.setContentElements(contentElementDtos.stream() //
             .map(dto -> modelMapper.map(dto, ContentElement.class)) //
-            .collect(Collectors.toList()) //
-    );
+            .collect(Collectors.toList())));
+    if (updatedDocument.getContentElements() == null) {
+      updatedDocument.setContentElements(Collections.emptyList());
+    }
   }
 
   @Override
@@ -117,10 +117,10 @@ public class ContentElementFacet implements DocumentFacet<List<ContentElementDto
           return 0;
 
         switch (key.head()){
-          case "count" :
+          case "count":
             return contentElements.size();
 
-          case "type" :
+          case "type":
             if (!key.hasMore())
               return null;
 
@@ -128,7 +128,7 @@ public class ContentElementFacet implements DocumentFacet<List<ContentElementDto
 
             return contentElements.stream().filter(e -> e.getType() != null && mt.isCompatible(e.getType())).count();
 
-          case "role" :
+          case "role":
             if (!key.hasMore())
               return null;
 
