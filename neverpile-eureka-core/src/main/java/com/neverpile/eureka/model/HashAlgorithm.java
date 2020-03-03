@@ -2,19 +2,13 @@ package com.neverpile.eureka.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "A description of a hash-algorithm")
 public enum HashAlgorithm {
   @JsonProperty("SHA-1")
-  SHA_1("SHA-1"),
-  @JsonProperty("SHA-256")
-  SHA_256("SHA-256"),
-  @JsonProperty("SHA-384")
-  SHA_384("SHA-384"),
-  @JsonProperty("SHA-512")
-  SHA_512("SHA-512"),
-  @JsonProperty("MD5")
+  SHA_1("SHA-1"), @JsonProperty("SHA-256")
+  SHA_256("SHA-256"), @JsonProperty("SHA-384")
+  SHA_384("SHA-384"), @JsonProperty("SHA-512")
+  SHA_512("SHA-512"), @JsonProperty("MD5")
   MD5("MD5");
 
 
