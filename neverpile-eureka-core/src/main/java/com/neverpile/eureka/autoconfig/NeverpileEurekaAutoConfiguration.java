@@ -18,8 +18,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.context.annotation.RequestScope;
 
-import com.neverpile.authorization.api.AuthorizationService;
-import com.neverpile.authorization.basic.AllowAllAuthorizationService;
+import com.neverpile.common.authorization.api.AuthorizationService;
+import com.neverpile.common.authorization.basic.AllowAllAuthorizationService;
 import com.neverpile.common.openapi.OpenApiFragment;
 import com.neverpile.common.openapi.ResourceOpenApiFragment;
 import com.neverpile.common.openapi.ServersFragment;

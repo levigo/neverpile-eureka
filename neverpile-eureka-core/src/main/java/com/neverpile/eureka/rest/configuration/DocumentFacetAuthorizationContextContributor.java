@@ -5,10 +5,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.neverpile.authorization.api.AuthorizationContext;
-import com.neverpile.authorization.api.AuthorizationContextContributor;
-import com.neverpile.authorization.policy.impl.CompositeAuthorizationContext;
-import com.neverpile.authorization.policy.impl.PrefixAuthorizationContext;
+import com.neverpile.common.authorization.api.AuthorizationContext;
+import com.neverpile.common.authorization.api.AuthorizationContextContributor;
+import com.neverpile.common.authorization.policy.impl.CompositeAuthorizationContext;
+import com.neverpile.common.authorization.policy.impl.PrefixAuthorizationContext;
 import com.neverpile.eureka.model.Document;
 import com.neverpile.eureka.rest.api.document.DocumentFacet;
 

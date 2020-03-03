@@ -15,8 +15,12 @@
       <artifactId>neverpile-common</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.neverpile.eureka</groupId>
-      <artifactId>neverpile-authorization</artifactId>
+      <groupId>com.neverpile.commons</groupId>
+      <artifactId>neverpile-commons-authorization</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.neverpile.commons</groupId>
+      <artifactId>neverpile-commons-openapi</artifactId>
     </dependency>
 
     <!-- Spring -->

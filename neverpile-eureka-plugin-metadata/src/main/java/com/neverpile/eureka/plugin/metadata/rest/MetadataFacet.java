@@ -27,7 +27,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.jayway.jsonpath.JsonPath;
 import com.mycila.xmltool.XMLDoc;
-import com.neverpile.authorization.api.AuthorizationContext;
+import com.neverpile.common.authorization.api.AuthorizationContext;
 import com.neverpile.common.specifier.Specifier;
 import com.neverpile.eureka.api.DocumentAuthorizationService;
 import com.neverpile.eureka.api.index.Schema;

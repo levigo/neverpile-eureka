@@ -5,9 +5,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 
-import com.neverpile.authorization.policy.MutablePolicyRepository;
-import com.neverpile.authorization.policy.PolicyRepository;
 import com.neverpile.authorization.service.impl.SimpleMutablePolicyRepository;
+import com.neverpile.common.authorization.policy.MutablePolicyRepository;
+import com.neverpile.common.authorization.policy.PolicyRepository;
 import com.neverpile.eureka.api.ObjectStoreService;
 
 @ConditionalOnMissingBean(value = PolicyRepository.class)

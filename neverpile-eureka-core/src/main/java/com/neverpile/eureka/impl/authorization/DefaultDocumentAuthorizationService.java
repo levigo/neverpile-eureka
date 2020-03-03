@@ -7,12 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Component;
 
-import com.neverpile.authorization.api.Action;
-import com.neverpile.authorization.api.AuthorizationContext;
-import com.neverpile.authorization.api.AuthorizationContextContributor;
-import com.neverpile.authorization.api.AuthorizationService;
-import com.neverpile.authorization.policy.impl.CompositeAuthorizationContext;
-import com.neverpile.authorization.policy.impl.PrefixAuthorizationContext;
+import com.neverpile.common.authorization.api.Action;
+import com.neverpile.common.authorization.api.AuthorizationContext;
+import com.neverpile.common.authorization.api.AuthorizationContextContributor;
+import com.neverpile.common.authorization.api.AuthorizationService;
+import com.neverpile.common.authorization.policy.impl.CompositeAuthorizationContext;
+import com.neverpile.common.authorization.policy.impl.PrefixAuthorizationContext;
 import com.neverpile.eureka.api.DocumentAuthorizationService;
 import com.neverpile.eureka.model.Document;
 

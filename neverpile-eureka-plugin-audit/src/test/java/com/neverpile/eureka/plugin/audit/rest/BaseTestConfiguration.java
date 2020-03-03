@@ -16,9 +16,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.neverpile.authorization.api.Action;
-import com.neverpile.authorization.api.AuthorizationService;
-import com.neverpile.authorization.basic.AllowAllAuthorizationService;
+import com.neverpile.common.authorization.api.Action;
+import com.neverpile.common.authorization.api.AuthorizationService;
+import com.neverpile.common.authorization.basic.AllowAllAuthorizationService;
 import com.neverpile.eureka.api.DocumentAuthorizationService;
 import com.neverpile.eureka.impl.tx.lock.LocalLockFactory;
 import com.neverpile.eureka.model.Document;

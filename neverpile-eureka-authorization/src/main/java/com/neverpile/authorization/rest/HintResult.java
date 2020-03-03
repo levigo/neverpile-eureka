@@ -2,7 +2,7 @@ package com.neverpile.authorization.rest;
 
 import java.util.List;
 
-import com.neverpile.authorization.api.HintRegistrations.Hint;
+import com.neverpile.common.authorization.api.HintRegistrations.Hint;
 
 public class HintResult {
   private List<Hint> actions;
