@@ -84,12 +84,12 @@
         <artifactId>neverpile-commons-authorization</artifactId>
         <version>${neverpile-commons.version}</version>
       </dependency>
-    <dependency>
-      <groupId>com.neverpile.commons</groupId>
-      <artifactId>neverpile-commons-openapi</artifactId>
+      <dependency>
+        <groupId>com.neverpile.commons</groupId>
+        <artifactId>neverpile-commons-openapi</artifactId>
         <version>${neverpile-commons.version}</version>
-    </dependency>
-    
+      </dependency>
+
       <!-- Swagger -->
       <dependency>
         <groupId>io.swagger.core.v3</groupId>
@@ -277,11 +277,6 @@
       <dependency>
         <groupId>com.neverpile.eureka</groupId>
         <artifactId>neverpile-eureka-test-support</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.neverpile.eureka</groupId>
-        <artifactId>neverpile-common</artifactId>
         <version>${project.version}</version>
       </dependency>
 

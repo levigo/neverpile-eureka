@@ -11,10 +11,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.neverpile.eureka</groupId>
-      <artifactId>neverpile-common</artifactId>
-    </dependency>
-    <dependency>
       <groupId>com.neverpile.commons</groupId>
       <artifactId>neverpile-commons-authorization</artifactId>
     </dependency>
