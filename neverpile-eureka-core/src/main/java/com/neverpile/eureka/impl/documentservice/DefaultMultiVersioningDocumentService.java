@@ -27,6 +27,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.neverpile.common.opentracing.TraceInvocation;
 import com.neverpile.common.util.VisibleForTesting;
 import com.neverpile.eureka.api.DocumentAssociatedEntityStore;
 import com.neverpile.eureka.api.MultiVersioningDocumentService;
@@ -39,7 +40,6 @@ import com.neverpile.eureka.event.EventPublisher;
 import com.neverpile.eureka.model.Document;
 import com.neverpile.eureka.model.ObjectName;
 import com.neverpile.eureka.rest.api.exception.NotFoundException;
-import com.neverpile.eureka.tracing.TraceInvocation;
 import com.neverpile.eureka.tx.lock.ClusterLockFactory;
 import com.neverpile.eureka.util.CompositeKey;
 

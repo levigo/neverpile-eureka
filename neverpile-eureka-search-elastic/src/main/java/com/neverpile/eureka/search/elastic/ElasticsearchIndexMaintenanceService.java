@@ -5,9 +5,9 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.neverpile.common.opentracing.TraceInvocation;
 import com.neverpile.eureka.api.index.IndexMaintenanceService;
 import com.neverpile.eureka.model.Document;
-import com.neverpile.eureka.tracing.TraceInvocation;
 
 @Service
 public class ElasticsearchIndexMaintenanceService implements IndexMaintenanceService {

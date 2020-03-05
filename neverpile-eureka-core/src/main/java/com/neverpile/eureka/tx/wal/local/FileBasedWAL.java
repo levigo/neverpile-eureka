@@ -32,8 +32,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 
-import com.neverpile.eureka.tracing.TraceInvocation;
-import com.neverpile.eureka.tracing.Tag;
+import com.neverpile.common.opentracing.Tag;
+import com.neverpile.common.opentracing.TraceInvocation;
 import com.neverpile.eureka.tx.wal.TransactionWAL.TransactionalAction;
 import com.neverpile.eureka.tx.wal.WALException;
 import com.neverpile.eureka.tx.wal.WriteAheadLog;

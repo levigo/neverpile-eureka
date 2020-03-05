@@ -18,6 +18,10 @@
       <groupId>com.neverpile.commons</groupId>
       <artifactId>neverpile-commons-openapi</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.neverpile.commons</groupId>
+      <artifactId>neverpile-commons-opentracing</artifactId>
+    </dependency>
 
     <!-- Spring -->
     <dependency>
@@ -75,12 +79,6 @@
     <dependency>
       <groupId>com.jayway.jsonpath</groupId>
       <artifactId>json-path</artifactId>
-    </dependency>
-
-    <!-- Tracing -->
-    <dependency>
-      <groupId>io.opentracing</groupId>
-      <artifactId>opentracing-api</artifactId>
     </dependency>
 
     <!-- FIXME: can we get rid of these dependencies? -->
