@@ -123,7 +123,7 @@ public class PolicyRepositoryResource {
       "operation", "create/update", "target", "policy"
   }, value = "eureka.authorization.policy.put")
   @Transactional
-  public void put(@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final Instant startOfValidity,
+  public void put(@PathVariable("startOfValidity") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final Instant startOfValidity,
       @RequestBody final AccessPolicy policy) {
     policy.setValidFrom(startOfValidity);
 
@@ -135,7 +135,7 @@ public class PolicyRepositoryResource {
       "operation", "delete", "target", "policy"
   }, value = "eureka.authorization.policy.delete")
   @Transactional
-  public void delete(@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final Instant startOfValidity) {
+  public void delete(@PathVariable("startOfValidity") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final Instant startOfValidity) {
     if (!authService.isAccessAllowed(POLICY_RESOURCE_SPECIFIER, Collections.singleton(CoreActions.DELETE),
         createAuthorizationContext()))
       throw new AccessDeniedException("Deletion of authorization policy denied");
