@@ -4,9 +4,9 @@ import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * This Interface defines a distributed variant of {@link AtomicReference}. Operations on the Object Referenced will be
- * executed atomically and the changes will be propagated to all nodes in the cluster. This Reference must have a
- * injected unique name by using the {@link DistributedAtomicType} annotation.
+ * This Interface defines a distributed variant of {@link AtomicReference}. Operations on the referenced object will be
+ * executed atomically and the changes will be propagated to all nodes in the cluster. This reference must be injected with
+ * a unique name by using the {@link DistributedAtomicType} annotation.
  *
  * @param <E> Type of the object to reference.
  */
@@ -53,7 +53,7 @@ public interface DistributedAtomicReference<E extends Serializable> {
   void set(E newValue);
 
   /**
-   * Execute a Atomic Function on the Object the Function will get the referenced Object as input and returns the
+   * Execute an atomic function on the object. The function will get the referenced Object as input and returns the
    * object in its updated state.
    *
    * @param fn function to be executed.
