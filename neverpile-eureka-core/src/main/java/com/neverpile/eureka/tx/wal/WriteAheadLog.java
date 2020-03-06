@@ -4,12 +4,12 @@ import com.neverpile.eureka.tx.wal.TransactionWAL.TransactionalAction;
 
 /**
  * Generic WAL (write ahead log). This class handles logging and applying actions.
- * These Actions ares stored with some sort of persistence or distribution to ensure fault tolerance.
+ * These actions ares stored with some sort of persistence or distribution to ensure fault tolerance.
  */
 public interface WriteAheadLog {
 
   /**
-   * Action type to specify an use case of a given action. Used in conjunction with
+   * Action type to specify the type of a given action. Used in conjunction with
    * {@link com.neverpile.eureka.tx.wal.util.ActionEntry}.
    */
   public enum ActionType {
@@ -17,7 +17,7 @@ public interface WriteAheadLog {
   }
 
   /**
-   * Event type to mark an Action as complete. Used in conjunction with
+   * Event type to mark an Action as completed or to be rolled back. Used in conjunction with
    * {@link com.neverpile.eureka.tx.wal.util.EventEntry}.
    */
   public enum EventType {
@@ -25,9 +25,9 @@ public interface WriteAheadLog {
   }
 
   /**
-   * Append a new action to the log. Tis action cab be identified by its ID in combination with a {@link ActionType}.
+   * Append a new action to the log. This action can be identified by its ID in combination with a {@link ActionType}.
    * The the given {@link TransactionalAction} will be executed when called via {@link WriteAheadLog#applyLoggedActions}
-   * When multiple Actions for the same id with different types are appended, only one type can be executed.
+   * When multiple actions for the same id with different types are appended, only one type can be executed.
    *
    * @param id Action identifier.
    * @param type ActionType depending on the Actions use case.
@@ -36,14 +36,14 @@ public interface WriteAheadLog {
   void logAction(String id, ActionType type, TransactionalAction action);
 
   /**
-   * This method marks a logged Action as completed. All previous logged action for the given ID are seen as completed.
+   * This method marks a logged action as completed. All previous logged action for the given ID are seen as completed.
    *
    * @param id identifier for logged actions to mark as completed.
    */
   void logCompletion(String id);
 
   /**
-   * Executes a logged Action with the specified ID and Type. If multiple Actions with this exact ID and Type where
+   * Executes a logged Action with the specified ID and yype. If multiple Actions with this exact ID and yype where
    * logged the actions will be executed sequentially.
    *
    * @param id Action identifier.
