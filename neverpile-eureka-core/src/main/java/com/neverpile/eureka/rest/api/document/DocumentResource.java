@@ -245,7 +245,7 @@ public class DocumentResource {
 
   /**
    * The method check_BadInputParameter checks the documentId for a specific pattern. If the Id
-   * does not meet the required pattern, this method throws an API-Exception.
+   * does not match the required pattern, this method throws an API-Exception.
    *
    * @param documentId Id to check
    */
