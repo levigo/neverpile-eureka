@@ -4,24 +4,24 @@ import java.io.Serializable;
 import java.util.Map;
 
 /**
- * this task queue is used to queue in asynchronous Tasks to be executed distributedly. The queue provides access for
- * listeners to get and work on a task. if the task was successfully completed it will be removed from the queue.
- * The Task is Parameterized to contain various data with information needed to perform a specific task.
- * This queue must have a injected unique name by using the {@link DistributedPersistentQueueType} annotation.
+ * This task queue is used to queue in asynchronous Tasks to be executed distributedly. The queue provides access for
+ * listeners to get and work on a task. If the task was successfully completed, it will be removed from the queue.
+ * The task is parameterized to contain various data with information needed to perform a specific task.
+ * This queue must have be injected with unique name by using the {@link DistributedPersistentQueueType} annotation.
  *
  * @param <V> The data type for executing a task.
  */
 public interface TaskQueue<V> {
 
   /**
-   * Add a Series of Tasks to the Queue. All Tasks are mapped to their unique key.
+   * Add a series of tasks to the queue. All tasks are mapped to their unique key.
    *
    * @param map Map containing the unique key and the task data.
    */
   void putAllInQueue(Map<String, V> map);
 
   /**
-   * Append a single Task to te Queue using a unique task key.
+   * Append a single task to te queue using a unique task key.
    *
    * @param key a unique task key.
    * @param data the task data.
@@ -29,24 +29,24 @@ public interface TaskQueue<V> {
   void putInQueue(String key, V data);
 
   /**
-   * get a element from the queue. The returned element has not jet been processed by another node.
+   * Get an element from the queue. The returned element has not yet been processed by another node.
    *
    * @return ProcessElement containing the key and the task data.
    */
   ProcessElement<V> getElementToProcess();
 
   /**
-   * Report a Task as Done and remove it from the queue. Task can only be removed when they are previously marked as
+   * Report a task as done and remove it from the queue. Task can only be removed when they have previously been marked as
    * in-progress by getting them via {@link TaskQueue#getElementToProcess()}.
    *
-   * @param key key of the Task to remove.
+   * @param key key of the task to remove.
    * @return return {@code true} if the removal was successful - {@code false} otherwise.
    */
   boolean removeProcessedElement(String key);
 
   /**
-   * Register a listener on the task queue. the listener will get notified by calling the
-   * {@link QueueListener#notifyUpdate()} function. A notification will be triggered whenever a element in the queue is
+   * Register a listener on the task queue. The listener will get notified by calling the
+   * {@link QueueListener#notifyUpdate()} function. A notification will be triggered whenever an element in the queue is
    * ready for processing.
    * The listener may process a task when notified.
    *
@@ -55,20 +55,20 @@ public interface TaskQueue<V> {
   void registerListener(QueueListener<V> listener);
 
   /**
-   * remove a listener from the task queue to no longer get notifications for queue changes.
+   * Remove a listener from the task queue to no longer get notifications for queue changes.
    *
    * @param listener listener to remove.
    */
   void unregisterListener(QueueListener<V> listener);
 
   /**
-   * Listener for the Task queue to get notifications  whenever a element in the queue is ready for processing.
+   * Listener for the task queue to get notifications whenever an element in the queue is ready for processing.
    *
    * @param <T> The data type for the task data.
    */
   interface QueueListener<T> {
     /**
-     * This Function will be called whenever a element in the queue is ready for processing.
+     * This Function will be called whenever an element in the queue is ready for processing.
      */
       void notifyUpdate();
   }
