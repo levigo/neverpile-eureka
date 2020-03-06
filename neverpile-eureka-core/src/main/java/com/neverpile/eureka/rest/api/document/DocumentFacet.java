@@ -34,8 +34,8 @@ import com.neverpile.eureka.tx.wal.WriteAheadLog;
 public interface DocumentFacet<V> {
   /**
    * Constraint violation is a way to veto a transaction during the validation phase. Every Facet has the opportunity
-   * to veto a operation during its validation phase. tu use this veto return this ConstraintViolation during the
-   * validate* lifecycle event (e.g. {@link DocumentFacet#validateCreate(DocumentDto)}).
+   * to veto a operation during its validation phase. To veto the operation, return this ConstraintViolation during the
+   * validate lifecycle-event (e.g. {@link DocumentFacet#validateCreate(DocumentDto)}).
    */
   public static class ConstraintViolation {
     public static <V> Set<ConstraintViolation> none() {
