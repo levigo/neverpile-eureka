@@ -53,7 +53,7 @@ public interface ContentElementService {
   InputStream getContentElement(final String documentId, final String contentId);
 
   /**
-   * Delete a existing {@link ContentElement}.
+   * Delete an existing {@link ContentElement}.
    *
    * @param documentId {@link Document#documentId} of the associated
    *                   {@link Document}.
@@ -63,7 +63,7 @@ public interface ContentElementService {
   boolean deleteContentElement(String documentId, String contentId);
 
   /**
-   * Checks if an {@link ContentElement} already exists.
+   * Checks if a {@link ContentElement} already exists.
    *
    * @param documentId {@link Document#documentId} of the associated
    *                   {@link Document}.
