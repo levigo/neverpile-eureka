@@ -36,7 +36,7 @@ public interface ObjectStoreService {
     InputStream getInputStream();
 
     /**
-     * version String to distinguish between versions of the same object
+     * Version string to distinguish between versions of the same object
      *
      * @return Object version String.
      */
@@ -115,7 +115,7 @@ public interface ObjectStoreService {
   void put(ObjectName objectName, String version, InputStream content, long length);
 
   /**
-   * Retrieve objects on a prefix-based search - note: listings based on partial segments won't be
+   * Retrieve objects on a prefix-based search. Note: listings based on partial segments won't be
    * resolved, filtering will be done by fully matching name components
    *
    * @param prefix build from the name components of the provided ObjectName
