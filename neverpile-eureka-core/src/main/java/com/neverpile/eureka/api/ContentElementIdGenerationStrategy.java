@@ -6,7 +6,7 @@ import com.neverpile.eureka.model.ContentElement;
 import com.neverpile.eureka.model.Digest;
 
 /**
- * {@link ContentElement}s must have unique IDs within a {@link com.neverpile.eureka.model.Document}. This interfaces
+ * {@link ContentElement}s must have unique IDs within a {@link com.neverpile.eureka.model.Document}. This interface
  * defines functions to create and validate such IDs with a implementation of choice.
  */
 public interface ContentElementIdGenerationStrategy {
