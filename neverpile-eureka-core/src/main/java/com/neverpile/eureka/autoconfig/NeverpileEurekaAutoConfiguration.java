@@ -61,9 +61,9 @@ import com.neverpile.eureka.tx.wal.local.DefaultTransactionWAL;
 import com.neverpile.eureka.tx.wal.local.FileBasedWAL;
 
 /**
- * This configuration builds the base auto configuration for neverpile eureka all configurations defined here
- * act as a fallback an can be overwritten by any other auto configuration. The Services configured here are mostly
- * the simple or default implementations of each service.
+ * This configuration builds the base auto configuration for neverpile eureka. All configuration defined here
+ * act as a fallback an can be overwritten by configuration provided by tie implementation. The Services configured here 
+ * are mostly the simple or default implementations of each service.
  */
 @Configuration
 @Import({
