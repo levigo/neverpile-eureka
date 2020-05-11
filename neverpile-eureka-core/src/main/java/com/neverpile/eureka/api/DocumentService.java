@@ -5,14 +5,18 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import com.neverpile.eureka.api.exception.VersionMismatchException;
+import com.neverpile.eureka.model.ContentElement;
 import com.neverpile.eureka.model.Document;
 
 /**
  * The document service provides access to documents (create/read/update/delete) within a eureka
- * instance. Documents are fundamentally identified by their unique document-id and are represented
+ * instance. Documents are fundamentally identified by their unique {@link Document#documentId} and are represented
  * by the {@link Document} model class.
  */
 public interface DocumentService {
+  /**
+   * Generic exception thrown when an error occurred while executing an operation on {@link Document}s.
+   */
   public class DocumentServiceException extends NeverpileException {
     private static final long serialVersionUID = 1L;
 
@@ -25,15 +29,21 @@ public interface DocumentService {
     }
   }
 
+  /**
+   * Exception thrown when trying to create an {@link Document} with an ID that already exists.
+   */
   public class DocumentAlreadyExistsException extends DocumentServiceException {
     private static final long serialVersionUID = 1L;
 
-    @SuppressWarnings("unused")
     private final Document document;
 
     public DocumentAlreadyExistsException(final Document document) {
       super("The document with the given id already exists");
       this.document = document;
+    }
+
+    public Document getDocument() {
+      return document;
     }
   }
 
@@ -77,7 +87,7 @@ public interface DocumentService {
    * @param deltaDocument the document instance containing the new/updated data
    * @return updated document or <code>null</code>
    * @throws VersionMismatchException if an attempt is made to update a document version that is
-   *           not/no longer the current version
+   *                                  not/no longer the current version
    * @throws DocumentServiceException in case of other failures
    */
   Optional<Document> update(Document deltaDocument);
@@ -102,7 +112,7 @@ public interface DocumentService {
   /**
    * Returns Documents to all given ids if present. The list may be empty if no document of the
    * given ids exists.
-   * 
+   *
    * @param ids the list ids for which the document shall be returned.
    * @return List of matching documents
    * @throws DocumentServiceException in case of other failures

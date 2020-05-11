@@ -10,6 +10,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
@@ -120,13 +121,7 @@ public class SimpleMutablePolicyRepository implements MutablePolicyRepository {
     // if we didn't find anything we return a fake policy denying everything except creating a new
     // policy
     if (policies.isEmpty()) {
-      LOGGER.warn("There is not currently valid access policy - falling back to default policy");
-
-      AccessPolicy denyAll = createDefaultPolicy();
-
-      denyAll.setValidFrom(now);
-
-      return denyAll;
+      return fallbackPolicy(now);
     }
 
     // archive expired policies while we're at it
@@ -134,11 +129,16 @@ public class SimpleMutablePolicyRepository implements MutablePolicyRepository {
       archiveExpiredPolicies(policies);
 
     // find the current policy
-    AccessPolicy currentAccessPolicy = unmarshalPolicy( //
-        policies.stream() //
-            .filter(s -> toInstant(s).isBefore(now)) // just active ones
-            .reduce((a, b) -> b) // reduce to last (i.e. the current) one
-            .get());
+    AccessPolicy currentAccessPolicy = null;
+    try {
+      currentAccessPolicy = unmarshalPolicy( //
+          policies.stream() //
+              .filter(s -> toInstant(s).isBefore(now)) // just active ones
+              .reduce((a, b) -> b) // reduce to last (i.e. the current) one
+              .get());
+    } catch (NoSuchElementException e) {
+      return fallbackPolicy(now);
+    }
 
     // find the first upcoming policy (if any)
     Optional<StoreObject> upcoming = policies.stream().filter(s -> toInstant(s).isAfter(now)).findFirst(); //
@@ -151,6 +151,16 @@ public class SimpleMutablePolicyRepository implements MutablePolicyRepository {
                     .orElseGet(() -> Instant.now().plusSeconds(MAX_CURRENT_POLICY_AGE))));
 
     return currentAccessPolicy;
+  }
+
+  private AccessPolicy fallbackPolicy(Instant now) {
+    LOGGER.warn("There is not currently valid access policy - falling back to default policy");
+
+    AccessPolicy denyAll = createDefaultPolicy();
+
+    denyAll.setValidFrom(now);
+
+    return denyAll;
   }
 
   private Instant toInstant(final StoreObject s) {

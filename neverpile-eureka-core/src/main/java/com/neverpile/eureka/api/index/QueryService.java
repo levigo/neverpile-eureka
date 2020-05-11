@@ -3,7 +3,12 @@ package com.neverpile.eureka.api.index;
 import java.util.List;
 
 import com.neverpile.eureka.model.Document;
+import com.neverpile.common.condition.Condition;
 
+/**
+ * Service to run queries against the index. These {@link DocumentQuery}s allow the use of complex combinations of
+ * {@link Condition}s and filters to return a List of matching {@link Document}s.
+ */
 public interface QueryService {
 
   /**

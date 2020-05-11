@@ -35,7 +35,7 @@ public class DefaultDocumentAuthorizationService implements DocumentAuthorizatio
   List<AuthorizationContextContributor<Document>> contextContributors;
 
   @Override
-  public boolean authorizeSubresourceAction(final Document document, final Action action,
+  public boolean authorizeSubResourceAction(final Document document, final Action action,
       final String... subResourcePath) {
     return authorizationService.isAccessAllowed(constructResourcePath(subResourcePath), Collections.singleton(action),
         constructAuthorizationContext(document));

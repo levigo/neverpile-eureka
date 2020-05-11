@@ -29,4 +29,10 @@ public class IndexBasedContentElementIdGenerationStrategy implements ContentElem
       }
     }).max(Comparators.comparable()).orElse(-1L).longValue() + 1);
   }
+
+  @Override
+  public boolean validateContentId(String id, List<ContentElement> existingElements, Digest elementDigest) {
+    return existingElements.stream().noneMatch(contentElement -> contentElement.getId().equals(id))
+        && id.matches("\\d*");
+  }
 }

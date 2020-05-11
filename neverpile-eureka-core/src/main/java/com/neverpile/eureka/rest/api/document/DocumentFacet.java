@@ -32,6 +32,11 @@ import com.neverpile.eureka.tx.wal.WriteAheadLog;
  * @param <V> the type of value associated with the facet
  */
 public interface DocumentFacet<V> {
+  /**
+   * Constraint violation is a way to veto a transaction during the validation phase. Every Facet has the opportunity
+   * to veto a operation during its validation phase. To veto the operation, return this ConstraintViolation during the
+   * validate lifecycle-event (e.g. {@link DocumentFacet#validateCreate(DocumentDto)}).
+   */
   public static class ConstraintViolation {
     public static <V> Set<ConstraintViolation> none() {
       return Collections.emptySet();
@@ -205,14 +210,37 @@ public interface DocumentFacet<V> {
     // do nothing
   }
 
+  /**
+   * Called when the Index schema is created an enables the facet to store its own indexed data according
+   * to this {@link Schema}.
+   * If null is returned, no data will be indexed for this facet.
+   *
+   * @return data schema or null if there is no data to be indexed.
+   */
   default Schema getIndexSchema() {
     return null;
   }
 
+  /**
+   * Called when a document is saved and the Index data gets created or updated. This method provides document
+   * specific data to be indexed by this facet. The data is formatted according to the provided {@link Schema}.
+   * If null is returned, no data will be indexed for this document.
+   *
+   * @param document document associated with the index data.
+   * @return JsonNode of index data.
+   */
   default JsonNode getIndexData(final Document document) {
     return null;
   }
-  
+
+  /**
+   * Can contribute contextual information for authorization checks related to some document by providing an
+   * implementation of {@link AuthorizationContext}.
+   * If null is returned, no AuthorizationContext will be appended.
+   *
+   * @param document document associated with the authorization.
+   * @return AuthorizationContext to be appended.
+   */
   default AuthorizationContext getAuthorizationContextContribution(final Document document) {
     return null;
   }

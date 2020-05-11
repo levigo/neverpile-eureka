@@ -400,7 +400,7 @@ public abstract class AbstractObjectStoreServiceTest {
     }
 
     @Override
-    public synchronized void mark(final int readlimit) {
+    public synchronized void mark(final int readLimit) {
       marks.push(pos);
     }
 

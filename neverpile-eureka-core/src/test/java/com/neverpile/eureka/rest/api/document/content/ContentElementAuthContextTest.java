@@ -125,7 +125,7 @@ public class ContentElementAuthContextTest extends AbstractRestAssuredTest {
     ArgumentCaptor<AuthorizationContext> authContextC = ArgumentCaptor.forClass(AuthorizationContext.class);
     given(authService.isAccessAllowed(any(), any(), authContextC.capture())).willReturn(true);
 
-    documentAuthorizationService.authorizeSubresourceGet(createTestDocument(D), "metadata");
+    documentAuthorizationService.authorizeSubResourceGet(createTestDocument(D), "metadata");
 
     AuthorizationContext authContext = authContextC.getValue();
 

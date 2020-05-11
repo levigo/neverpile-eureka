@@ -206,8 +206,8 @@ public class MultiVersioningDocumentAPITest extends AbstractRestAssuredTest {
   }
 
   @Test
-  public void testThat_nonexistingDocumentYields404() throws Exception {
-    // retrieve nonexisting
+  public void testThat_nonexistentDocumentYields404() throws Exception {
+    // retrieve nonexistent
     // @formatter:off
     given()
       .accept(ContentType.JSON)
@@ -221,8 +221,8 @@ public class MultiVersioningDocumentAPITest extends AbstractRestAssuredTest {
   }
 
   @Test
-  public void testThat_nonexistingDocumentVersionYields404() throws Exception {
-    // retrieve nonexisting
+  public void testThat_nonexistentDocumentVersionYields404() throws Exception {
+    // retrieve nonexistent
     // @formatter:off
     given()
       .accept(ContentType.JSON)

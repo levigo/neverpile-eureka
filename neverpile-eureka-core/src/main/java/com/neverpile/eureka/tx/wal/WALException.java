@@ -1,6 +1,8 @@
 package com.neverpile.eureka.tx.wal;
 
-public class WALException extends RuntimeException {
+import com.neverpile.eureka.api.NeverpileException;
+
+public class WALException extends NeverpileException {
   private static final long serialVersionUID = 1L;
 
   public WALException(final String message, final Throwable cause) {
