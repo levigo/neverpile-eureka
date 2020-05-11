@@ -9,6 +9,7 @@ import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -52,7 +53,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.neverpile.eureka.api.ContentElementService;
 import com.neverpile.eureka.api.DocumentIdGenerationStrategy;
 import com.neverpile.eureka.api.DocumentService;
-import com.neverpile.eureka.api.NeverpileException;
 import com.neverpile.eureka.model.ContentElement;
 import com.neverpile.eureka.model.Document;
 import com.neverpile.eureka.rest.api.document.DocumentDto;
@@ -209,7 +209,8 @@ public class ContentElementResource {
 
   private ResponseEntity<?> returnSingleContentElement(final Document document, final ContentElement contentElement) {
     // retrieve content
-    InputStream contentElementInputStream = contentElementService.getContentElement(document.getDocumentId(), contentElement.getId());
+    InputStream contentElementInputStream = contentElementService.getContentElement(document.getDocumentId(),
+        contentElement.getId());
     if (contentElementInputStream == null)
       throw new NotFoundException("Object not found in backing store");
 
@@ -223,6 +224,9 @@ public class ContentElementResource {
         .size(contentElement.getLength()) //
         .build();
 
+    String digestAlgorithmName = contentElement.getDigest().getAlgorithm().name().toLowerCase().replaceAll("_", "-");
+    String encodedDigest = Base64.getEncoder().encodeToString(contentElement.getDigest().getBytes());
+
     return ResponseEntity.ok() //
         .lastModified(document.getDateModified() != null
             ? document.getDateModified().toEpochMilli()
@@ -230,6 +234,10 @@ public class ContentElementResource {
         .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString()) //
         .header(HttpHeaders.CONTENT_TYPE, contentElement.getType().toString()) //
         .header(HttpHeaders.CONTENT_LENGTH, Long.toString(contentElement.getLength())) //
+        // add ETag header - yes, the specification proscribes the quotes
+        .header(HttpHeaders.ETAG, '"' + digestAlgorithmName + "_" + encodedDigest + '"') //
+        // add Digest header - try to canonicalize the algorithm name
+        .header("Digest", digestAlgorithmName + "=" + encodedDigest) //
         .body(new InputStreamResource( //
             contentElementInputStream, document.getDocumentId() + "/" + contentElement.getId()));
   }
