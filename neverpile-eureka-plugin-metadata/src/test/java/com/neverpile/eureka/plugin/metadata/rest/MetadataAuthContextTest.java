@@ -79,7 +79,7 @@ public class MetadataAuthContextTest extends AbstractRestAssuredTest {
   public void testThat_resourcePathIsCorrect() throws Exception {
     given(authService.isAccessAllowed(any(), any(), any())).willReturn(true);
 
-    assertThat(documentAuthorizationService.authorizeSubresourceGet(new Document(D), "metadata")).isTrue();
+    assertThat(documentAuthorizationService.authorizeSubResourceGet(new Document(D), "metadata")).isTrue();
 
     verify(authService).isAccessAllowed(eq("document.metadata"), eq(singleton(CoreActions.GET)), any());
   }
@@ -89,14 +89,14 @@ public class MetadataAuthContextTest extends AbstractRestAssuredTest {
     ArgumentCaptor<AuthorizationContext> authContextC = ArgumentCaptor.forClass(AuthorizationContext.class);
     given(authService.isAccessAllowed(any(), any(), authContextC.capture())).willReturn(true);
 
-    documentAuthorizationService.authorizeSubresourceGet(new Document(D), "metadata");
+    documentAuthorizationService.authorizeSubResourceGet(new Document(D), "metadata");
 
     AuthorizationContext authContext = authContextC.getValue();
 
     assertThat(authContext.resolveValue("document.metadata")).isEqualTo(Boolean.TRUE);
     assertThat(authContext.resolveValue("document.somethingelse")).isNull();
 
-    assertThat(authContext.resolveValue("document.metadata.someNonExistingElement")).isEqualTo(Boolean.FALSE);
+    assertThat(authContext.resolveValue("document.metadata.someNonexistentElement")).isEqualTo(Boolean.FALSE);
 
     assertThat(authContext.resolveValue("document.metadata.someJson")).isEqualTo(Boolean.TRUE);
 

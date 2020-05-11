@@ -1,5 +1,7 @@
 package com.neverpile.eureka.util;
 
+import com.neverpile.eureka.api.NeverpileException;
+
 /**
  * A collection of static utility methods related to threads/threading.
  */
@@ -11,7 +13,7 @@ public class Threads {
   /**
    * Just like {@link Thread#sleep(long)} but without the {@link InterruptedException} in the method
    * signature. If the sleep is interrupted, re-interrupt the thread and bail out with a
-   * {@link RuntimeException}.
+   * {@link NeverpileException}.
    * 
    * @param interval time to sleep in ms.
    */
@@ -20,7 +22,7 @@ public class Threads {
       Thread.sleep(interval);
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
-      throw new RuntimeException("Interrupted while sleeping");
+      throw new NeverpileException("Interrupted while sleeping");
     }
   }
 }

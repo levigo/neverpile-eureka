@@ -60,6 +60,11 @@ import com.neverpile.eureka.tx.wal.WriteAheadLog;
 import com.neverpile.eureka.tx.wal.local.DefaultTransactionWAL;
 import com.neverpile.eureka.tx.wal.local.FileBasedWAL;
 
+/**
+ * This configuration builds the base auto configuration for neverpile eureka. All configuration defined here
+ * act as a fallback an can be overwritten by configuration provided by tie implementation. The Services configured here 
+ * are mostly the simple or default implementations of each service.
+ */
 @Configuration
 @Import({
     /*
@@ -254,7 +259,7 @@ public class NeverpileEurekaAutoConfiguration {
   @Bean
   @ConditionalOnMissingBean
   public ClusterLockFactory localLockFactory() {
-    LOGGER.warn("Using a purely local, non-clustered lock factory. Do not use in mult-instance setups!");
+    LOGGER.warn("Using a purely local, non-clustered lock factory. Do not use in multi-instance setups!");
     return new LocalLockFactory();
   }
 

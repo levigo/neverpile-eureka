@@ -51,7 +51,6 @@ public class ModelMapperConfiguration {
         return doc;
       }
     };
-
     Converter<DocumentPdo, DocumentDto> pdoToDtoConv = new AbstractConverter<DocumentPdo, DocumentDto>() {
       @Override
       protected DocumentDto convert(final DocumentPdo source) {
@@ -83,20 +82,20 @@ public class ModelMapperConfiguration {
   }
 
   private void dtoToDoc(DocumentDto source, Document doc, ModelMapper m) {
-    doc.setDocumentId(source.getDocumentId());
-    doc.setVersionTimestamp(source.getVersionTimestamp());
+        doc.setDocumentId(source.getDocumentId());
+        doc.setVersionTimestamp(source.getVersionTimestamp());
 
     ArrayList<ContentElement> contentElemnts = new ArrayList<>();
-    if (source.getFacets().get("contentElements") != null) {
-      for (ContentElementDto dto : (List<ContentElementDto>) source.getFacets().get("contentElements")) {
+        if (source.getFacets().get("contentElements") != null) {
+          for (ContentElementDto dto : (List<ContentElementDto>) source.getFacets().get("contentElements")) {
         contentElemnts.add(m.map(dto, ContentElement.class));
-      }
-    }
+          }
+        }
     doc.setContentElements(contentElemnts);
 
-    doc.setDateCreated((Instant) source.getFacets().get("dateCreated"));
-    doc.setDateModified((Instant) source.getFacets().get("dateModified"));
-  }
+        doc.setDateCreated((Instant) source.getFacets().get("dateCreated"));
+        doc.setDateModified((Instant) source.getFacets().get("dateModified"));
+      }
 
   private void docToDto(Document source, DocumentDto dto, ModelMapper m) {
     dto.setDocumentId(source.getDocumentId());

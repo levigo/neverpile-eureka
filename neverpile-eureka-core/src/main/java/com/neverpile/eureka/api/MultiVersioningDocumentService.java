@@ -32,7 +32,7 @@ public interface MultiVersioningDocumentService extends DocumentService {
    * Return the version specified by the given timestamp of the document uniquely identified the
    * given document id.
    *
-   * @param documentId the document's unique id
+   * @param documentId       the document's unique id
    * @param versionTimestamp the timestamp of the version to retrieve
    * @return the optional document
    * @throws DocumentServiceException in case of other failures
@@ -42,7 +42,7 @@ public interface MultiVersioningDocumentService extends DocumentService {
   /**
    * Return the timestamps of all versions of the document identified by the given id. Return an
    * empty list if the document cannot be found.
-   * 
+   *
    * @param documentId the document id for which to fetch all version timestamps
    * @return the list of versions
    */

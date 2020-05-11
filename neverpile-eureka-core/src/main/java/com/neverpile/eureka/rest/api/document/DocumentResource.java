@@ -243,8 +243,8 @@ public class DocumentResource {
   }
 
   /**
-   * The method check_BadInputParameter checks the documentenId for a specific pattern. If the Id
-   * does not meet the required pattern, this method throws an APIExeption.
+   * The method check_BadInputParameter checks the documentId for a specific pattern. If the Id
+   * does not match the required pattern, this method throws an API-Exception.
    *
    * @param documentId Id to check
    */
@@ -256,10 +256,10 @@ public class DocumentResource {
 
   /**
    * The get_Document method returns the document with the given id. If no document could be found,
-   * this method throws an APIExeption.
+   * this method throws an API-Exception.
    *
    * @param documentId Id of document to get
-   * @return the document or throws an APIExeption
+   * @return the document or throws an API-Exception
    */
   private Document getDocument(final String documentId) {
     return documentService.getDocument(documentId).orElseThrow(() -> new NotFoundException("Document not found"));

@@ -44,7 +44,7 @@ public class SimpleContentElementService implements ContentElementService {
   private ContentElementIdGenerationStrategy idGenerationStrategy;
 
   /**
-   * Generates a ContentElentKey from the supplied documentId, as well as the ContentId.
+   * Generates a ContentElementKey from the supplied documentId, as well as the ContentId.
    *
    * @param documentId the id of the document
    * @param contentId id of the content element
@@ -56,8 +56,9 @@ public class SimpleContentElementService implements ContentElementService {
   }
 
   @Override
-  public StoreObject getContentElement(final String documentId, final String contentId) {
-    return objectStore.get(createObjectName(documentId, contentId));
+  public InputStream getContentElement(final String documentId, final String contentId) {
+    StoreObject storeObject = objectStore.get(createObjectName(documentId, contentId));
+    return storeObject == null ? null : storeObject.getInputStream();
   }
 
   @Override

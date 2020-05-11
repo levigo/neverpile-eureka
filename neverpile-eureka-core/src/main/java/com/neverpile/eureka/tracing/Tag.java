@@ -31,7 +31,7 @@ public @interface Tag {
   /**
    * An optional implementation of a {@link Function} used to map from the argument value to the tag
    * value.
-   * @return Function to map a non standard value for traceing.
+   * @return Function to map a non standard value for tracing.
    */
   Class<? extends Function<? extends Object, ? extends Object>> valueAdapter() default NoopMapper.class;
 }

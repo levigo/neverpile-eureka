@@ -79,8 +79,8 @@ public class MetadataAuthorizationTest extends AbstractRestAssuredTest {
     metadata.put("bar", new MetadataElement()); // disallowed
     given(mockMetadataService.get(any())).willAnswer(i -> Optional.of(metadata));
 
-    given(mockAuthService.authorizeSubresourceGet(any(), eq("metadata"), eq("foo"))).willReturn(true);
-    given(mockAuthService.authorizeSubresourceGet(any(), eq("metadata"), eq("bar"))).willReturn(false);
+    given(mockAuthService.authorizeSubResourceGet(any(), eq("metadata"), eq("foo"))).willReturn(true);
+    given(mockAuthService.authorizeSubResourceGet(any(), eq("metadata"), eq("bar"))).willReturn(false);
 
     // Create a document
     // @formatter:off
@@ -93,8 +93,8 @@ public class MetadataAuthorizationTest extends AbstractRestAssuredTest {
       .body("metadata", not(hasKey("bar"))); // must have been removed from result!
     // @formatter:on
 
-    verify(mockAuthService).authorizeSubresourceGet(any(), eq("metadata"), eq("foo"));
-    verify(mockAuthService).authorizeSubresourceGet(any(), eq("metadata"), eq("bar"));
+    verify(mockAuthService).authorizeSubResourceGet(any(), eq("metadata"), eq("foo"));
+    verify(mockAuthService).authorizeSubResourceGet(any(), eq("metadata"), eq("bar"));
   }
 
   @Test
@@ -116,15 +116,15 @@ public class MetadataAuthorizationTest extends AbstractRestAssuredTest {
         .post("/api/v1/documents");
     // @formatter:on
 
-    verify(mockAuthService).authorizeSubresourceCreate(any(), eq("metadata"), eq("foo"));
+    verify(mockAuthService).authorizeSubResourceCreate(any(), eq("metadata"), eq("foo"));
   }
 
   @Test
   public void testThat_documentUpdateWithMetadataVerifiesAuthorization() throws JsonProcessingException {
-    given(mockAuthService.authorizeSubresourceUpdate(any(), any())).willReturn(true);
-    given(mockAuthService.authorizeSubresourceCreate(any(), any())).willReturn(true);
-    given(mockAuthService.authorizeSubresourceDelete(any(), any())).willReturn(true);
-    given(mockAuthService.authorizeSubresourceGet(any(), any())).willReturn(true);
+    given(mockAuthService.authorizeSubResourceUpdate(any(), any())).willReturn(true);
+    given(mockAuthService.authorizeSubResourceCreate(any(), any())).willReturn(true);
+    given(mockAuthService.authorizeSubResourceDelete(any(), any())).willReturn(true);
+    given(mockAuthService.authorizeSubResourceGet(any(), any())).willReturn(true);
 
     givenVanillaExistingMetadata();
 
@@ -143,10 +143,10 @@ public class MetadataAuthorizationTest extends AbstractRestAssuredTest {
       .put("/api/v1/documents/{id}", D);
     // @formatter:on
 
-    verify(mockAuthService).authorizeSubresourceUpdate(any(), eq("metadata"), eq("foo"));
-    verify(mockAuthService).authorizeSubresourceDelete(any(), eq("metadata"), eq("bar"));
-    verify(mockAuthService).authorizeSubresourceCreate(any(), eq("metadata"), eq("new"));
-    verify(mockAuthService, times(3)).authorizeSubresourceGet(any(), eq("metadata"), any());
+    verify(mockAuthService).authorizeSubResourceUpdate(any(), eq("metadata"), eq("foo"));
+    verify(mockAuthService).authorizeSubResourceDelete(any(), eq("metadata"), eq("bar"));
+    verify(mockAuthService).authorizeSubResourceCreate(any(), eq("metadata"), eq("new"));
+    verify(mockAuthService, times(3)).authorizeSubResourceGet(any(), eq("metadata"), any());
     verifyNoMoreInteractions(mockAuthService);
   }
 
@@ -157,8 +157,8 @@ public class MetadataAuthorizationTest extends AbstractRestAssuredTest {
     metadata.put("bar", new MetadataElement()); // disallowed
     given(mockMetadataService.get(any())).willAnswer(i -> Optional.of(metadata));
 
-    given(mockAuthService.authorizeSubresourceGet(any(), eq("metadata"), eq("foo"))).willReturn(true);
-    given(mockAuthService.authorizeSubresourceGet(any(), eq("metadata"), eq("bar"))).willReturn(false);
+    given(mockAuthService.authorizeSubResourceGet(any(), eq("metadata"), eq("foo"))).willReturn(true);
+    given(mockAuthService.authorizeSubResourceGet(any(), eq("metadata"), eq("bar"))).willReturn(false);
 
     // Create a document
     // @formatter:off
@@ -171,16 +171,16 @@ public class MetadataAuthorizationTest extends AbstractRestAssuredTest {
       .body("$", not(hasKey("bar"))); // must have been removed from result!
     // @formatter:on
 
-    verify(mockAuthService).authorizeSubresourceGet(any(), eq("metadata"), eq("foo"));
-    verify(mockAuthService).authorizeSubresourceGet(any(), eq("metadata"), eq("bar"));
+    verify(mockAuthService).authorizeSubResourceGet(any(), eq("metadata"), eq("foo"));
+    verify(mockAuthService).authorizeSubResourceGet(any(), eq("metadata"), eq("bar"));
   }
 
   @Test
   public void testThat_metadataUpdateVerifiesAuthorization() throws JsonProcessingException {
-    given(mockAuthService.authorizeSubresourceUpdate(any(), any())).willReturn(true);
-    given(mockAuthService.authorizeSubresourceCreate(any(), any())).willReturn(true);
-    given(mockAuthService.authorizeSubresourceDelete(any(), any())).willReturn(true);
-    given(mockAuthService.authorizeSubresourceGet(any(), any())).willReturn(true);
+    given(mockAuthService.authorizeSubResourceUpdate(any(), any())).willReturn(true);
+    given(mockAuthService.authorizeSubResourceCreate(any(), any())).willReturn(true);
+    given(mockAuthService.authorizeSubResourceDelete(any(), any())).willReturn(true);
+    given(mockAuthService.authorizeSubResourceGet(any(), any())).willReturn(true);
 
     givenVanillaExistingMetadata();
 
@@ -196,10 +196,10 @@ public class MetadataAuthorizationTest extends AbstractRestAssuredTest {
         .put("/api/v1/documents/{id}/metadata", D);
     // @formatter:on
 
-    verify(mockAuthService).authorizeSubresourceUpdate(any(), eq("metadata"), eq("foo"));
-    verify(mockAuthService).authorizeSubresourceDelete(any(), eq("metadata"), eq("bar"));
-    verify(mockAuthService).authorizeSubresourceCreate(any(), eq("metadata"), eq("new"));
-    verify(mockAuthService, times(3)).authorizeSubresourceGet(any(), eq("metadata"), any());
+    verify(mockAuthService).authorizeSubResourceUpdate(any(), eq("metadata"), eq("foo"));
+    verify(mockAuthService).authorizeSubResourceDelete(any(), eq("metadata"), eq("bar"));
+    verify(mockAuthService).authorizeSubResourceCreate(any(), eq("metadata"), eq("new"));
+    verify(mockAuthService, times(3)).authorizeSubResourceGet(any(), eq("metadata"), any());
     verifyNoMoreInteractions(mockAuthService);
   }
 
@@ -214,10 +214,10 @@ public class MetadataAuthorizationTest extends AbstractRestAssuredTest {
 
   @Test
   public void testThat_metadataUpdateRejectedOnDeniedUpdate() throws JsonProcessingException {
-    given(mockAuthService.authorizeSubresourceUpdate(any(), any())).willReturn(false);
-    given(mockAuthService.authorizeSubresourceCreate(any(), any())).willReturn(true);
-    given(mockAuthService.authorizeSubresourceDelete(any(), any())).willReturn(true);
-    given(mockAuthService.authorizeSubresourceGet(any(), any())).willReturn(true);
+    given(mockAuthService.authorizeSubResourceUpdate(any(), any())).willReturn(false);
+    given(mockAuthService.authorizeSubResourceCreate(any(), any())).willReturn(true);
+    given(mockAuthService.authorizeSubResourceDelete(any(), any())).willReturn(true);
+    given(mockAuthService.authorizeSubResourceGet(any(), any())).willReturn(true);
 
     givenVanillaExistingMetadata();
 
@@ -239,10 +239,10 @@ public class MetadataAuthorizationTest extends AbstractRestAssuredTest {
   public void testThat_metadataUpdateRejectedOnDeniedCreate() throws JsonProcessingException {
     given(mockDocumentService.getDocument(any())).willAnswer(i -> Optional.of(new Document(D)));
 
-    given(mockAuthService.authorizeSubresourceUpdate(any(), any())).willReturn(true);
-    given(mockAuthService.authorizeSubresourceCreate(any(), any())).willReturn(false);
-    given(mockAuthService.authorizeSubresourceDelete(any(), any())).willReturn(true);
-    given(mockAuthService.authorizeSubresourceGet(any(), any())).willReturn(true);
+    given(mockAuthService.authorizeSubResourceUpdate(any(), any())).willReturn(true);
+    given(mockAuthService.authorizeSubResourceCreate(any(), any())).willReturn(false);
+    given(mockAuthService.authorizeSubResourceDelete(any(), any())).willReturn(true);
+    given(mockAuthService.authorizeSubResourceGet(any(), any())).willReturn(true);
 
     Metadata metadata = new Metadata(); // start with nothing, try to add "foo"
 
@@ -257,10 +257,10 @@ public class MetadataAuthorizationTest extends AbstractRestAssuredTest {
   public void testThat_metadataUpdateRejectedOnDeniedDelete() throws JsonProcessingException {
     given(mockDocumentService.getDocument(any())).willAnswer(i -> Optional.of(new Document(D)));
 
-    given(mockAuthService.authorizeSubresourceUpdate(any(), any())).willReturn(true);
-    given(mockAuthService.authorizeSubresourceCreate(any(), any())).willReturn(true);
-    given(mockAuthService.authorizeSubresourceDelete(any(), any())).willReturn(false);
-    given(mockAuthService.authorizeSubresourceGet(any(), any())).willReturn(true);
+    given(mockAuthService.authorizeSubResourceUpdate(any(), any())).willReturn(true);
+    given(mockAuthService.authorizeSubResourceCreate(any(), any())).willReturn(true);
+    given(mockAuthService.authorizeSubResourceDelete(any(), any())).willReturn(false);
+    given(mockAuthService.authorizeSubResourceGet(any(), any())).willReturn(true);
 
     givenVanillaExistingMetadata();
 
@@ -271,8 +271,8 @@ public class MetadataAuthorizationTest extends AbstractRestAssuredTest {
   public void testThat_metadataElementRetrieveVerifiesAuthorization() throws JsonProcessingException {
     givenVanillaExistingMetadata();
 
-    given(mockAuthService.authorizeSubresourceGet(any(), eq("metadata"), eq("foo"))).willReturn(true);
-    given(mockAuthService.authorizeSubresourceGet(any(), eq("metadata"), eq("bar"))).willReturn(false);
+    given(mockAuthService.authorizeSubResourceGet(any(), eq("metadata"), eq("foo"))).willReturn(true);
+    given(mockAuthService.authorizeSubResourceGet(any(), eq("metadata"), eq("bar"))).willReturn(false);
 
     // @formatter:off
     givenVanillaCall()
@@ -291,13 +291,13 @@ public class MetadataAuthorizationTest extends AbstractRestAssuredTest {
       .statusCode(NOT_FOUND.value());
     // @formatter:on
 
-    verify(mockAuthService, atLeastOnce()).authorizeSubresourceGet(any(), eq("metadata"), eq("foo"));
-    verify(mockAuthService, atLeastOnce()).authorizeSubresourceGet(any(), eq("metadata"), eq("bar"));
+    verify(mockAuthService, atLeastOnce()).authorizeSubResourceGet(any(), eq("metadata"), eq("foo"));
+    verify(mockAuthService, atLeastOnce()).authorizeSubResourceGet(any(), eq("metadata"), eq("bar"));
   }
 
   @Test
   public void testThat_metadataElementUpdateVerifiesAuthorization() throws JsonProcessingException {
-    given(mockAuthService.authorizeSubresourceUpdate(any(), any())).willReturn(true);
+    given(mockAuthService.authorizeSubResourceUpdate(any(), any())).willReturn(true);
 
     givenVanillaExistingMetadata();
 
@@ -310,12 +310,12 @@ public class MetadataAuthorizationTest extends AbstractRestAssuredTest {
         .put("/api/v1/documents/{id}/metadata/foo", D);
     // @formatter:on
 
-    verify(mockAuthService).authorizeSubresourceUpdate(any(), eq("metadata"), eq("foo"));
+    verify(mockAuthService).authorizeSubResourceUpdate(any(), eq("metadata"), eq("foo"));
   }
 
   @Test
   public void testThat_metadataElementDeleteVerifiesAuthorization() throws JsonProcessingException {
-    given(mockAuthService.authorizeSubresourceDelete(any(), any())).willReturn(true);
+    given(mockAuthService.authorizeSubResourceDelete(any(), any())).willReturn(true);
 
     givenVanillaExistingMetadata();
 
@@ -325,12 +325,12 @@ public class MetadataAuthorizationTest extends AbstractRestAssuredTest {
       .delete("/api/v1/documents/{id}/metadata/foo", D);
     // @formatter:on
 
-    verify(mockAuthService).authorizeSubresourceDelete(any(), eq("metadata"), eq("foo"));
+    verify(mockAuthService).authorizeSubResourceDelete(any(), eq("metadata"), eq("foo"));
   }
 
   @Test
   public void testThat_metadataElementCreateVerifiesAuthorization() throws JsonProcessingException {
-    given(mockAuthService.authorizeSubresourceDelete(any(), any())).willReturn(true);
+    given(mockAuthService.authorizeSubResourceDelete(any(), any())).willReturn(true);
 
     givenVanillaExistingMetadata();
 
@@ -341,15 +341,15 @@ public class MetadataAuthorizationTest extends AbstractRestAssuredTest {
       .put("/api/v1/documents/{id}/metadata/new", D);
     // @formatter:on
 
-    verify(mockAuthService).authorizeSubresourceCreate(any(), eq("metadata"), eq("new"));
+    verify(mockAuthService).authorizeSubResourceCreate(any(), eq("metadata"), eq("new"));
   }
 
   @Test
   public void testThat_metadataElementUpdateRejectedOnDeniedUpdate() throws JsonProcessingException {
-    given(mockAuthService.authorizeSubresourceUpdate(any(), any())).willReturn(false);
-    given(mockAuthService.authorizeSubresourceCreate(any(), any())).willReturn(true);
-    given(mockAuthService.authorizeSubresourceDelete(any(), any())).willReturn(true);
-    given(mockAuthService.authorizeSubresourceGet(any(), any())).willReturn(true);
+    given(mockAuthService.authorizeSubResourceUpdate(any(), any())).willReturn(false);
+    given(mockAuthService.authorizeSubResourceCreate(any(), any())).willReturn(true);
+    given(mockAuthService.authorizeSubResourceDelete(any(), any())).willReturn(true);
+    given(mockAuthService.authorizeSubResourceGet(any(), any())).willReturn(true);
 
     givenVanillaExistingMetadata();
 
@@ -368,10 +368,10 @@ public class MetadataAuthorizationTest extends AbstractRestAssuredTest {
   // FIXME
   @Test
   public void testThat_metadataElementDeleteRejectedOnDeniedDelete() throws JsonProcessingException {
-    given(mockAuthService.authorizeSubresourceUpdate(any(), any())).willReturn(true);
-    given(mockAuthService.authorizeSubresourceCreate(any(), any())).willReturn(true);
-    given(mockAuthService.authorizeSubresourceDelete(any(), any())).willReturn(false);
-    given(mockAuthService.authorizeSubresourceGet(any(), any())).willReturn(true);
+    given(mockAuthService.authorizeSubResourceUpdate(any(), any())).willReturn(true);
+    given(mockAuthService.authorizeSubResourceCreate(any(), any())).willReturn(true);
+    given(mockAuthService.authorizeSubResourceDelete(any(), any())).willReturn(false);
+    given(mockAuthService.authorizeSubResourceGet(any(), any())).willReturn(true);
 
     givenVanillaExistingMetadata();
 
@@ -387,10 +387,10 @@ public class MetadataAuthorizationTest extends AbstractRestAssuredTest {
   // FIXME
   @Test
   public void testThat_metadataElementCreateRejectedOnDeniedCreated() throws JsonProcessingException {
-    given(mockAuthService.authorizeSubresourceUpdate(any(), any())).willReturn(true);
-    given(mockAuthService.authorizeSubresourceCreate(any(), any())).willReturn(false);
-    given(mockAuthService.authorizeSubresourceDelete(any(), any())).willReturn(true);
-    given(mockAuthService.authorizeSubresourceGet(any(), any())).willReturn(true);
+    given(mockAuthService.authorizeSubResourceUpdate(any(), any())).willReturn(true);
+    given(mockAuthService.authorizeSubResourceCreate(any(), any())).willReturn(false);
+    given(mockAuthService.authorizeSubResourceDelete(any(), any())).willReturn(true);
+    given(mockAuthService.authorizeSubResourceGet(any(), any())).willReturn(true);
 
     givenVanillaExistingMetadata();
 

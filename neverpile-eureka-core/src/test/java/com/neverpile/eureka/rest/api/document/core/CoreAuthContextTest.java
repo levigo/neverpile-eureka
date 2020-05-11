@@ -95,7 +95,7 @@ public class CoreAuthContextTest extends AbstractRestAssuredTest {
   public void testThat_resourcePathIsCorrect() throws Exception {
     given(authService.isAccessAllowed(any(), any(), any())).willReturn(true);
 
-    assertThat(documentAuthorizationService.authorizeSubresourceGet(new Document(D), "contentElements")).isTrue();
+    assertThat(documentAuthorizationService.authorizeSubResourceGet(new Document(D), "contentElements")).isTrue();
 
     verify(authService).isAccessAllowed(eq("document.contentElements"), eq(singleton(CoreActions.GET)), any());
   }
@@ -105,7 +105,7 @@ public class CoreAuthContextTest extends AbstractRestAssuredTest {
     ArgumentCaptor<AuthorizationContext> authContextC = ArgumentCaptor.forClass(AuthorizationContext.class);
     given(authService.isAccessAllowed(any(), any(), authContextC.capture())).willReturn(true);
 
-    documentAuthorizationService.authorizeSubresourceGet(createTestDocument(D), "metadata");
+    documentAuthorizationService.authorizeSubResourceGet(createTestDocument(D), "metadata");
 
     AuthorizationContext authContext = authContextC.getValue();
 

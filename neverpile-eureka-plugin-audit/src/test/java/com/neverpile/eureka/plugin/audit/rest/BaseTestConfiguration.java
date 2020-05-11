@@ -73,7 +73,7 @@ public class BaseTestConfiguration {
   public DocumentAuthorizationService documentAuthorizationService() {
     return new DocumentAuthorizationService() {
       @Override
-      public boolean authorizeSubresourceAction(final Document document, final Action action,
+      public boolean authorizeSubResourceAction(final Document document, final Action action,
           final String... subResourcePath) {
         return true;
       }

@@ -14,69 +14,69 @@ public interface DocumentAuthorizationService {
    * Authorize the given action targeting the given resource path below the document resource.
    * Implementations typically delegate to an {@link AuthorizationService}, providing it with
    * context information from the given document.
-   * 
-   * @param document the document which the access is related to
-   * @param action the action to authorize
+   *
+   * @param document        the document which the access is related to
+   * @param action          the action to authorize
    * @param subResourcePath the sub-resource path. Multiple levels may be specified as separate
-   *          arguments.
+   *                        arguments.
    * @return the access decision: <code>true</code> if the access shall be allowed
    */
-  boolean authorizeSubresourceAction(Document document, Action action, String... subResourcePath);
+  boolean authorizeSubResourceAction(Document document, Action action, String... subResourcePath);
 
   /**
    * Authorize a create action on the given document sub-resource. Implementations typically
    * delegate to an {@link AuthorizationService}, providing it with context information from the
    * given document.
-   * 
-   * @param document the document which the access is related to
+   *
+   * @param document        the document which the access is related to
    * @param subResourcePath the sub-resource path. Multiple levels may be specified as separate
-   *          arguments.
+   *                        arguments.
    * @return the access decision: <code>true</code> if the access shall be allowed
    */
-  default boolean authorizeSubresourceCreate(final Document document, final String... subResourcePath) {
-    return authorizeSubresourceAction(document, CoreActions.CREATE, subResourcePath);
+  default boolean authorizeSubResourceCreate(final Document document, final String... subResourcePath) {
+    return authorizeSubResourceAction(document, CoreActions.CREATE, subResourcePath);
   }
 
   /**
    * Authorize a retrieve action on the given document sub-resource. Implementations typically
    * delegate to an {@link AuthorizationService}, providing it with context information from the
    * given document.
-   * 
-   * @param document the document which the access is related to
+   *
+   * @param document        the document which the access is related to
    * @param subResourcePath the sub-resource path. Multiple levels may be specified as separate
-   *          arguments.
+   *                        arguments.
    * @return the access decision: <code>true</code> if the access shall be allowed
    */
-  default boolean authorizeSubresourceGet(final Document document, final String... subResourcePath) {
-    return authorizeSubresourceAction(document, CoreActions.GET, subResourcePath);
+  default boolean authorizeSubResourceGet(final Document document, final String... subResourcePath) {
+    return authorizeSubResourceAction(document, CoreActions.GET, subResourcePath);
   }
 
   /**
    * Authorize an update action on the given document sub-resource. Implementations typically
    * delegate to an {@link AuthorizationService}, providing it with context information from the
    * given document.
-   * 
-   * @param document the document which the access is related to
+   *
+   * @param document        the document which the access is related to
    * @param subResourcePath the sub-resource path. Multiple levels may be specified as separate
-   *          arguments.
+   *                        arguments.
    * @return the access decision: <code>true</code> if the access shall be allowed
    */
-  default boolean authorizeSubresourceUpdate(final Document document, final String... subResourcePath) {
-    return authorizeSubresourceAction(document, CoreActions.UPDATE, subResourcePath);
+  default boolean authorizeSubResourceUpdate(final Document document, final String... subResourcePath) {
+    return authorizeSubResourceAction(document, CoreActions.UPDATE, subResourcePath);
   }
 
   /**
    * Authorize a deletion action on the given document sub-resource. Implementations typically
    * delegate to an {@link AuthorizationService}, providing it with context information from the
    * given document.
-   * 
-   * @param document the document which the access is related to
+   *
+   * @param document        the document which the access is related to
    * @param subResourcePath the sub-resource path. Multiple levels may be specified as separate
-   *          arguments.
+   *                        arguments.
    * @return the access decision: <code>true</code> if the access shall be allowed
    */
-  default boolean authorizeSubresourceDelete(final Document document, final String... subResourcePath) {
-    return authorizeSubresourceAction(document, CoreActions.DELETE, subResourcePath);
+  default boolean authorizeSubResourceDelete(final Document document, final String... subResourcePath) {
+    return authorizeSubResourceAction(document, CoreActions.DELETE, subResourcePath);
   }
 
 }

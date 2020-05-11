@@ -1,6 +1,7 @@
 package com.neverpile.eureka.rest.api.document.content;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.security.MessageDigest;
@@ -51,7 +52,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.neverpile.eureka.api.ContentElementService;
 import com.neverpile.eureka.api.DocumentIdGenerationStrategy;
 import com.neverpile.eureka.api.DocumentService;
-import com.neverpile.eureka.api.ObjectStoreService.StoreObject;
+import com.neverpile.eureka.api.NeverpileException;
 import com.neverpile.eureka.model.ContentElement;
 import com.neverpile.eureka.model.Document;
 import com.neverpile.eureka.rest.api.document.DocumentDto;
@@ -224,8 +225,8 @@ public class ContentElementResource {
 
   private ResponseEntity<?> returnSingleContentElement(final Document document, final ContentElement contentElement) {
     // retrieve content
-    StoreObject storeObject = contentElementService.getContentElement(document.getDocumentId(), contentElement.getId());
-    if (storeObject == null)
+    InputStream contentElementInputStream = contentElementService.getContentElement(document.getDocumentId(), contentElement.getId());
+    if (contentElementInputStream == null)
       throw new NotFoundException("Object not found in backing store");
 
     LOGGER.info("add Content response");
@@ -246,7 +247,7 @@ public class ContentElementResource {
         .header(HttpHeaders.CONTENT_TYPE, contentElement.getType().toString()) //
         .header(HttpHeaders.CONTENT_LENGTH, Long.toString(contentElement.getLength())) //
         .body(new InputStreamResource( //
-            storeObject.getInputStream(), document.getDocumentId() + "/" + contentElement.getId()));
+            contentElementInputStream, document.getDocumentId() + "/" + contentElement.getId()));
   }
 
   @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -288,7 +289,7 @@ public class ContentElementResource {
 
     return ResponseEntity//
         .created(URI.create(created.getLink(IanaLinkRelations.SELF)
-            .orElseThrow(() -> new RuntimeException("self rel not populated")).getHref())) //
+            .orElseThrow(() -> new NeverpileException("self rel not populated")).getHref())) //
         .lastModified(created.getFacetData(mdFacet).orElse(Instant.now()).toEpochMilli()) //
         .body(created);
   }

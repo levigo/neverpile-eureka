@@ -109,7 +109,7 @@ public class MetadataFacet implements DocumentFacet<MetadataDto> {
   private void removeDisallowedEntries(final Document document, final MetadataDto dto) {
     for (Iterator<Entry<String, MetadataElementDto>> i = dto.getElements().entrySet().iterator(); i.hasNext();) {
       Map.Entry<String, MetadataElementDto> e = i.next();
-      if (!documentAuthorizationService.authorizeSubresourceGet(document, getName(), e.getKey()))
+      if (!documentAuthorizationService.authorizeSubResourceGet(document, getName(), e.getKey()))
         i.remove();
     }
   }
@@ -119,7 +119,7 @@ public class MetadataFacet implements DocumentFacet<MetadataDto> {
     MetadataDto metadata = (MetadataDto) requestDto.getFacets().get(getName());
     if (null != metadata) {
       metadata.get().forEach((name, element) -> {
-        if (!documentAuthorizationService.authorizeSubresourceCreate(document, getName(), name))
+        if (!documentAuthorizationService.authorizeSubResourceCreate(document, getName(), name))
           throw new AccessDeniedException("Creation of metadata element " + name + " denied");
       });
 
@@ -143,7 +143,7 @@ public class MetadataFacet implements DocumentFacet<MetadataDto> {
     // authorize element deletion
     existing.keySet().stream() //
         .filter(k -> updated.get(k) == null) //
-        .filter(k -> !documentAuthorizationService.authorizeSubresourceDelete(document, getName(), k)) //
+        .filter(k -> !documentAuthorizationService.authorizeSubResourceDelete(document, getName(), k)) //
         .findAny().ifPresent(k -> {
           throw new AccessDeniedException("Creation of metadata element " + k + " denied");
         });
@@ -159,10 +159,10 @@ public class MetadataFacet implements DocumentFacet<MetadataDto> {
     MetadataElement existingElement = existing.get(name);
     if (null != existingElement) {
       if (!Objects.equals(update, existingElement)
-          && !documentAuthorizationService.authorizeSubresourceUpdate(document, getName(), name))
+          && !documentAuthorizationService.authorizeSubResourceUpdate(document, getName(), name))
         throw new AccessDeniedException("Update of metadata element " + name + " denied");
     } else {
-      if (!documentAuthorizationService.authorizeSubresourceCreate(document, getName(), name))
+      if (!documentAuthorizationService.authorizeSubResourceCreate(document, getName(), name))
         throw new AccessDeniedException("Creation of metadata element " + name + " denied");
     }
   }
@@ -190,7 +190,7 @@ public class MetadataFacet implements DocumentFacet<MetadataDto> {
    * @param name the element name
    */
   void delete(final Document document, final String name) {
-    if (!documentAuthorizationService.authorizeSubresourceDelete(document, getName(), name))
+    if (!documentAuthorizationService.authorizeSubResourceDelete(document, getName(), name))
       throw new AccessDeniedException("Deletion of metadata element " + name + " denied");
 
     Metadata existing = metadataService.get(document).orElseGet(Metadata::new);

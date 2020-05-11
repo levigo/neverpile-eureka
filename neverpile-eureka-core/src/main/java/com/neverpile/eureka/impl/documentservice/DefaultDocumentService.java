@@ -360,7 +360,7 @@ public class DefaultDocumentService implements DocumentService, DocumentAssociat
   }
 
   /**
-   * Detete the document identified by the given id.
+   * Delete the document identified by the given id.
    * 
    * @param documentId the id of the document to delete
    */

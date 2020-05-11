@@ -14,7 +14,7 @@ public class ValidationError extends ApiException {
 
   public ValidationError(final Collection<ConstraintViolation> violations) {
     super(HttpStatus.NOT_ACCEPTABLE.value(),
-        "Contstraint violation(s) detected: \n" + Arrays.toString(violations.toArray()));
+        "Constraint violation(s) detected: \n" + Arrays.toString(violations.toArray()));
 
     this.violations = violations;
   }

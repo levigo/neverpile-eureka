@@ -36,7 +36,7 @@ public class LocalLockFactoryTest {
     Thread.sleep(100);
     System.gc();
     
-    // new instance of lock must be retrieveable 
+    // new instance of lock must be retrievable
     f.readLock("foo");
   }
   
