@@ -196,10 +196,9 @@ public class DocumentResource {
     // @formatter:off
   }
 
-  public DocumentDto update(final HttpServletRequest request, final DocumentDto requestDto, final Document storedDocument,
+  public DocumentDto update(final HttpServletRequest request, final DocumentDto requestDto, final Document updatedDocument,
       final List<String> requestedFacets) {
     Document currentDocument = getDocument(requestDto.getDocumentId());
-    Document updatedDocument = documentMapper.map(currentDocument, Document.class); // deep copy
 
     validate(f -> f.validateUpdate(currentDocument, requestDto));
 
