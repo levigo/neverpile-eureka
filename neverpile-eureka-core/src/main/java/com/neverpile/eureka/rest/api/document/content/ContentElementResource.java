@@ -94,7 +94,7 @@ public class ContentElementResource {
   private ObjectMapper mapper;
 
   @Autowired
-  private DocumentResource documentResource;
+  protected DocumentResource documentResource;
 
   @Autowired
   private DocumentIdGenerationStrategy idGenerationStrategy;
@@ -193,7 +193,7 @@ public class ContentElementResource {
     }
   }
 
-  private ResponseEntity<MultiValueMap<String, HttpEntity<?>>> returnMultipleElementsAsMultipart(
+  protected ResponseEntity<MultiValueMap<String, HttpEntity<?>>> returnMultipleElementsAsMultipart(
       final Document document, final List<ContentElement> matches) {
     MultiValueMap<String, HttpEntity<?>> mbb = new LinkedMultiValueMap<>(matches.size());
 
@@ -207,7 +207,7 @@ public class ContentElementResource {
         .body(mbb);
   }
 
-  private ResponseEntity<?> returnSingleContentElement(final Document document, final ContentElement contentElement) {
+  protected ResponseEntity<?> returnSingleContentElement(final Document document, final ContentElement contentElement) {
     // retrieve content
     InputStream contentElementInputStream = contentElementService.getContentElement(document.getDocumentId(),
         contentElement.getId());
@@ -395,7 +395,7 @@ public class ContentElementResource {
     documentResource.update(request, documentMapper.map(doc, DocumentDto.class), doc, requestedFacets);
   }
 
-  private void assertContentExists(final String documentId, final String contentId) {
+  protected void assertContentExists(final String documentId, final String contentId) {
     if (!contentElementService.checkContentExist(documentId, contentId)) {
       throw new NotFoundException("Content not found");
     }
