@@ -65,19 +65,11 @@ import com.neverpile.eureka.rest.api.exception.NotFoundException;
 import com.neverpile.urlcrypto.PreSignedUrlEnabled;
 
 import io.micrometer.core.annotation.Timed;
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping(path = "/api/v1/documents", produces = {
     MediaType.APPLICATION_JSON_VALUE
 })
-@OpenAPIDefinition(tags = @Tag(name = "Content"))
 @Import(ContentElementResourceConfiguration.class)
 @Transactional
 public class ContentElementResource {
@@ -122,15 +114,11 @@ public class ContentElementResource {
 
   @PreSignedUrlEnabled
   @GetMapping(value = "{documentID}/content/{element}")
-  @Operation(summary = "Fetch a single content element")
-  @ApiResponse(responseCode = "200", description = "Content element found", content = @Content(mediaType = "*/*", schema = @Schema(format = "bytes")))
-  @ApiResponse(responseCode = "404", description = "Document or content element not found")
   @Timed(description = "get content element", extraTags = {
       "operation", "retrieve", "target", "content"
   }, value = "eureka.content.get")
-  public ResponseEntity<?> getById(
-      @Parameter(description = "ID of the document") @PathVariable("documentID") final String documentId,
-      @Parameter(description = "ID of the content element to be fetched") @PathVariable("element") final String contentId) {
+  public ResponseEntity<?> getById(@PathVariable("documentID") final String documentId,
+      @PathVariable("element") final String contentId) {
     // preconditions
     documentResource.validateDocumentId(documentId);
     assertContentExists(documentId, contentId);
@@ -163,16 +151,12 @@ public class ContentElementResource {
 
   @PreSignedUrlEnabled
   @GetMapping(value = "{documentID}/content")
-  @Operation(summary = "Queries content elements")
-  @ApiResponse(responseCode = "200", description = "Content element found", content = @Content(mediaType = "*/*", schema = @Schema(format = "bytes")))
-  @ApiResponse(responseCode = "404", description = "Document or content element not found")
   @Timed(description = "get content element", extraTags = {
       "operation", "retrieve", "target", "content"
   }, value = "eureka.content.get")
-  public ResponseEntity<?> query(
-      @Parameter(description = "ID of the document") @PathVariable("documentID") final String documentId,
-      @Parameter(description = "Role(s) of the content elements to be fetched. Multiple roles can be specified separated by comma") @RequestParam(name = "role", required = false) final List<String> roles,
-      @Parameter(description = "How and what to return") @RequestParam(name = "return", required = false, defaultValue = "first") final Return ret) {
+  public ResponseEntity<?> query(@PathVariable("documentID") final String documentId,
+      @RequestParam(name = "role", required = false) final List<String> roles,
+      @RequestParam(name = "return", required = false, defaultValue = "first") final Return ret) {
     // preconditions
     documentResource.validateDocumentId(documentId);
 
@@ -251,14 +235,10 @@ public class ContentElementResource {
   }
 
   @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  @Operation(summary = "Creates a new document with content elements", description = "The ID of the newly created document is taken from the posted document if "
-      + "present, otherwise generated automatically")
-  @ApiResponse(responseCode = "201", description = "Document created. Return the document JSON")
-  @ApiResponse(responseCode = "409", description = "Document already exists")
-  public ResponseEntity<DocumentDto> createDocumentFromMultipart(
-      final AllRequestParts files, // mapped using AllRequestPartsMethodArgumentResolver
-      @Parameter(description = "The list of facets to be included in the response; return all facets if empty") @RequestParam(name = "facets", required = false) final List<String> requestedFacets)
-      throws Exception {
+  public ResponseEntity<DocumentDto> createDocumentFromMultipart(final AllRequestParts files, // mapped
+                                                                                              // using
+                                                                                              // AllRequestPartsMethodArgumentResolver
+      @RequestParam(name = "facets", required = false) final List<String> requestedFacets) throws Exception {
     // try to find the metadata part named __DOC
     DocumentDto doc = docPartFromAllRequestParts(files).orElse(new DocumentDto());
 
@@ -288,8 +268,8 @@ public class ContentElementResource {
     DocumentDto created = documentResource.create(doc, requestedFacets);
 
     return ResponseEntity//
-        .created(URI.create(created.getLink(IanaLinkRelations.SELF)
-            .orElseThrow(() -> new NeverpileException("self rel not populated")).getHref())) //
+        .created(URI.create(created.getLink(IanaLinkRelations.SELF).orElseThrow(
+            () -> new RuntimeException("self rel not populated")).getHref())) //
         .lastModified(created.getFacetData(mdFacet).orElse(Instant.now()).toEpochMilli()) //
         .body(created);
   }
@@ -315,18 +295,12 @@ public class ContentElementResource {
   }
 
   @PostMapping(value = "{documentId}/content", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  @Operation(summary = "Add content elements to a document")
-  @ApiResponse(responseCode = "200", description = "Content element(s) added")
-  @ApiResponse(responseCode = "400", description = "Invalid documentID supplied")
-  @ApiResponse(responseCode = "404", description = "Document not found")
   @Timed(description = "create document with content", extraTags = {
       "operation", "create", "target", "document-with-content"
   }, value = "eureka.document.create-with-content")
-  public DocumentDto add(final HttpServletRequest request,
-      @Parameter(description = "ID of the document to be updated") @PathVariable("documentId") final String documentId,
+  public DocumentDto add(final HttpServletRequest request, @PathVariable("documentId") final String documentId,
       final AllRequestParts files, // mapped using AllRequestPartsMethodArgumentResolver
-      @Parameter(description = "The list of facets to be included in the response; return all facets if empty") @RequestParam(name = "facets", required = false) final List<String> requestedFacets)
-      throws Exception {
+      @RequestParam(name = "facets", required = false) final List<String> requestedFacets) throws Exception {
     // preconditions
     documentResource.validateDocumentId(documentId);
 
@@ -349,19 +323,13 @@ public class ContentElementResource {
   }
 
   @PutMapping(value = "{documentID}/content/{content}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  @Operation(summary = "Updates a specific content element")
-  @ApiResponse(responseCode = "202", description = "Content element updated")
-  @ApiResponse(responseCode = "400", description = "Invalid documentID supplied")
-  @ApiResponse(responseCode = "404", description = "Content element not found")
   @Timed(description = "update content element", extraTags = {
       "operation", "update", "target", "content"
   }, value = "eureka.content.update")
-  public DocumentDto update(final HttpServletRequest request,
-      @Parameter(description = "ID of the document") @PathVariable("documentID") final String documentId,
-      @Parameter(description = "ID of the content element to be updated") @PathVariable("content") final String contentId,
-      final AllRequestParts files, // mapped using AllRequestPartsMethodArgumentResolver
-      @Parameter(description = "The list of facets to be included in the response; return all facets if empty") @RequestParam(name = "facets", required = false) final List<String> requestedFacets)
-      throws Exception {
+  public DocumentDto update(final HttpServletRequest request, @PathVariable("documentID") final String documentId,
+      @PathVariable("content") final String contentId, final AllRequestParts files, // mapped using
+                                                                                    // AllRequestPartsMethodArgumentResolver
+      @RequestParam(name = "facets", required = false) final List<String> requestedFacets) throws Exception {
     // preconditions
     assertContentExists(documentId, contentId);
 
@@ -394,17 +362,12 @@ public class ContentElementResource {
 
   @DeleteMapping(value = "{documentID}/content/{element}")
   @ResponseStatus(value = HttpStatus.NO_CONTENT)
-  @Operation(summary = "Deletes a content element by ID")
-  @ApiResponse(responseCode = "204", description = "Content element deleted")
-  @ApiResponse(responseCode = "400", description = "Invalid documentID supplied")
-  @ApiResponse(responseCode = "404", description = "Document/Content not found")
   @Timed(description = "delete content element", extraTags = {
       "operation", "delete", "target", "content"
   }, value = "eureka.content.delete")
-  public void delete(final HttpServletRequest request,
-      @Parameter(description = "ID of the document to be fetched") @PathVariable("documentID") final String documentId,
-      @Parameter(description = "ID of the content element to be deleted") @PathVariable("element") final String elementId,
-      @Parameter(description = "The list of facets to be included in the response; return all facets if empty") @RequestParam(name = "facets", required = false) final List<String> requestedFacets) {
+  public void delete(final HttpServletRequest request, @PathVariable("documentID") final String documentId,
+      @PathVariable("element") final String elementId,
+      @RequestParam(name = "facets", required = false) final List<String> requestedFacets) {
     documentResource.validateDocumentId(documentId);
 
     Document doc = documentService.getDocument(documentId).orElseThrow(

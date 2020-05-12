@@ -10,7 +10,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.neverpile.authorization.api.AuthorizationContext;
+import com.neverpile.common.authorization.api.AuthorizationContext;
 import com.neverpile.eureka.api.DocumentAssociatedEntityStore;
 import com.neverpile.eureka.api.ObjectStoreService;
 import com.neverpile.eureka.api.index.Schema;

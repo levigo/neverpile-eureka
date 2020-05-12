@@ -12,9 +12,6 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-
-@Schema(name = "Document", description = "A neverpile document")
 @JsonPropertyOrder({
     "documentId", "versionTimestamp", "dateCreated", "dateModified", "contentElements"
 })
@@ -28,7 +25,6 @@ public class DocumentDto extends RepresentationModel<DocumentDto> implements IDt
   public DocumentDto() {
   }
 
-  @Schema(description = "The document's unique ID")
   public String getDocumentId() {
     return documentId;
   }
@@ -45,26 +41,22 @@ public class DocumentDto extends RepresentationModel<DocumentDto> implements IDt
     this.versionTimestamp = versionTimestamp;
   }
   
-  @Schema(hidden = true)
   @JsonAnyGetter
   public Map<String, Object> getFacets() {
     return facets;
   }
 
-  @Schema(hidden = true)
   @JsonIgnore // handled by custom deserializer
   public void setFacet(final String name, final Object value) {
     this.facets.put(name, value);
   }
   
-  @Schema(hidden = true)
   @JsonIgnore
   @SuppressWarnings("unchecked")
   public <V> Optional<V> getFacetData(final DocumentFacet<V> facet) {
     return (Optional<V>) Optional.ofNullable(facets.get(facet.getName()));
   }
   
-  @Schema(hidden = true)
   @JsonIgnore
   public <V> void putFacetData(final DocumentFacet<V> facet, final V value) {
     facets.put(facet.getName(), value);

@@ -45,9 +45,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.neverpile.authorization.policy.AccessPolicy;
-import com.neverpile.authorization.policy.Effect;
 import com.neverpile.authorization.service.impl.SimpleMutablePolicyRepository.CacheEntry;
+import com.neverpile.common.authorization.policy.AccessPolicy;
+import com.neverpile.common.authorization.policy.Effect;
 import com.neverpile.eureka.api.ObjectStoreService;
 import com.neverpile.eureka.model.ObjectName;
 

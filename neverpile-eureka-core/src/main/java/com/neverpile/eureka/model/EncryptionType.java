@@ -1,14 +1,9 @@
 package com.neverpile.eureka.model;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "An enum describing the type of encryption used on an object")
 public enum EncryptionType {
-  @Schema(description = "Objects are with this encryption type are `shared` with the server and thus not encrypted")
-  SHARED(String.valueOf("shared")), 
+  SHARED(String.valueOf("shared")),
 
-  @Schema(description = "Objects are with this encryption type are `private` to the client"
-      + " and thus encrypted so that the server does not have access to the content")
   PRIVATE(String.valueOf("private"));
 
   private final String value;

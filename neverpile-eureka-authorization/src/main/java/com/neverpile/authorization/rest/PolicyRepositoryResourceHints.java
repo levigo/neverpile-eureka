@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import com.neverpile.authorization.api.HintRegistrations;
-import com.neverpile.authorization.policy.ResourceHints;
+import com.neverpile.common.authorization.api.HintRegistrations;
+import com.neverpile.common.authorization.policy.ResourceHints;
 
 @Component
 @ResourceHints

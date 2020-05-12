@@ -55,6 +55,8 @@
     <maven-failsafe-plugin.version>2.22.2</maven-failsafe-plugin.version>
     <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
     <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
+
+    <neverpile-commons.version>1.0.4</neverpile-commons.version>
   </properties>
 
   <repositories>
@@ -74,6 +76,23 @@
         <version>${spring-boot.version}</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+
+      <!-- neverpile-commons -->
+      <dependency>
+        <groupId>com.neverpile.commons</groupId>
+        <artifactId>neverpile-commons-authorization</artifactId>
+        <version>${neverpile-commons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.neverpile.commons</groupId>
+        <artifactId>neverpile-commons-openapi</artifactId>
+        <version>${neverpile-commons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.neverpile.commons</groupId>
+        <artifactId>neverpile-commons-opentracing</artifactId>
+        <version>${neverpile-commons.version}</version>
       </dependency>
 
       <!-- Swagger -->
@@ -265,11 +284,6 @@
         <artifactId>neverpile-eureka-test-support</artifactId>
         <version>${project.version}</version>
       </dependency>
-      <dependency>
-        <groupId>com.neverpile.eureka</groupId>
-        <artifactId>neverpile-common</artifactId>
-        <version>${project.version}</version>
-      </dependency>
 
       <!-- Needed with eclipse 2019-09, see https://bugs.eclipse.org/bugs/show_bug.cgi?id=551298 -->
       <!-- and https://stackoverflow.com/questions/57040675/java-lang-noclassdeffounderror-org-junit-platform-commons-preconditionviolation -->
@@ -293,12 +307,12 @@
       <dependency>
         <groupId>io.rest-assured</groupId>
         <artifactId>rest-assured</artifactId>
-          <version>3.3.0</version>
+        <version>3.3.0</version>
         <scope>test</scope>
         <exclusions>
           <exclusion>
-              <groupId>com.sun.xml.bind</groupId>
-              <artifactId>jaxb-osgi</artifactId>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-osgi</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -352,7 +366,6 @@
   </dependencies>
 
   <modules>
-    <module>neverpile-authorization</module>
     <module>neverpile-eureka-core</module>
     <module>neverpile-eureka-bridge-storage-filesystem</module>
     <module>neverpile-eureka-bridge-storage-s3</module>
@@ -364,8 +377,6 @@
     <module>neverpile-eureka-authorization</module>
     <module>neverpile-eureka-plugin-metadata</module>
     <module>neverpile-eureka-plugin-audit</module>
-    <module>neverpile-common</module>
-    <module>neverpile-openapi</module>
     <module>neverpile-eureka-bom</module>
   </modules>
 

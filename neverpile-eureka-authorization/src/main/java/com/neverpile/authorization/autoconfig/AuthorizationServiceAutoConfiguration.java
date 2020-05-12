@@ -6,9 +6,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
-import com.neverpile.authorization.api.AuthorizationService;
-import com.neverpile.authorization.policy.PolicyRepository;
-import com.neverpile.authorization.policy.impl.PolicyBasedAuthorizationService;
+import com.neverpile.common.authorization.api.AuthorizationService;
+import com.neverpile.common.authorization.policy.PolicyRepository;
+import com.neverpile.common.authorization.policy.impl.PolicyBasedAuthorizationService;
 import com.neverpile.common.condition.config.ConditionModule;
 
 @AutoConfigureAfter(PolicyRepositoryAutoConfiguration.class)

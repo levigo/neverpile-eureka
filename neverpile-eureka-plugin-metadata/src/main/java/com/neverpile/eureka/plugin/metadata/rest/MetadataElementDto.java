@@ -15,13 +15,9 @@ import com.neverpile.eureka.model.MediaTypeDeserializer;
 import com.neverpile.eureka.model.MediaTypeSerializer;
 import com.neverpile.eureka.rest.api.document.IDto;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-
-@Schema(name = "MetadataElement", description = "A metadata element associated with a document")
 public class MetadataElementDto extends RepresentationModel<MetadataDto> implements IDto {
   private String schema;
 
-  @Schema(description = "The MIME-Type of the metadata element as specified in RFC 2045 without parameters", type = "string")
   @Pattern(regexp = "[-\\w+]+/[-\\w+]+")
   @JsonSerialize(using = MediaTypeSerializer.class)
   @JsonDeserialize(using = MediaTypeDeserializer.class)
@@ -37,8 +33,6 @@ public class MetadataElementDto extends RepresentationModel<MetadataDto> impleme
 
   private Instant dateModified;
   
-  @Schema(description = "A reference to a schema which the element is supposed to conform to, "
-      + "e.g. an XML namespace definition, an XSD reference, a JSON schema reference etc.")
   public String getSchema() {
     return schema;
   }
@@ -55,7 +49,6 @@ public class MetadataElementDto extends RepresentationModel<MetadataDto> impleme
     this.contentType = format;
   }
 
-  @Schema(description = "The content (payload) of the metadata element")
   public byte[] getContent() {
     return content;
   }
@@ -64,7 +57,6 @@ public class MetadataElementDto extends RepresentationModel<MetadataDto> impleme
     this.content = content;
   }
 
-  @Schema(description = "The type of encryption the content element is subject to")
   public EncryptionType getEncryption() {
     return encryption;
   }
@@ -73,7 +65,6 @@ public class MetadataElementDto extends RepresentationModel<MetadataDto> impleme
     this.encryption = encryption;
   }
 
-  @Schema(description = "A key hint may be used by a client to store information about which key was used to encrypt the element")
   public String getKeyHint() {
     return keyHint;
   }
@@ -82,7 +73,6 @@ public class MetadataElementDto extends RepresentationModel<MetadataDto> impleme
     this.keyHint = keyHint;
   }
 
-  @Schema(description = "The timestamp at which the element was created")
   public Instant getDateCreated() {
     return dateCreated;
   }
@@ -91,7 +81,6 @@ public class MetadataElementDto extends RepresentationModel<MetadataDto> impleme
     this.dateCreated = dateCreated;
   }
 
-  @Schema(description = "The timestamp at which the element was last modified")
   public Instant getDateModified() {
     return dateModified;
   }

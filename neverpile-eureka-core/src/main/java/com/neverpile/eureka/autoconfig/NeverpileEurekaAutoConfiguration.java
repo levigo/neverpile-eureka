@@ -18,8 +18,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.context.annotation.RequestScope;
 
-import com.neverpile.authorization.api.AuthorizationService;
-import com.neverpile.authorization.basic.AllowAllAuthorizationService;
+import com.neverpile.common.authorization.api.AuthorizationService;
+import com.neverpile.common.authorization.basic.AllowAllAuthorizationService;
 import com.neverpile.common.openapi.OpenApiFragment;
 import com.neverpile.common.openapi.ResourceOpenApiFragment;
 import com.neverpile.common.openapi.ServersFragment;
@@ -51,7 +51,6 @@ import com.neverpile.eureka.rest.api.document.core.ModificationDateFacet;
 import com.neverpile.eureka.rest.api.exception.ExceptionHandlers;
 import com.neverpile.eureka.rest.configuration.FacetedDocumentDtoModule;
 import com.neverpile.eureka.rest.configuration.JacksonConfiguration;
-import com.neverpile.eureka.tracing.aspect.OpentracingAspect;
 import com.neverpile.eureka.tx.atomic.DistributedAtomicReference;
 import com.neverpile.eureka.tx.atomic.DistributedAtomicType;
 import com.neverpile.eureka.tx.lock.ClusterLockFactory;
@@ -72,8 +71,7 @@ import com.neverpile.eureka.tx.wal.local.FileBasedWAL;
      * declare a @ComponentScan for the Jackson et. al. configuration. Instead we import
      * JacksonConfiguration as an anchor and let it do the dirty work of @ComponentScanning.
      */
-    FacetedDocumentDtoModule.class, JacksonConfiguration.class, EventPublisher.class, UpdateEventAggregator.class,
-    OpentracingAspect.class
+    FacetedDocumentDtoModule.class, JacksonConfiguration.class, EventPublisher.class, UpdateEventAggregator.class
 })
 @AutoConfigureOrder(AutoConfigureOrder.DEFAULT_ORDER + 1)
 public class NeverpileEurekaAutoConfiguration {

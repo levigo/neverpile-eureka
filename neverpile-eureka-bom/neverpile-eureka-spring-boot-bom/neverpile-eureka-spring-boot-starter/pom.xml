@@ -43,8 +43,8 @@
       <artifactId>neverpile-eureka-client-webjar</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.neverpile.eureka</groupId>
-      <artifactId>neverpile-openapi</artifactId>
+      <groupId>com.neverpile.commons</groupId>
+      <artifactId>neverpile-commons-openapi</artifactId>
     </dependency>
   </dependencies>
 </project>

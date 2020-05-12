@@ -7,20 +7,12 @@ import org.springframework.hateoas.RepresentationModel;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.neverpile.eureka.rest.api.document.IDto;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Schema(name = "AuditEvent", description = "An audit event associated with a document")
 public class AuditEventDto extends RepresentationModel<AuditEventDto> implements IDto {
-  @Schema(description = "The type of an audit event")
   public enum Type {
-    @Schema(description = "A document created event")
     CREATE, 
-    @Schema(description = "A document updated event")
     UPDATE, 
-    @Schema(description = "A document deleted event")
     DELETE,
-    @Schema(description = "A user-defined event")
     CUSTOM
     ;
   }
@@ -32,7 +24,6 @@ public class AuditEventDto extends RepresentationModel<AuditEventDto> implements
   private String description;
   private String documentId;
 
-  @Schema(description = "The time at which the event occurred")
   public Instant getTimestamp() {
     return timestamp;
   }
@@ -41,7 +32,6 @@ public class AuditEventDto extends RepresentationModel<AuditEventDto> implements
     this.timestamp = timestamp;
   }
 
-  @Schema(description = "The ID of the used which triggered the event; may be null if the event wasn't triggered by a user")
   public String getUserID() {
     return userID;
   }
@@ -50,7 +40,6 @@ public class AuditEventDto extends RepresentationModel<AuditEventDto> implements
     this.userID = userID;
   }
 
-  @Schema(description = "The type of event")
   public Type getType() {
     return type;
   }
@@ -59,7 +48,6 @@ public class AuditEventDto extends RepresentationModel<AuditEventDto> implements
     this.type = type;
   }
 
-  @Schema(description = "A textual description of the event")
   public String getDescription() {
     return description;
   }
@@ -68,7 +56,6 @@ public class AuditEventDto extends RepresentationModel<AuditEventDto> implements
     this.description = description;
   }
   
-  @Schema(description = "The ID of this event")
   public String getAuditId() {
     return auditId;
   }
@@ -77,12 +64,11 @@ public class AuditEventDto extends RepresentationModel<AuditEventDto> implements
     this.auditId = id;
   }
 
-  @Schema(description = "The document ID associated with this event")
   public String getDocumentId() {
     return documentId;
   }
 
-  public void setDocumentId(String documentId) {
+  public void setDocumentId(final String documentId) {
     this.documentId = documentId;
   }
 }

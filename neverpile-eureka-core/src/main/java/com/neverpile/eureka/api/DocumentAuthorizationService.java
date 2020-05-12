@@ -1,8 +1,8 @@
 package com.neverpile.eureka.api;
 
-import com.neverpile.authorization.api.Action;
-import com.neverpile.authorization.api.AuthorizationService;
-import com.neverpile.authorization.api.CoreActions;
+import com.neverpile.common.authorization.api.Action;
+import com.neverpile.common.authorization.api.AuthorizationService;
+import com.neverpile.common.authorization.api.CoreActions;
 import com.neverpile.eureka.model.Document;
 
 /**

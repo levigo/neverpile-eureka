@@ -9,13 +9,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import com.neverpile.authorization.api.Action;
-import com.neverpile.authorization.api.AuthorizationService;
-import com.neverpile.authorization.api.CoreActionHints;
-import com.neverpile.authorization.basic.AllowAllAuthorizationService;
-import com.neverpile.authorization.policy.MutablePolicyRepository;
-import com.neverpile.authorization.policy.impl.PolicyBasedAuthorizationService;
 import com.neverpile.authorization.rest.PolicyRepositoryResource;
+import com.neverpile.common.authorization.api.Action;
+import com.neverpile.common.authorization.api.AuthorizationService;
+import com.neverpile.common.authorization.api.CoreActionHints;
+import com.neverpile.common.authorization.basic.AllowAllAuthorizationService;
+import com.neverpile.common.authorization.policy.MutablePolicyRepository;
+import com.neverpile.common.authorization.policy.impl.PolicyBasedAuthorizationService;
 import com.neverpile.common.condition.CoreConditionRegistry;
 import com.neverpile.eureka.autoconfig.NeverpileEurekaAutoConfiguration;
 

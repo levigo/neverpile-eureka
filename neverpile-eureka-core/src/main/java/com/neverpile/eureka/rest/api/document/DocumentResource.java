@@ -44,18 +44,11 @@ import com.neverpile.eureka.rest.api.exception.ValidationError;
 import com.neverpile.urlcrypto.PreSignedUrlEnabled;
 
 import io.micrometer.core.annotation.Timed;
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping(path = "/api/v1/documents", produces = {
     MediaType.APPLICATION_JSON_VALUE
 })
-@OpenAPIDefinition(tags = @Tag(name = "Document"))
 @Transactional
 public class DocumentResource {
 
@@ -74,20 +67,15 @@ public class DocumentResource {
 
   @Autowired
   ObjectMapper mapper;
-  
+
   // GET - Returns a specific document by ID
   @PreSignedUrlEnabled
   @GetMapping(value = "{documentID}")
-  @Operation(summary = "Fetches a document by ID")
-  @ApiResponse(responseCode = "200", description = "Document found")
-  @ApiResponse(responseCode = "400", description = "Invalid documentID supplied")
-  @ApiResponse(responseCode = "404", description = "Document not found")
   @Timed(description = "get document", extraTags = {
       "operation", "retrieve", "target", "document"
   }, value = "eureka.document.get")
-  public DocumentDto get(
-      @Parameter(description = "The ID of the document to be fetched") @PathVariable("documentID") final String documentId,
-      @Parameter(description = "The list of facets to be included in the response; return all facets if empty") @RequestParam(name = "facets", required = false) final List<String> requestedFacets) {
+  public DocumentDto get(@PathVariable("documentID") final String documentId,
+      @RequestParam(name = "facets", required = false) final List<String> requestedFacets) {
     // @formatter:on
     Document document = getDocument(documentId);
 
@@ -101,21 +89,17 @@ public class DocumentResource {
   private static final Logger LOGGER = LoggerFactory.getLogger(DocumentResource.class);
 
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-  @Operation(summary = "Creates a new document", //
-      description = "The ID of the newly created document is taken from the posted document if present, "
-          + "otherwise generated automatically.")
-  @ApiResponse(responseCode = "201", description = "Document created")
-  @ApiResponse(responseCode = "409", description = "Document with the given id already exists")
   @Timed(description = "create document", extraTags = {
       "operation", "create", "target", "document"
   }, value = "eureka.document.create")
-  public DocumentDto create(@Parameter @RequestBody final DocumentDto requestDto,
-      @Parameter(description = "The list of facets to be included in the response; return all facets if empty") @RequestParam(name = "facets", required = false) final List<String> requestedFacets) throws JsonMappingException, JsonProcessingException {
+  public DocumentDto create(@RequestBody final DocumentDto requestDto,
+      @RequestParam(name = "facets", required = false) final List<String> requestedFacets)
+      throws JsonMappingException, JsonProcessingException {
 
     validate(f -> f.validateCreate(requestDto));
-    
+
     LOGGER.info("Registered jackson modules: " + mapper.getRegisteredModuleIds());
-    
+
     Document newDocument = documentMapper.map(requestDto, Document.class);
     if (checkDocumentExist(newDocument.getDocumentId())) {
       throw new AlreadyExistsException("DocumentId already exists");
@@ -172,19 +156,12 @@ public class DocumentResource {
   }
 
   @PutMapping(value = "{documentID}", consumes = MediaType.APPLICATION_JSON_VALUE)
-  @Operation(summary = "Update a document", description = "The document must already exist. It is not possible to create a new document with this method. ")
-  @ApiResponses({
-      @ApiResponse(responseCode = "202", description = "Document updated"),
-      @ApiResponse(responseCode = "400", description = "Invalid documentID supplied"),
-      @ApiResponse(responseCode = "404", description = "Document not found")
-  })
   @Timed(description = "update document", extraTags = {
       "operation", "update", "target", "document"
   }, value = "eureka.document.update")
-  public DocumentDto update(final HttpServletRequest request,
-      @Parameter(description = "The ID of the document to be updated") @PathVariable("documentID") final String documentId,
-      @Parameter @RequestBody final DocumentDto requestDto,
-      @Parameter(description = "The list of facets to be included in the response; return all facets if empty") @RequestParam(name = "facets", required = false) final List<String> requestedFacets) {
+  public DocumentDto update(final HttpServletRequest request, @PathVariable("documentID") final String documentId,
+      @RequestBody final DocumentDto requestDto,
+      @RequestParam(name = "facets", required = false) final List<String> requestedFacets) {
     if (!checkDocumentExist(documentId)) {
       throw new NotFoundException("Document not found");
     }
@@ -220,16 +197,9 @@ public class DocumentResource {
 
   @DeleteMapping(value = "{documentID}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  @Operation(summary = "Delete a document identified by its ID")
-  @ApiResponses({
-      @ApiResponse(responseCode = "204", description = "Document successfully deleted"),
-      @ApiResponse(responseCode = "400", description = "Invalid documentID supplied"),
-      @ApiResponse(responseCode = "404", description = "Document not found"),
-      @ApiResponse(responseCode = "409", description = "The request could not be completed due to a conflict with the current state of the target resource.")
-  })
   @Timed(description = "delete document", extraTags = {"operation", "delete", "target", "document"}, value="eureka.document.delete")
   public void delete(
-      @Parameter(description = "The ID of the document to be deleted") @PathVariable("documentID") final String documentId) {
+      @PathVariable("documentID") final String documentId) {
     Document document = getDocument(documentId);
     if (null == document) {
       throw new NotFoundException("Document not found");

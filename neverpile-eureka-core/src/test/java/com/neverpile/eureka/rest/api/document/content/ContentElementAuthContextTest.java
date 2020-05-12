@@ -21,8 +21,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.neverpile.authorization.api.AuthorizationContext;
-import com.neverpile.authorization.api.AuthorizationService;
+import com.neverpile.common.authorization.api.AuthorizationContext;
+import com.neverpile.common.authorization.api.AuthorizationService;
 import com.neverpile.eureka.api.BaseTestConfiguration;
 import com.neverpile.eureka.api.ContentElementService;
 import com.neverpile.eureka.api.DocumentAuthorizationService;
