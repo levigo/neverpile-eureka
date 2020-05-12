@@ -68,9 +68,9 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.neverpile.eureka</groupId>
-        <artifactId>neverpile-openapi</artifactId>
-        <version>${project.version}</version>
+        <groupId>com.neverpile.commons</groupId>
+        <artifactId>neverpile-commons-openapi</artifactId>
+        <version>${neverpile-commons.version}</version>
       </dependency>
 
       <!-- neverpile-eureka-ignite has optional (provided) depenencies which we list here so that the correct versions are 
