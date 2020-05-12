@@ -1,6 +1,9 @@
 name: Continuous Integration (pull-request checks)
 
-on: [push]
+on: 
+  push:
+    branches-ignore:
+      - master
 
 jobs:
   build:
