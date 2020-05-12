@@ -296,6 +296,8 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
           .statusCode(200)
           .contentType("text/plain")
           .header("Content-Disposition", Matchers.startsWith("inline; name=\"part\"; filename=\"foo.txt\""))
+          .header("Digest", Matchers.equalTo("sha-256=LCa0a2j/xo/5m0U8HTBBNBNCLXBkg7+g+YpeiGJm564="))
+          .header("ETag", Matchers.equalTo("\"sha-256_LCa0a2j/xo/5m0U8HTBBNBNCLXBkg7+g+YpeiGJm564=\""))          
           .body(equalTo("foo"));
 
     RestAssured
@@ -308,6 +310,8 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
           .statusCode(200)
           .contentType("application/xml")
           .header("Content-Disposition",  Matchers.startsWith("inline; name=\"annotations\"; filename=\"foo.xml\""))
+          .header("Digest", Matchers.equalTo("sha-256=STjYc7Z1UJKRK1T5cDMFIgYZKk6q5c6aTyNaEGfQSw0="))
+          .header("ETag", Matchers.equalTo("\"sha-256_STjYc7Z1UJKRK1T5cDMFIgYZKk6q5c6aTyNaEGfQSw0=\""))
           .body(equalTo("<foo>foobar</foo>"));
 
     byte[] bodyBytes = RestAssured
@@ -320,6 +324,8 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
           .statusCode(200)
           .contentType("application/octet-stream")
           .header("Content-Disposition",  Matchers.startsWith("inline; name=\"stuff\"; filename=\"foo.dat\""))
+          .header("Digest", Matchers.equalTo("sha-256=STjYc7Z1UJKRK1T5cDMFIgYZKk6q5c6aTyNaEGfQSw0="))
+          .header("ETag", Matchers.equalTo("\"sha-256_STjYc7Z1UJKRK1T5cDMFIgYZKk6q5c6aTyNaEGfQSw0=\""))
           .extract().asByteArray();
 
     // can't use rest-assured body check at it messes up binary content
@@ -350,6 +356,8 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
           .statusCode(200)
           .contentType("text/plain")
           .header("Content-Disposition", Matchers.startsWith("inline; name=\"part\"; filename=\"foo.txt\""))
+          .header("Digest", Matchers.equalTo("sha-256=LCa0a2j/xo/5m0U8HTBBNBNCLXBkg7+g+YpeiGJm564="))
+          .header("ETag", Matchers.equalTo("\"sha-256_LCa0a2j/xo/5m0U8HTBBNBNCLXBkg7+g+YpeiGJm564=\""))
           .body(equalTo("foo"));
     // @formatter:on
   }
@@ -438,6 +446,8 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
     assertThat(headers).anyMatch(s -> s.startsWith("Content-Disposition: inline; name=\"part\"; filename=\"foo.txt\""));
     assertThat(headers).anyMatch(s -> s.startsWith("Content-Type: text/plain"));
     assertThat(headers).anyMatch(s -> s.startsWith("Content-Length: 3"));
+    assertThat(headers).anyMatch(s -> s.startsWith("ETag: \"sha-256_LCa0a2j/xo/5m0U8HTBBNBNCLXBkg7+g+YpeiGJm564=\""));
+    assertThat(headers).anyMatch(s -> s.startsWith("Digest: sha-256=LCa0a2j/xo/5m0U8HTBBNBNCLXBkg7+g+YpeiGJm564="));
 
     ByteArrayOutputStream body = new ByteArrayOutputStream();
     ms.readBodyData(body);
@@ -448,6 +458,8 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
         s -> s.startsWith("Content-Disposition: inline; name=\"annotations\"; filename=\"foo.xml\""));
     assertThat(headers).anyMatch(s -> s.startsWith("Content-Type: application/xml"));
     assertThat(headers).anyMatch(s -> s.startsWith("Content-Length: 17"));
+    assertThat(headers).anyMatch(s -> s.startsWith("ETag: \"sha-256_STjYc7Z1UJKRK1T5cDMFIgYZKk6q5c6aTyNaEGfQSw0=\""));
+    assertThat(headers).anyMatch(s -> s.startsWith("Digest: sha-256=STjYc7Z1UJKRK1T5cDMFIgYZKk6q5c6aTyNaEGfQSw0="));
 
     body = new ByteArrayOutputStream();
     ms.readBodyData(body);
@@ -458,7 +470,9 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
         s -> s.startsWith("Content-Disposition: inline; name=\"stuff\"; filename=\"foo.dat\""));
     assertThat(headers).anyMatch(s -> s.startsWith("Content-Type: application/octet-stream"));
     assertThat(headers).anyMatch(s -> s.startsWith("Content-Length: 4"));
-
+    assertThat(headers).anyMatch(s -> s.startsWith("ETag: \"sha-256_STjYc7Z1UJKRK1T5cDMFIgYZKk6q5c6aTyNaEGfQSw0=\""));
+    assertThat(headers).anyMatch(s -> s.startsWith("Digest: sha-256=STjYc7Z1UJKRK1T5cDMFIgYZKk6q5c6aTyNaEGfQSw0="));
+    
     body = new ByteArrayOutputStream();
     ms.readBodyData(body);
     assertThat(body.toByteArray()).contains(0, 1, 2, 3);
@@ -468,7 +482,9 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
         s -> s.startsWith("Content-Disposition: inline; name=\"stuff\"; filename=\"fox.txt\""));
     assertThat(headers).anyMatch(s -> s.startsWith("Content-Type: application/octet-stream"));
     assertThat(headers).anyMatch(s -> s.startsWith("Content-Length: 44"));
-
+    assertThat(headers).anyMatch(s -> s.startsWith("ETag: \"sha-256_7d38b5cd25a2baf85ad3bb5b9311383e671a8a142eb302b324d4a5fba8748c69\""));
+    assertThat(headers).anyMatch(s -> s.startsWith("Digest: sha-256=7d38b5cd25a2baf85ad3bb5b9311383e671a8a142eb302b324d4a5fba8748c69"));
+    
     body = new ByteArrayOutputStream();
     ms.readBodyData(body);
     assertThat(body.toByteArray()).isEqualTo("The quick brown fox jumped over the lazy dog".getBytes());
@@ -529,7 +545,7 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
         .accept(ContentType.ANY)
         .auth().preemptive().basic("user", "password")
         .when()
-        .queryParam("role", "part,annotations")
+        .queryParam("role", "part", "annotations")
         .queryParam("return", "all")
         .get("/api/v1/documents/{documentID}/content", D)
         .then()

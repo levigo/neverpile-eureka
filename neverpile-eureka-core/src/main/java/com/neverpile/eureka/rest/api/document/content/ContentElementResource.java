@@ -9,6 +9,7 @@ import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -232,6 +233,9 @@ public class ContentElementResource {
         .size(contentElement.getLength()) //
         .build();
 
+    String digestAlgorithmName = contentElement.getDigest().getAlgorithm().name().toLowerCase().replaceAll("_", "-");
+    String encodedDigest = Base64.getEncoder().encodeToString(contentElement.getDigest().getBytes());
+
     return ResponseEntity.ok() //
         .lastModified(document.getDateModified() != null
             ? document.getDateModified().toEpochMilli()
@@ -239,6 +243,10 @@ public class ContentElementResource {
         .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString()) //
         .header(HttpHeaders.CONTENT_TYPE, contentElement.getType().toString()) //
         .header(HttpHeaders.CONTENT_LENGTH, Long.toString(contentElement.getLength())) //
+        // add ETag header - yes, the specification proscribes the quotes
+        .header(HttpHeaders.ETAG, '"' + digestAlgorithmName + "_" + encodedDigest + '"') //
+        // add Digest header - try to canonicalize the algorithm name
+        .header("Digest", digestAlgorithmName + "=" + encodedDigest) //
         .body(new InputStreamResource( //
             contentElementInputStream, document.getDocumentId() + "/" + contentElement.getId()));
   }
