@@ -14,6 +14,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -80,8 +81,8 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
   @TestConfiguration
   @Import({
       ModelMapperConfiguration.class, SimpleContentElementService.class, ContentElementFacet.class,
-      ContentElementResource.class, IdFacet.class, ModificationDateFacet.class, CreationDateFacet.class,
-      DocumentResource.class
+      ContentElementResource.class, MultiVersioningContentElementResource.class, IdFacet.class,
+      ModificationDateFacet.class, CreationDateFacet.class, DocumentResource.class
   })
   public static class ServiceConfig {
   }
@@ -275,7 +276,7 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
     
     // @formatter:on
   }
-  
+
   @Test
   public void testThat_contentElementsCanBeRetrievedById() throws Exception {
     Document doc = createTestDocumentWithContent();
@@ -472,7 +473,7 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
     assertThat(headers).anyMatch(s -> s.startsWith("Content-Length: 4"));
     assertThat(headers).anyMatch(s -> s.startsWith("ETag: \"sha-256_STjYc7Z1UJKRK1T5cDMFIgYZKk6q5c6aTyNaEGfQSw0=\""));
     assertThat(headers).anyMatch(s -> s.startsWith("Digest: sha-256=STjYc7Z1UJKRK1T5cDMFIgYZKk6q5c6aTyNaEGfQSw0="));
-    
+
     body = new ByteArrayOutputStream();
     ms.readBodyData(body);
     assertThat(body.toByteArray()).contains(0, 1, 2, 3);
@@ -482,9 +483,11 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
         s -> s.startsWith("Content-Disposition: inline; name=\"stuff\"; filename=\"fox.txt\""));
     assertThat(headers).anyMatch(s -> s.startsWith("Content-Type: application/octet-stream"));
     assertThat(headers).anyMatch(s -> s.startsWith("Content-Length: 44"));
-    assertThat(headers).anyMatch(s -> s.startsWith("ETag: \"sha-256_7d38b5cd25a2baf85ad3bb5b9311383e671a8a142eb302b324d4a5fba8748c69\""));
-    assertThat(headers).anyMatch(s -> s.startsWith("Digest: sha-256=7d38b5cd25a2baf85ad3bb5b9311383e671a8a142eb302b324d4a5fba8748c69"));
-    
+    assertThat(headers).anyMatch(
+        s -> s.startsWith("ETag: \"sha-256_7d38b5cd25a2baf85ad3bb5b9311383e671a8a142eb302b324d4a5fba8748c69\""));
+    assertThat(headers).anyMatch(
+        s -> s.startsWith("Digest: sha-256=7d38b5cd25a2baf85ad3bb5b9311383e671a8a142eb302b324d4a5fba8748c69"));
+
     body = new ByteArrayOutputStream();
     ms.readBodyData(body);
     assertThat(body.toByteArray()).isEqualTo("The quick brown fox jumped over the lazy dog".getBytes());
@@ -618,8 +621,40 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
     // @formatter:on
   }
 
+  @Test
+  public void testThat_contentQueryWorksAgainstHistory() throws Exception {
+    Document doc = createTestDocumentWithContent();
+
+    // @formatter:off
+    given(mockDocumentService.getDocumentVersion(D, doc.getVersionTimestamp()))
+      .willReturn(Optional.of(doc));
+
+    // retrieve and verify parts
+    RestAssured
+        .given()
+          .log().all()
+          .accept(ContentType.ANY)
+          .auth().preemptive().basic("user", "password")
+        .when()
+          .queryParam("role", "part")
+          .queryParam("return", "first")
+          .get("/api/v1/documents/{documentID}/history/1970-01-01T00:00:00.042Z/content", D)
+        .then()
+          .log().all()
+          .statusCode(200)
+          .contentType("text/plain")
+          .header("Content-Disposition", Matchers.startsWith("inline; name=\"part\"; filename=\"foo.txt\""))
+          .header("Digest", Matchers.equalTo("sha-256=LCa0a2j/xo/5m0U8HTBBNBNCLXBkg7+g+YpeiGJm564="))
+          .header("ETag", Matchers.equalTo("\"sha-256_LCa0a2j/xo/5m0U8HTBBNBNCLXBkg7+g+YpeiGJm564=\""))
+          .body(equalTo("foo"));
+    
+    verify(mockDocumentService.getDocumentVersion(D, doc.getVersionTimestamp()));
+    // @formatter:on
+  }
+
   private Document createTestDocumentWithContent() {
     Document doc = createTestDocument();
+    doc.setVersionTimestamp(Instant.ofEpochMilli(42L));
 
     doc.setDocumentId(D);
 

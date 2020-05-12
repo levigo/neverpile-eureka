@@ -1,0 +1,111 @@
+openapi: 3.0.1
+
+info:
+  title: Neverpile eureka API
+  contact:
+    name: levigo solutions gmbh
+    url: https://levigo.de
+    email: solutions@levigo.de
+  version: 1.0.0
+
+paths:
+  /api/v1/documents/{documentID}/history/{versionTimestamp}:
+    get:
+      tags:
+      - Document
+      summary: Fetches a particular version of a document by ID
+      
+      parameters:
+      - name: documentID
+        in: path
+        description: The ID of the document to be fetched
+        required: true
+        schema:
+          type: string
+      - name: versionTimestamp
+        in: path
+        description: The timestamp of the version to be queried
+        schema:
+          type: string
+          format: date-time
+        required: true
+      - name: facets
+        in: query
+        description: The list of facets to be included in the response; return all
+          facets if empty
+        allowEmptyValue: false
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+            
+      responses:
+        200:
+          description: Document found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        400:
+          description: Invalid documentID supplied
+        404:
+          description: Document or version not found
+          
+  /api/v1/documents/{documentID}/history/{versionTimestamp}/content:
+    get:
+      tags:
+      - Content
+      summary: Queries a particular document vertion for content elements
+
+      parameters:
+      - name: documentID
+        in: path
+        description: ID of the document
+        required: true
+        schema:
+          type: string
+      - name: versionTimestamp
+        in: path
+        description: The timestamp of the version to be queried
+        schema:
+          type: string
+          format: date-time
+        required: true
+      - name: return
+        in: query
+        description: How and what to return
+        allowEmptyValue: false
+        schema:
+          type: string
+          default: first
+          enum:
+          - only
+          - first
+          - all
+      - name: role
+        in: query
+        description: Role(s) of the content elements to be fetched. Multiple roles
+          can be specified separated by comma
+        allowEmptyValue: false
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        200:
+          description: Content element found
+          content:
+            application/json:
+              schema:
+                type: string
+                format: byte
+            '*/*':
+              schema:
+                type: string
+                format: byte
+        404:
+          description: Document or content element not found

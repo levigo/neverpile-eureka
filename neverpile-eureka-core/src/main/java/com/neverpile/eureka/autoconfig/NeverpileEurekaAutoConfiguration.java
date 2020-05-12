@@ -89,6 +89,13 @@ public class NeverpileEurekaAutoConfiguration {
     public MultiVersioningDocumentResource multiVersioningDocumentResource() {
       return new MultiVersioningDocumentResource();
     }
+    
+    @Bean
+    @ConditionalOnBean(value = MultiVersioningDocumentService.class)
+    public OpenApiFragment multiVersioningOpenApiFragment() {
+      return new ResourceOpenApiFragment("eureka", "core-multiversioning",
+          new ClassPathResource("com/neverpile/eureka/eureka-core-multiversioning.yaml"));
+    }
 
     @Bean
     public OpenApiFragment coreOpenApiFragment() {

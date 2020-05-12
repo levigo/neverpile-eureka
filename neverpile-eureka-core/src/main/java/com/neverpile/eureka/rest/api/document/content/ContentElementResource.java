@@ -164,14 +164,10 @@ public class ContentElementResource {
     Document document = documentService.getDocument(documentId) //
         .orElseThrow(() -> new NotFoundException("Document not found"));
 
-    Stream<ContentElement> elements = document.getContentElements().stream();
+    return returnMatches(ret, document, applyFilters(roles, document));
+  }
 
-    // filter by roles
-    if (null != roles)
-      elements = elements.filter(ce -> roles.contains(ce.getRole()));
-
-    List<ContentElement> matches = elements.collect(Collectors.toList());
-
+  protected ResponseEntity<?> returnMatches(final Return ret, final Document document, final List<ContentElement> matches) {
     // return mode
     switch (ret){
       case only :
@@ -191,6 +187,17 @@ public class ContentElementResource {
       default :
         throw new NotAcceptableException("Unrecognized return mode");
     }
+  }
+
+  public List<ContentElement> applyFilters(final List<String> roles, final Document document) {
+    Stream<ContentElement> elements = document.getContentElements().stream();
+
+    // filter by roles
+    if (null != roles)
+      elements = elements.filter(ce -> roles.contains(ce.getRole()));
+
+    List<ContentElement> matches = elements.collect(Collectors.toList());
+    return matches;
   }
 
   protected ResponseEntity<MultiValueMap<String, HttpEntity<?>>> returnMultipleElementsAsMultipart(
