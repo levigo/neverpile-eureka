@@ -494,7 +494,7 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
   }
 
   @Test
-  public void testThat_contentQueryReturnsMatchingPartsByType() throws Exception {
+  public void testThat_contentQueryReturnsMatchingPartsByRole() throws Exception {
     Document doc = createTestDocumentWithContent();
 
     // @formatter:off
@@ -535,7 +535,7 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
   }
 
   @Test
-  public void testThat_contentQueryReturnsMatchingPartsByTypeWithMultipleTypes() throws Exception {
+  public void testThat_contentQueryReturnsMatchingPartsByTypeWithMultipleRoles() throws Exception {
     Document doc = createTestDocumentWithContent();
 
     // @formatter:off
@@ -574,6 +574,81 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
         s -> s.startsWith("Content-Disposition: inline; name=\"annotations\"; filename=\"foo.xml\""));
   }
 
+
+  @Test
+  public void testThat_contentQueryReturnsMatchingPartsByType() throws Exception {
+    Document doc = createTestDocumentWithContent();
+
+    // @formatter:off
+    BDDMockito.given(mockDocumentService.getDocument(D)).willReturn(Optional.of(doc));
+    
+    // retrieve and verify parts
+    ExtractableResponse<Response> response = RestAssured
+      .given()
+        .log().all()
+        .accept(ContentType.XML)
+        .auth().preemptive().basic("user", "password")
+      .when()
+        .queryParam("return", "all")
+        .get("/api/v1/documents/{documentID}/content", D)
+      .then()
+        .log().all()
+        .statusCode(200)
+        .contentType("multipart/mixed").extract();
+    
+    byte[] responseBytes = response.response().asByteArray();
+    // @formatter:on
+
+    MediaType mt = MediaType.valueOf(response.header("Content-Type"));
+
+    MultipartStream ms = new MultipartStream(new ByteArrayInputStream(responseBytes),
+        mt.getParameters().get("boundary").getBytes(), 1024, null);
+
+    String[] headers = ms.readHeaders().split("\r\n");
+    assertThat(headers).anyMatch(
+        s -> s.startsWith("Content-Disposition: inline; name=\"annotations\"; filename=\"foo.xml\""));
+  }
+
+  @Test
+  public void testThat_contentQueryReturnsMatchingPartsByTypeWithMultipleTypes() throws Exception {
+    Document doc = createTestDocumentWithContent();
+
+    // @formatter:off
+    BDDMockito.given(mockDocumentService.getDocument(D)).willReturn(Optional.of(doc));
+    
+    // retrieve and verify parts
+    ExtractableResponse<Response> response = RestAssured
+      .given()
+        .log().all()
+        .accept("application/xml, text/plain")
+        .auth().preemptive().basic("user", "password")
+      .when()
+        .queryParam("role", "part,annotations")
+        .queryParam("return", "all")
+        .get("/api/v1/documents/{documentID}/content", D)
+      .then()
+        .log().all()
+        .statusCode(200)
+        .contentType("multipart/mixed").extract();
+    
+    byte[] responseBytes = response.response().asByteArray();
+    // @formatter:on
+
+    MediaType mt = MediaType.valueOf(response.header("Content-Type"));
+
+    MultipartStream ms = new MultipartStream(new ByteArrayInputStream(responseBytes),
+        mt.getParameters().get("boundary").getBytes(), 1024, null);
+
+    String[] headers = ms.readHeaders().split("\r\n");
+    assertThat(headers).anyMatch(s -> s.startsWith("Content-Disposition: inline; name=\"part\"; filename=\"foo.txt\""));
+
+    ms.discardBodyData();
+
+    headers = ms.readHeaders().split("\r\n");
+    assertThat(headers).anyMatch(
+        s -> s.startsWith("Content-Disposition: inline; name=\"annotations\"; filename=\"foo.xml\""));
+  }
+  
   @Test
   public void testThat_contentQueryFailsOnMissingPart() throws Exception {
     Document doc = createTestDocumentWithContent();
