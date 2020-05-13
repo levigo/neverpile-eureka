@@ -55,7 +55,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.neverpile.eureka.api.ContentElementService;
 import com.neverpile.eureka.api.DocumentIdGenerationStrategy;
 import com.neverpile.eureka.api.DocumentService;
-import com.neverpile.eureka.api.MultiVersioningDocumentService;
 import com.neverpile.eureka.model.ContentElement;
 import com.neverpile.eureka.model.Document;
 import com.neverpile.eureka.rest.api.document.DocumentDto;
@@ -73,7 +72,7 @@ import io.micrometer.core.annotation.Timed;
 @RequestMapping(path = "/api/v1/documents", produces = MediaType.APPLICATION_JSON_VALUE)
 @Import(ContentElementResourceConfiguration.class)
 @Transactional
-@ConditionalOnMissingBean(MultiVersioningDocumentService.class)
+@ConditionalOnMissingBean(MultiVersioningContentElementResource.class)
 public class ContentElementResource {
   public static final String DOCUMENT_FORM_ELEMENT_NAME = "__DOC";
 
