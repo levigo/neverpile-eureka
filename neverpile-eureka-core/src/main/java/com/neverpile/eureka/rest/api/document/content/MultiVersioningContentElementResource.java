@@ -25,20 +25,22 @@ import com.neverpile.urlcrypto.PreSignedUrlEnabled;
 import io.micrometer.core.annotation.Timed;
 
 @RestController
-@RequestMapping(path = "/api/v1/documents", produces = {
-    MediaType.APPLICATION_JSON_VALUE
-})
+@RequestMapping(path = "/api/v1/documents", produces = MediaType.APPLICATION_JSON_VALUE)
 @Import(ContentElementResourceConfiguration.class)
 @ConditionalOnBean(MultiVersioningDocumentService.class)
 @Transactional
 public class MultiVersioningContentElementResource extends ContentElementResource {
+  private final MultiVersioningDocumentService multiVersioningDocumentService;
+
   @Autowired
-  private MultiVersioningDocumentService multiVersioningDocumentService;
+  public MultiVersioningContentElementResource(final MultiVersioningDocumentService multiVersioningDocumentService) {
+    this.multiVersioningDocumentService = multiVersioningDocumentService;
+  }
 
   @PreSignedUrlEnabled
-  @GetMapping(value = "{documentID}/history/{versionTimestamp}/content")
-  @Timed(description = "get content element", extraTags = {
-      "operation", "retrieve", "target", "content"
+  @GetMapping(value = "{documentID}/history/{versionTimestamp}/content", produces = MediaType.ALL_VALUE)
+  @Timed(description = "query content element of particular version", extraTags = {
+      "operation", "query", "target", "content"
   }, value = "eureka.content.get")
   public ResponseEntity<?> query(@PathVariable("documentID") final String documentId,
       @PathVariable("versionTimestamp") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final Instant versionTimestamp,

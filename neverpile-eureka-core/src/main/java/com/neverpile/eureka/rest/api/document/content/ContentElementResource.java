@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.hateoas.IanaLinkRelations;
@@ -54,6 +55,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.neverpile.eureka.api.ContentElementService;
 import com.neverpile.eureka.api.DocumentIdGenerationStrategy;
 import com.neverpile.eureka.api.DocumentService;
+import com.neverpile.eureka.api.MultiVersioningDocumentService;
 import com.neverpile.eureka.model.ContentElement;
 import com.neverpile.eureka.model.Document;
 import com.neverpile.eureka.rest.api.document.DocumentDto;
@@ -68,11 +70,10 @@ import com.neverpile.urlcrypto.PreSignedUrlEnabled;
 import io.micrometer.core.annotation.Timed;
 
 @RestController
-@RequestMapping(path = "/api/v1/documents", produces = {
-    MediaType.APPLICATION_JSON_VALUE
-})
+@RequestMapping(path = "/api/v1/documents", produces = MediaType.APPLICATION_JSON_VALUE)
 @Import(ContentElementResourceConfiguration.class)
 @Transactional
+@ConditionalOnMissingBean(MultiVersioningDocumentService.class)
 public class ContentElementResource {
   public static final String DOCUMENT_FORM_ELEMENT_NAME = "__DOC";
 
@@ -261,9 +262,9 @@ public class ContentElementResource {
   }
 
   @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public ResponseEntity<DocumentDto> createDocumentFromMultipart(final AllRequestParts files, // mapped
-                                                                                              // using
-                                                                                              // AllRequestPartsMethodArgumentResolver
+  public ResponseEntity<DocumentDto> createDocumentFromMultipart(
+      // mapped using AllRequestPartsMethodArgumentResolver
+      final AllRequestParts files, //
       @RequestParam(name = "facets", required = false) final List<String> requestedFacets) throws Exception {
     // try to find the metadata part named __DOC
     DocumentDto doc = docPartFromAllRequestParts(files).orElse(new DocumentDto());
@@ -321,7 +322,7 @@ public class ContentElementResource {
   }
 
   @PostMapping(value = "{documentId}/content", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  @Timed(description = "create document with content", extraTags = {
+  @Timed(description = "add content from multipart", extraTags = {
       "operation", "create", "target", "document-with-content"
   }, value = "eureka.document.create-with-content")
   public DocumentDto add(final HttpServletRequest request, @PathVariable("documentId") final String documentId,
@@ -345,16 +346,17 @@ public class ContentElementResource {
     }
 
     // persist document
-    return documentResource.update(request, documentMapper.map(document, DocumentDto.class), document, requestedFacets);
+    return documentResource.update(documentMapper.map(document, DocumentDto.class), document, requestedFacets);
   }
 
-  @PutMapping(value = "{documentID}/content/{content}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @PutMapping(value = "{documentID}/content/{content}", consumes = MediaType.ALL_VALUE)
   @Timed(description = "update content element", extraTags = {
       "operation", "update", "target", "content"
   }, value = "eureka.content.update")
-  public DocumentDto update(final HttpServletRequest request, @PathVariable("documentID") final String documentId,
-      @PathVariable("content") final String contentId, final AllRequestParts files, // mapped using
-                                                                                    // AllRequestPartsMethodArgumentResolver
+  public ContentElement update(final HttpServletRequest request, @PathVariable("documentID") final String documentId,
+      @PathVariable("content") final String contentId, final //
+      InputStream contentData, // Must not be annotated with @RequestBody for some reason...
+      @RequestHeader(name = "Content-Type", required = false) final Optional<String> contentType,
       @RequestParam(name = "facets", required = false) final List<String> requestedFacets) throws Exception {
     // preconditions
     assertContentExists(documentId, contentId);
@@ -367,23 +369,21 @@ public class ContentElementResource {
 
     List<ContentElement> contentElements = document.getContentElements();
 
-    // Find index of insertion point and remove CE to be replaced
+    // Find index of insertion point
     ContentElement toBeReplaced = contentElements.stream().filter(
         e -> e.getId().equals(contentId)).findAny().orElseThrow(
             () -> new NotFoundException("Content element not found"));
     int insertionPoint = contentElements.indexOf(toBeReplaced);
-    contentElements.remove(insertionPoint);
-
-    // add new element(s)
-    for (MultipartFile file : (Iterable<MultipartFile>) files.getAllParts().stream().filter(
-        f -> !f.getName().equals(DOCUMENT_FORM_ELEMENT_NAME))::iterator) {
-      contentElements.add(insertionPoint++, //
-          contentElementService.createContentElement(documentId, null, file.getInputStream(), file.getName(),
-              file.getOriginalFilename(), file.getContentType(), messageDigest, contentElements));
-    }
+    // create and add new element
+    ContentElement contentElement = contentElementService.createContentElement(documentId, null, contentData,
+        toBeReplaced.getRole(), toBeReplaced.getFileName(), contentType.orElse(toBeReplaced.getType().toString()),
+        messageDigest, contentElements);
+    contentElements.set(insertionPoint, contentElement);
 
     // persist document
-    return documentResource.update(request, documentMapper.map(document, DocumentDto.class), document, requestedFacets);
+    documentResource.update(documentMapper.map(document, DocumentDto.class), document, requestedFacets);
+
+    return contentElement;
   }
 
   @DeleteMapping(value = "{documentID}/content/{element}")
@@ -410,7 +410,7 @@ public class ContentElementResource {
           "The request could not be completed due to a conflict with the current state of the target resource. ");
     }
 
-    documentResource.update(request, documentMapper.map(doc, DocumentDto.class), doc, requestedFacets);
+    documentResource.update(documentMapper.map(doc, DocumentDto.class), doc, requestedFacets);
   }
 
   protected void assertContentExists(final String documentId, final String contentId) {

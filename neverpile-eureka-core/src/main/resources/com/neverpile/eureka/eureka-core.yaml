@@ -487,7 +487,7 @@ paths:
         required: true
         schema:
           type: string
-
+        
       responses:
         200:
           description: Content element found
@@ -502,12 +502,19 @@ paths:
                 format: byte
         404:
           description: Document or content element not found
+          
     put:
       tags:
       - Content
-      summary: Update a specific content element. The content element must be sent
-        in the body of the request.
-
+      summary: Update the content data of a specific content element. The new content data must be sent
+        in the body of the request. The referenced document and content element must exist. Updating the
+        content data will preserve some aspects of the content element like `role`, `metadata` and `fileName`.
+        The `mediaType` will be updated from the request body's `Content-Type` header (if present).
+        
+        Updating content data will change its `digest` (unless the content data is the same as before) 
+        and may change the content element's `id`, depending on whether the installation uses multi-versioning and
+        other factors. Therefor users of this API mus be prepared to handle an updated id, which will be
+        communicated in the returned `ContentElement` descriptor.
       parameters:
       - name: documentID
         in: path
@@ -522,23 +529,25 @@ paths:
         schema:
           type: string
 
+      requestBody:
+        description: The new content data
+        content:
+          '*/*':
+            schema:
+              type: string
+              format: byte
+        required: true
+        
       responses:
         200:
-          description: OK
+          description: Content data successfully updated. 
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Document'
-        202:
-          description: Content element updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Document'
-        400:
-          description: Invalid documentID supplied
+                $ref: '#/components/schemas/ContentElement'
         404:
-          description: Content element not found
+          description: Document or content element not found
+          
     delete:
       tags:
       - Content
