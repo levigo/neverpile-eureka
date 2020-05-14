@@ -74,6 +74,8 @@ import io.micrometer.core.annotation.Timed;
 @Transactional
 @ConditionalOnMissingBean(MultiVersioningContentElementResource.class)
 public class ContentElementResource {
+  private static final String VERSION_TIMESTAMP_HEADER = "X-NPE-Document-Version-Timestamp";
+
   public static final String DOCUMENT_FORM_ELEMENT_NAME = "__DOC";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ContentElementResource.class);
@@ -222,6 +224,7 @@ public class ContentElementResource {
             ? document.getDateModified().toEpochMilli()
             : document.getDateCreated().toEpochMilli()) //
         .header(HttpHeaders.CONTENT_TYPE, "multipart/mixed") //
+        .header(VERSION_TIMESTAMP_HEADER, document.getVersionTimestamp() != null ? document.getVersionTimestamp().toString() : "-") //
         .body(mbb);
   }
 
@@ -252,6 +255,7 @@ public class ContentElementResource {
         .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString()) //
         .header(HttpHeaders.CONTENT_TYPE, contentElement.getType().toString()) //
         .header(HttpHeaders.CONTENT_LENGTH, Long.toString(contentElement.getLength())) //
+        .header(VERSION_TIMESTAMP_HEADER, document.getVersionTimestamp() != null ? document.getVersionTimestamp().toString() : "-") //
         // add ETag header - yes, the specification proscribes the quotes
         .header(HttpHeaders.ETAG, '"' + digestAlgorithmName + "_" + encodedDigest + '"') //
         // add Digest header - try to canonicalize the algorithm name
