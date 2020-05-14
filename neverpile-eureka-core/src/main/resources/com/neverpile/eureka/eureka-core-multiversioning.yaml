@@ -48,6 +48,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Document'
+          headers: 
+            X-NPE-Document-Version-Timestamp:
+              $ref: '#/components/headers/X-NPE-Document-Version-Timestamp'
         400:
           description: Invalid documentID supplied
         404:
@@ -57,7 +60,7 @@ paths:
     get:
       tags:
       - Content
-      summary: Queries a particular document vertion for content elements
+      summary: Queries a particular document version for content elements
 
       parameters:
       - name: documentID
@@ -75,11 +78,15 @@ paths:
         required: true
       - name: return
         in: query
-        description: How and what to return
+        description: Specify what and how to return
         allowEmptyValue: false
         schema:
           type: string
           default: first
+          description: Enum values are
+            * `only` - return the only matching element, assuming there is exactly one match. Return an error `406` otherwise.
+            * `first`- return just the first matching element, assuming there is at least one match. Return `404` otherwise.
+            * `all`- all matching elements as a stream of type `multipart/mixed`.
           enum:
           - only
           - first
@@ -88,6 +95,7 @@ paths:
         in: query
         description: Role(s) of the content elements to be fetched. Multiple roles
           can be specified separated by comma
+        required: false
         allowEmptyValue: false
         style: form
         explode: true
@@ -99,13 +107,37 @@ paths:
         200:
           description: Content element found
           content:
-            application/json:
+            multipart/mixed:
               schema:
+                description: "Multiple content elements as a RFC 2046 multipart stream. Each part has the following headers
+                  (see headers section for details):
+                  * `Content-Disposition`
+                  * `Last-Modified`
+                  * `Content-Type`
+                  * `Content-Length`
+                  * `ETag`
+                  * `Digest`
+                  * `X-NPE-Document-Version-Timestamp`"
                 type: string
                 format: byte
             '*/*':
               schema:
                 type: string
                 format: byte
+          headers: 
+            X-NPE-Document-Version-Timestamp:
+              $ref: '#/components/headers/X-NPE-Document-Version-Timestamp'
+            Last-Modified:
+              $ref: '#/components/headers/Last-Modified'
+            Content-Length:
+              $ref: '#/components/headers/Content-Length'
+            ETag:
+              $ref: '#/components/headers/ETag'
+            Digest:
+              $ref: '#/components/headers/Digest'
         404:
           description: Document or content element not found
+        406:
+          description: The query could not be satisfied, e.g. there was more than one match
+            with return mode `only`.
+
