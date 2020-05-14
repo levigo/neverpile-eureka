@@ -33,7 +33,8 @@ import com.neverpile.eureka.tx.lock.ClusterLockFactory;
 @EnableHypermediaSupport(type = HypermediaType.HAL)
 @Import({
     JacksonConfiguration.class, FacetedDocumentDtoModule.class, DocumentResource.class, ModelMapperConfiguration.class,
-    ContentElementResource.class, ContentElementFacet.class, IdFacet.class, CreationDateFacet.class, ModificationDateFacet.class
+    ContentElementResource.class, ContentElementFacet.class, IdFacet.class,
+    CreationDateFacet.class, ModificationDateFacet.class
 })
 @EnableTransactionManagement
 public class BaseTestConfiguration {

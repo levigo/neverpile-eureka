@@ -385,11 +385,15 @@ paths:
           type: string
       - name: return
         in: query
-        description: How and what to return
+        description: Specify what and how to return
         allowEmptyValue: false
         schema:
           type: string
           default: first
+          description: Enum values are
+            * `only` - return the only matching element, assuming there is exactly one match. Return an error `406` otherwise.
+            * `first`- return just the first matching element, assuming there is at least one match. Return `404` otherwise.
+            * `all`- all matching elements as a stream of type `multipart/mixed`.
           enum:
           - only
           - first
@@ -398,7 +402,7 @@ paths:
         in: query
         description: Role(s) of the content elements to be fetched. Multiple roles
           can be specified separated by comma
-        allowEmptyValue: false
+        required: false
         style: form
         explode: true
         schema:
@@ -409,16 +413,39 @@ paths:
         200:
           description: Content element found
           content:
-            application/json:
+            multipart/mixed:
               schema:
+                description: "Multiple content elements as a RFC 2046 multipart stream. Each part has the following headers
+                  (see headers section for details):
+                  * `Content-Disposition`
+                  * `Last-Modified`
+                  * `Content-Type`
+                  * `Content-Length`
+                  * `ETag`
+                  * `Digest`
+                  * `X-NPE-Document-Version-Timestamp`"
                 type: string
                 format: byte
             '*/*':
               schema:
                 type: string
                 format: byte
+          headers: 
+            X-NPE-Document-Version-Timestamp:
+              $ref: '#/components/headers/X-NPE-Document-Version-Timestamp'
+            Last-Modified:
+              $ref: '#/components/headers/Last-Modified'
+            Content-Length:
+              $ref: '#/components/headers/Content-Length'
+            ETag:
+              $ref: '#/components/headers/ETag'
+            Digest:
+              $ref: '#/components/headers/Digest'
         404:
           description: Document or content element not found
+        406:
+          description: The query could not be satisfied, e.g. there was more than one match
+            with return mode `only`.
     post:
       tags:
       - Content
@@ -447,6 +474,7 @@ paths:
         content:
           multipart/form-data:
             schema:
+              type: object
               properties:
                 __DOC:
                   type: string
@@ -464,6 +492,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Document'
+          headers: 
+            X-NPE-Document-Version-Timestamp:
+              $ref: '#/components/headers/X-NPE-Document-Version-Timestamp'
         400:
           description: Invalid documentID supplied
         404:
@@ -487,7 +518,7 @@ paths:
         required: true
         schema:
           type: string
-
+        
       responses:
         200:
           description: Content element found
@@ -500,14 +531,32 @@ paths:
               schema:
                 type: string
                 format: byte
+          headers: 
+            X-NPE-Document-Version-Timestamp:
+              $ref: '#/components/headers/X-NPE-Document-Version-Timestamp'
+            Last-Modified:
+              $ref: '#/components/headers/Last-Modified'
+            Content-Length:
+              $ref: '#/components/headers/Content-Length'
+            ETag:
+              $ref: '#/components/headers/ETag'
+            Digest:
+              $ref: '#/components/headers/Digest'        
         404:
           description: Document or content element not found
+          
     put:
       tags:
       - Content
-      summary: Update a specific content element. The content element must be sent
-        in the body of the request.
-
+      summary: Update the content data of a specific content element. The new content data must be sent
+        in the body of the request. The referenced document and content element must exist. Updating the
+        content data will preserve some aspects of the content element like `role`, `metadata` and `fileName`.
+        The `mediaType` will be updated from the request body's `Content-Type` header (if present).
+        
+        Updating content data will change its `digest` (unless the content data is the same as before) 
+        and may change the content element's `id`, depending on whether the installation uses multi-versioning and
+        other factors. Therefor users of this API mus be prepared to handle an updated id, which will be
+        communicated in the returned `ContentElement` descriptor.
       parameters:
       - name: documentID
         in: path
@@ -522,23 +571,28 @@ paths:
         schema:
           type: string
 
+      requestBody:
+        description: The new content data
+        content:
+          '*/*':
+            schema:
+              type: string
+              format: byte
+        required: true
+        
       responses:
         200:
-          description: OK
+          description: Content data successfully updated. 
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Document'
-        202:
-          description: Content element updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Document'
-        400:
-          description: Invalid documentID supplied
+                $ref: '#/components/schemas/ContentElement'
+          headers: 
+            X-NPE-Document-Version-Timestamp:
+              $ref: '#/components/headers/X-NPE-Document-Version-Timestamp'
         404:
-          description: Content element not found
+          description: Document or content element not found
+          
     delete:
       tags:
       - Content
@@ -733,6 +787,31 @@ paths:
           description: Index rebuild successfully started.
           
 components:
+  headers:
+    X-NPE-Document-Version-Timestamp:
+      description: The version timestamp of the document associated with a returned
+        resource.
+      schema:
+        type: string
+        format: date-time
+    Last-Modified:
+      description: The modification date
+      schema:
+        type: string
+        format: RFC 2616 format
+    Content-Length:
+      description: the lenght in bytes
+      schema:
+        type: integer
+    ETag:
+      description: The ETag. No assumption should be made about the ETag's format.
+      schema: 
+        type: string
+    Digest:
+      description: The content digest
+      schema:
+        type: string
+        format: <algorighm name>=<digest value>        
   schemas:
     AccessPolicy:
       title: AccessPolicy

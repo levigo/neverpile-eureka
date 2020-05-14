@@ -169,12 +169,11 @@ public class DocumentResource {
     if (StringUtils.isEmpty(requestDto.getDocumentId())) {
       requestDto.setDocumentId(documentId);
     }
-    return update(request, requestDto, getDocument(documentId), requestedFacets);
+    return update(requestDto, getDocument(documentId), requestedFacets);
     // @formatter:off
   }
 
-  public DocumentDto update(final HttpServletRequest request, final DocumentDto requestDto, final Document updatedDocument,
-      final List<String> requestedFacets) {
+  public DocumentDto update(final DocumentDto requestDto, final Document updatedDocument, final List<String> requestedFacets) {
     Document currentDocument = getDocument(requestDto.getDocumentId());
 
     validate(f -> f.validateUpdate(currentDocument, requestDto));

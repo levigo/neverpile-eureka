@@ -2,6 +2,7 @@ package com.neverpile.eureka.rest.api.document.content;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
@@ -40,9 +41,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.neverpile.eureka.api.BaseTestConfiguration;
@@ -59,11 +58,6 @@ import com.neverpile.eureka.model.EncryptionType;
 import com.neverpile.eureka.model.HashAlgorithm;
 import com.neverpile.eureka.model.ObjectName;
 import com.neverpile.eureka.rest.api.document.DocumentDto;
-import com.neverpile.eureka.rest.api.document.DocumentResource;
-import com.neverpile.eureka.rest.api.document.core.CreationDateFacet;
-import com.neverpile.eureka.rest.api.document.core.IdFacet;
-import com.neverpile.eureka.rest.api.document.core.ModificationDateFacet;
-import com.neverpile.eureka.rest.configuration.ModelMapperConfiguration;
 import com.neverpile.eureka.rest.mocks.MockObjectStoreService;
 import com.neverpile.eureka.test.AbstractRestAssuredTest;
 
@@ -77,15 +71,6 @@ import io.restassured.specification.RequestSpecification;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = BaseTestConfiguration.class)
 public class DocumentContentAPITest extends AbstractRestAssuredTest {
-  @TestConfiguration
-  @Import({
-      ModelMapperConfiguration.class, SimpleContentElementService.class, ContentElementFacet.class,
-      ContentElementResource.class, IdFacet.class, ModificationDateFacet.class, CreationDateFacet.class,
-      DocumentResource.class
-  })
-  public static class ServiceConfig {
-  }
-
   // Must mock the MultiVersioningDocumentService or we will break the app context initialization
   @MockBean
   MultiVersioningDocumentService mockDocumentService;
@@ -275,7 +260,7 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
     
     // @formatter:on
   }
-  
+
   @Test
   public void testThat_contentElementsCanBeRetrievedById() throws Exception {
     Document doc = createTestDocumentWithContent();
@@ -472,7 +457,7 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
     assertThat(headers).anyMatch(s -> s.startsWith("Content-Length: 4"));
     assertThat(headers).anyMatch(s -> s.startsWith("ETag: \"sha-256_STjYc7Z1UJKRK1T5cDMFIgYZKk6q5c6aTyNaEGfQSw0=\""));
     assertThat(headers).anyMatch(s -> s.startsWith("Digest: sha-256=STjYc7Z1UJKRK1T5cDMFIgYZKk6q5c6aTyNaEGfQSw0="));
-    
+
     body = new ByteArrayOutputStream();
     ms.readBodyData(body);
     assertThat(body.toByteArray()).contains(0, 1, 2, 3);
@@ -482,9 +467,11 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
         s -> s.startsWith("Content-Disposition: inline; name=\"stuff\"; filename=\"fox.txt\""));
     assertThat(headers).anyMatch(s -> s.startsWith("Content-Type: application/octet-stream"));
     assertThat(headers).anyMatch(s -> s.startsWith("Content-Length: 44"));
-    assertThat(headers).anyMatch(s -> s.startsWith("ETag: \"sha-256_7d38b5cd25a2baf85ad3bb5b9311383e671a8a142eb302b324d4a5fba8748c69\""));
-    assertThat(headers).anyMatch(s -> s.startsWith("Digest: sha-256=7d38b5cd25a2baf85ad3bb5b9311383e671a8a142eb302b324d4a5fba8748c69"));
-    
+    assertThat(headers).anyMatch(
+        s -> s.startsWith("ETag: \"sha-256_7d38b5cd25a2baf85ad3bb5b9311383e671a8a142eb302b324d4a5fba8748c69\""));
+    assertThat(headers).anyMatch(
+        s -> s.startsWith("Digest: sha-256=7d38b5cd25a2baf85ad3bb5b9311383e671a8a142eb302b324d4a5fba8748c69"));
+
     body = new ByteArrayOutputStream();
     ms.readBodyData(body);
     assertThat(body.toByteArray()).isEqualTo("The quick brown fox jumped over the lazy dog".getBytes());
@@ -645,7 +632,7 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
     assertThat(headers).anyMatch(
         s -> s.startsWith("Content-Disposition: inline; name=\"annotations\"; filename=\"foo.xml\""));
   }
-  
+
   @Test
   public void testThat_contentQueryFailsOnMissingPart() throws Exception {
     Document doc = createTestDocumentWithContent();
@@ -695,6 +682,7 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
 
   private Document createTestDocumentWithContent() {
     Document doc = createTestDocument();
+    doc.setVersionTimestamp(Instant.ofEpochMilli(42L));
 
     doc.setDocumentId(D);
 
@@ -846,7 +834,7 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
   }
 
   @Test
-  public void testThat_contentElementsCanBeUpdatedFromMultipart() throws Exception {
+  public void testThat_contentElementsCanBeUpdated() throws Exception {
     Document doc = createTestDocumentWithContent();
     int contentCount = doc.getContentElements().size();
 
@@ -861,38 +849,31 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
     RestAssured
         .given()
           .accept(ContentType.JSON)
-          .multiPart("stuff", "bar.xml", "<bar>foobar</bar>".getBytes(), ContentType.XML.toString())
+          .body("<bar>Hello, world!</bar>".getBytes())
+          .contentType("application/x-foo")
           .auth().preemptive().basic("user", "password")
-         .when()
+        .when()
           .put("/api/v1/documents/{document}/content/{content}", 
               doc.getDocumentId(), "4938d873b6755092912b54f97033052206192a4eaae5ce9a4f235a1067d04b0d")
         .then()
           .log().all()
           .statusCode(200)
           .contentType(ContentType.JSON)
-          .body("documentId", equalTo(D))
-          .body("contentElements.size()", equalTo((contentCount)))
-          // the updated element goes at the end
-          .body("contentElements[0].id", equalTo("2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae"))
-          
-          // element at index 1 becomes insertion point
-          .body("contentElements[1].id", equalTo("TheAnswerIs42"))
-          .body("contentElements[1].role", equalTo("stuff"))
-          .body("contentElements[1].fileName", equalTo("bar.xml"))
-          .body("contentElements[1].type", equalTo(MediaType.APPLICATION_XML))
-          .body("contentElements[1].length", equalTo(17))
-          .body("contentElements[1].encryption", equalTo("SHARED"))
-          .body("contentElements[1].digest.algorithm", equalTo("SHA-256"))
-          .body("contentElements[1].digest.bytes", equalTo("WXTzWeYQaURSH03z0GpnsMviQokbkY2rU43Dffn8t/M="))
-
-          .body("contentElements[2].id", equalTo("content054edec1d0211f624fed0cbca9d4f9400b0e491c43742af2c5b0abebf0c990d8"))
-          .body("contentElements[3].id", equalTo("7d38b5cd25a2baf85ad3bb5b9311383e671a8a142eb302b324d4a5fba8748c69"))
+          .body("id", equalTo("TheAnswerIs42"))
+          .body("role", equalTo("annotations"))
+          .body("fileName", equalTo("foo.xml"))
+          .body("type", startsWith("application/x-foo"))
+          .body("length", equalTo(24))
+          .body("encryption", equalTo("SHARED"))
+          .body("digest.algorithm", equalTo("SHA-256"))
+          .body("digest.bytes", equalTo("DOmUMVitclB+nLT1VJ+x2BGgFhTWU3k7o9KV5Ijl3qw="))
           ;
     // @formatter:on
 
-    // FIXME: deletion of the old version is not currently implemented, as we intend to go for
-    // multi-versioning
     assertThat(mockObjectStoreService.streams).hasSize(contentCount + 1);
+    assertThat(new String(
+        mockObjectStoreService.streams.get(ObjectName.of("document", "aTestDocument", "TheAnswerIs42")))).isEqualTo(
+            "<bar>Hello, world!</bar>");
   }
 
   @Test
