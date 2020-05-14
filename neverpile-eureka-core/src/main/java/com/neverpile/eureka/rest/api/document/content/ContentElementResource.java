@@ -356,10 +356,11 @@ public class ContentElementResource {
   @Timed(description = "update content element", extraTags = {
       "operation", "update", "target", "content"
   }, value = "eureka.content.update")
-  public ContentElement update(final HttpServletRequest request, @PathVariable("documentID") final String documentId,
+  public ContentElement update(final HttpServletRequest request, //
+      @PathVariable("documentID") final String documentId, //
       @PathVariable("content") final String contentId, final //
       InputStream contentData, // Must not be annotated with @RequestBody for some reason...
-      @RequestHeader(name = "Content-Type", required = false) final Optional<String> contentType,
+      @RequestHeader(name = "Content-Type", required = false) final Optional<String> contentType, //
       @RequestParam(name = "facets", required = false) final List<String> requestedFacets) throws Exception {
     // preconditions
     assertContentExists(documentId, contentId);
@@ -394,8 +395,9 @@ public class ContentElementResource {
   @Timed(description = "delete content element", extraTags = {
       "operation", "delete", "target", "content"
   }, value = "eureka.content.delete")
-  public void delete(final HttpServletRequest request, @PathVariable("documentID") final String documentId,
-      @PathVariable("element") final String elementId,
+  public void delete(final HttpServletRequest request, //
+      @PathVariable("documentID") final String documentId, //
+      @PathVariable("element") final String elementId, //
       @RequestParam(name = "facets", required = false) final List<String> requestedFacets) {
     documentResource.validateDocumentId(documentId);
 
