@@ -4,7 +4,10 @@ on:
   push:
     branches-ignore:
       - master
-
+    paths-ignore:
+      - '.github/**'
+      - '**/README.md'
+      
 jobs:
   build:
 
