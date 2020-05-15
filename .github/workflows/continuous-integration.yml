@@ -1,4 +1,4 @@
-name: Continuous Integration (pull-request checks)
+name: Continuous Integration
 
 on: 
   push:
