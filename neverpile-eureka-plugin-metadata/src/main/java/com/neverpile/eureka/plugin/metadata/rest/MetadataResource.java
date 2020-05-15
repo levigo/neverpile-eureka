@@ -2,7 +2,6 @@ package com.neverpile.eureka.plugin.metadata.rest;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +34,6 @@ public class MetadataResource {
   MetadataFacet facet;
 
   @Autowired
-  @Qualifier("document")
   ModelMapper documentMapper;
 
   @PreSignedUrlEnabled

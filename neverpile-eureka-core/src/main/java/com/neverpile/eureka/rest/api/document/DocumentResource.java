@@ -14,7 +14,6 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,7 +61,6 @@ public class DocumentResource {
   private final List<DocumentFacet<?>> facets = new ArrayList<DocumentFacet<?>>();
 
   @Autowired
-  @Qualifier("document")
   ModelMapper documentMapper;
 
   @Autowired
