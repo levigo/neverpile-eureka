@@ -78,6 +78,13 @@
         <version>${neverpile-commons.version}</version>
       </dependency>
 
+      <!-- The spring-boot starter -->
+      <dependency>
+        <groupId>com.neverpile.eureka</groupId>
+        <artifactId>neverpile-eureka-spring-boot-starter</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
       <!-- neverpile-eureka-ignite has optional (provided) depenencies which we list here so that the correct versions are 
         managed automatically. -->
       <dependency>
