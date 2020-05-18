@@ -1,4 +1,4 @@
-name: Continuous Delivery (automatic versioning and deployment) 
+name: Continuous Delivery
 
 on: 
   push:
@@ -6,6 +6,7 @@ on:
       - master
     paths-ignore:
       - '.github/**'
+      - '**/README.md'
       
 jobs:
   build:
@@ -13,16 +14,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
 
-    ## Build-Number
-    - name: Generate build number
-      id: buildnumber
-      uses: einaregilsson/build-number@v1 
+    - name: Bump version and push tag
+      id: semanticversion
+      uses: hennejg/github-tag-action@v4.1.jh5
       with:
-        token: ${{secrets.GITHUB_TOKEN}}
+        release_branches: master
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        
     - name: Print new build number
-      run: echo Build number is $BUILD_NUMBER
+      run: "echo tag: '${{ steps.semanticversion.outputs.new_tag }}', new_version: '${{ steps.semanticversion.outputs.new_version }}', changelog: '${{ steps.semanticversion.outputs.changelog }}'" 
 
     ## Enable Caching
     - uses: actions/cache@v1
@@ -49,11 +51,8 @@ jobs:
     - name: Set version
       id: version
       run: |
-        export project_version=$(mvn help:evaluate -N -Dexpression=project.version | grep -v '\[' | tail -1 | sed -r -e 's/[-.](snapshot|local)$//i' -e 's/\s+//g')
-        export release_version=${project_version}.${{ steps.buildnumber.outputs.build_number }}
-        echo ::set-output name=release_version::${release_version}
-        echo Truncated version found to be ${project_version}, releasing as ${release_version}
-        mvn versions:set -DnewVersion=${release_version} 
+        echo Releasing as ${{ steps.semanticversion.outputs.new_version }}
+        mvn versions:set -DnewVersion=${{ steps.semanticversion.outputs.new_version }}
 
     - name: Perform build
       run: mvn -B package --file pom.xml
@@ -70,13 +69,34 @@ jobs:
         echo "<settings><servers><server><id>neverpile</id><username>${REPOSITORY_USERID}</username><password>${REPOSITORY_CREDENTIALS}</password></server></servers></settings>" > ~/.m2/settings.xml 
         mvn deploy -Dmaven.test.skip.exec=true -DaltDeploymentRepository=neverpile::default::${REPOSITORY_URL}
         
+    ## Update README.md
+    - name: Edit README.md to contain version number
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git checkout master
+        git reset --hard HEAD      
+
+        sed -ri "s,<version>.*</version>,<version>${{ steps.semanticversion.outputs.new_version }}</version>," README.md
+        sed -ri "s,version-[0-9.]+-,version-${{ steps.semanticversion.outputs.new_version }}-," README.md 
+        sed -ri "s,neverpile-fusion/tree/[0-9a-z.]+,neverpile-fusion/tree/${{ steps.semanticversion.outputs.new_tag }}," README.md
+
+        git add README.md
+        git commit -m "Edit README.md to contain correct version"
+      
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        branch: master
+        github_token: ${{ secrets.GITHUB_TOKEN }}    
+        
     ## Notify Slack
     - name: Notify slack
       uses: hennejg/slack-build-notifier@v1.1
       with:
         username: GitHub
         icon_emoji: octocat
-        text: Released new version `${{ steps.version.outputs.release_version }}` of *${{ github.repository }}* to ${{ secrets.REPOSITORY_URL }}
+        text: Released new version `${{ steps.semanticversion.outputs.new_version }}` of *${{ github.repository }}* to ${{ secrets.REPOSITORY_URL }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
