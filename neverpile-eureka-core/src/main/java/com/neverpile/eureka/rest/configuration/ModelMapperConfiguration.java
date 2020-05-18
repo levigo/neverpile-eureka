@@ -24,10 +24,11 @@ import com.neverpile.eureka.rest.api.document.DocumentDto;
 import com.neverpile.eureka.rest.api.document.content.ContentElementDto;
 import com.neverpile.eureka.rest.api.document.content.ContentElementFacet;
 import com.neverpile.eureka.rest.configuration.ModelMapperConfiguration.DocumentModelMapperConfigurer;
+import com.neverpile.eureka.rest.configuration.ModelMapperConfiguration.ModelMapperConfigurationApplier;
 
 
 @Configuration
-@Import(DocumentModelMapperConfigurer.class)
+@Import({DocumentModelMapperConfigurer.class, ModelMapperConfigurationApplier.class})
 public class ModelMapperConfiguration {
   public interface ModelMapperConfigurer {
     void configure(ModelMapper mapper);
@@ -112,22 +113,27 @@ public class ModelMapperConfiguration {
       dto.setFacet("dateModified", source.getDateModified());
     }
   }
-
-  @Autowired(required = false)
-  List<ModelMapperConfigurer> configurers;
   
-  @Autowired
-  ModelMapper modelMapper;
 
+  @Component
+  public static class ModelMapperConfigurationApplier {
+    @Autowired(required = false)
+    List<ModelMapperConfigurer> configurers;
+    
+    @Autowired
+    ModelMapper modelMapper;
+
+    @PostConstruct
+    public void configureModelMapper() {
+      if (null != configurers)
+        configurers.forEach(c -> c.configure(modelMapper));
+    }
+  }
+  
   @Bean
   @ConditionalOnMissingBean(ModelMapper.class)
-  ModelMapper modelMapper() {
+  public ModelMapper modelMapper() {
     return new ModelMapper();
   }
 
-  @PostConstruct
-  public void configureModelMapper() {
-    if (null != configurers)
-      configurers.forEach(c -> c.configure(modelMapper));
-  }
 }
