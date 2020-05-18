@@ -5,7 +5,7 @@ on:
     branches:
       - master
     paths-ignore:
-      # - '.github/**'
+      - '.github/**'
       - '**/README.md'
       
 jobs:
