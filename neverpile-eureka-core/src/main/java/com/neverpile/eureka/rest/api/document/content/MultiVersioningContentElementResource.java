@@ -17,8 +17,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.neverpile.eureka.api.ContentElementService;
 import com.neverpile.eureka.api.MultiVersioningDocumentService;
 import com.neverpile.eureka.model.Document;
+import com.neverpile.eureka.rest.api.document.DocumentResource;
+import com.neverpile.eureka.rest.api.document.content.ContentElementResource.Return;
 import com.neverpile.eureka.rest.api.exception.NotFoundException;
 import com.neverpile.urlcrypto.PreSignedUrlEnabled;
 
@@ -29,12 +32,18 @@ import io.micrometer.core.annotation.Timed;
 @Import(ContentElementResourceConfiguration.class)
 @ConditionalOnBean(MultiVersioningDocumentService.class)
 @Transactional
-public class MultiVersioningContentElementResource extends ContentElementResource {
+public class MultiVersioningContentElementResource {
   private final MultiVersioningDocumentService multiVersioningDocumentService;
 
+  private final DocumentResource documentResource;
+  
+  private final ContentElementService contentElementService;
+  
   @Autowired
-  public MultiVersioningContentElementResource(final MultiVersioningDocumentService multiVersioningDocumentService) {
+  public MultiVersioningContentElementResource(final MultiVersioningDocumentService multiVersioningDocumentService, final DocumentResource documentResource, final ContentElementService contentElementService) {
     this.multiVersioningDocumentService = multiVersioningDocumentService;
+    this.documentResource = documentResource;
+    this.contentElementService = contentElementService;
   }
 
   @PreSignedUrlEnabled
@@ -54,6 +63,6 @@ public class MultiVersioningContentElementResource extends ContentElementResourc
     Document document = multiVersioningDocumentService.getDocumentVersion(documentId, versionTimestamp) //
         .orElseThrow(() -> new NotFoundException("Document not found"));
 
-    return returnMatches(ret, document, applyFilters(roles, acceptHeader, document));
+    return ContentElementResource.returnMatches(ret, document, ContentElementResource.applyFilters(roles, acceptHeader, document), contentElementService);
   }
 }

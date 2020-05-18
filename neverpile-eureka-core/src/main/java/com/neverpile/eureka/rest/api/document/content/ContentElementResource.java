@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.hateoas.IanaLinkRelations;
@@ -71,7 +71,7 @@ import io.micrometer.core.annotation.Timed;
 @RequestMapping(path = "/api/v1/documents", produces = MediaType.APPLICATION_JSON_VALUE)
 @Import(ContentElementResourceConfiguration.class)
 @Transactional
-@ConditionalOnMissingBean(MultiVersioningContentElementResource.class)
+@ConditionalOnBean(ContentElementResource.class)
 public class ContentElementResource {
   private static final String VERSION_TIMESTAMP_HEADER = "X-NPE-Document-Version-Timestamp";
 
@@ -132,7 +132,7 @@ public class ContentElementResource {
         e -> e.getId().equals(contentId)).findFirst().orElseThrow(
             () -> new NotFoundException("Content element not found"));
 
-    return returnSingleContentElement(document, contentElement);
+    return returnSingleContentElement(document, contentElement, contentElementService);
   }
 
   public enum Return {
@@ -166,11 +166,11 @@ public class ContentElementResource {
     Document document = documentService.getDocument(documentId) //
         .orElseThrow(() -> new NotFoundException("Document not found"));
 
-    return returnMatches(ret, document, applyFilters(roles, acceptHeader, document));
+    return returnMatches(ret, document, applyFilters(roles, acceptHeader, document), contentElementService);
   }
 
-  protected ResponseEntity<?> returnMatches(final Return ret, final Document document,
-      final List<ContentElement> matches) {
+  static ResponseEntity<?> returnMatches(final Return ret, final Document document,
+      final List<ContentElement> matches, final ContentElementService contentElementService) {
     // return mode
     switch (ret){
       case only :
@@ -182,17 +182,17 @@ public class ContentElementResource {
         if (matches.isEmpty())
           throw new NotFoundException("No matching content element");
 
-        return returnSingleContentElement(document, matches.get(0));
+        return returnSingleContentElement(document, matches.get(0), contentElementService);
 
       case all :
-        return returnMultipleElementsAsMultipart(document, matches);
+        return returnMultipleElementsAsMultipart(document, matches, contentElementService);
 
       default :
         throw new NotAcceptableException("Unrecognized return mode");
     }
   }
 
-  public List<ContentElement> applyFilters(final List<String> roles, final List<String> acceptHeader,
+  static List<ContentElement> applyFilters(final List<String> roles, final List<String> acceptHeader,
       final Document document) {
     Stream<ContentElement> elements = document.getContentElements().stream();
 
@@ -211,11 +211,11 @@ public class ContentElementResource {
     return matches;
   }
 
-  protected ResponseEntity<MultiValueMap<String, HttpEntity<?>>> returnMultipleElementsAsMultipart(
-      final Document document, final List<ContentElement> matches) {
+  private static ResponseEntity<MultiValueMap<String, HttpEntity<?>>> returnMultipleElementsAsMultipart(
+      final Document document, final List<ContentElement> matches,  final ContentElementService contentElementService) {
     MultiValueMap<String, HttpEntity<?>> mbb = new LinkedMultiValueMap<>(matches.size());
 
-    matches.forEach(ce -> mbb.add(ce.getRole(), returnSingleContentElement(document, ce)));
+    matches.forEach(ce -> mbb.add(ce.getRole(), returnSingleContentElement(document, ce, contentElementService)));
 
     return ResponseEntity.ok() //
         .lastModified(document.getDateModified() != null
@@ -227,7 +227,7 @@ public class ContentElementResource {
         .body(mbb);
   }
 
-  protected ResponseEntity<?> returnSingleContentElement(final Document document, final ContentElement contentElement) {
+  private static ResponseEntity<?> returnSingleContentElement(final Document document, final ContentElement contentElement, final ContentElementService contentElementService) {
     // retrieve content
     InputStream contentElementInputStream = contentElementService.getContentElement(document.getDocumentId(),
         contentElement.getId());

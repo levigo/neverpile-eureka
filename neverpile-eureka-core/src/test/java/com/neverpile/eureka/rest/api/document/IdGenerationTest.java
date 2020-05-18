@@ -39,7 +39,7 @@ import io.restassured.http.ContentType;
  * far less realistic tests.
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes=BaseTestConfiguration.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes= {BaseTestConfiguration.class, ContentElementResource.class})
 public class IdGenerationTest extends AbstractRestAssuredTest {
   private static final String UUID_PATTERN = "\\p{XDigit}{8}-(\\p{XDigit}{4}-){3}\\p{XDigit}{12}";
 
