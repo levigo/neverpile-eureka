@@ -222,7 +222,8 @@ public class ContentElementResource {
             ? document.getDateModified().toEpochMilli()
             : document.getDateCreated().toEpochMilli()) //
         .header(HttpHeaders.CONTENT_TYPE, "multipart/mixed") //
-        .header(VERSION_TIMESTAMP_HEADER, document.getVersionTimestamp() != null ? document.getVersionTimestamp().toString() : "-") //
+        .header(VERSION_TIMESTAMP_HEADER,
+            document.getVersionTimestamp() != null ? document.getVersionTimestamp().toString() : "-") //
         .body(mbb);
   }
 
@@ -243,6 +244,7 @@ public class ContentElementResource {
         .size(contentElement.getLength()) //
         .build();
 
+    // try to canonicalize the algorithm name
     String digestAlgorithmName = contentElement.getDigest().getAlgorithm().name().toLowerCase().replaceAll("_", "-");
     String encodedDigest = Base64.getEncoder().encodeToString(contentElement.getDigest().getBytes());
 
@@ -253,10 +255,10 @@ public class ContentElementResource {
         .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString()) //
         .header(HttpHeaders.CONTENT_TYPE, contentElement.getType().toString()) //
         .header(HttpHeaders.CONTENT_LENGTH, Long.toString(contentElement.getLength())) //
-        .header(VERSION_TIMESTAMP_HEADER, document.getVersionTimestamp() != null ? document.getVersionTimestamp().toString() : "-") //
+        .header(VERSION_TIMESTAMP_HEADER,
+            document.getVersionTimestamp() != null ? document.getVersionTimestamp().toString() : "-") //
         // add ETag header - yes, the specification proscribes the quotes
         .header(HttpHeaders.ETAG, '"' + digestAlgorithmName + "_" + encodedDigest + '"') //
-        // add Digest header - try to canonicalize the algorithm name
         .header("Digest", digestAlgorithmName + "=" + encodedDigest) //
         .body(new InputStreamResource( //
             contentElementInputStream, document.getDocumentId() + "/" + contentElement.getId()));
@@ -354,7 +356,7 @@ public class ContentElementResource {
   @Timed(description = "update content element", extraTags = {
       "operation", "update", "target", "content"
   }, value = "eureka.content.update")
-  public ContentElement update(final HttpServletRequest request, //
+  public ResponseEntity<ContentElementDto> update(final HttpServletRequest request, //
       @PathVariable("documentID") final String documentId, //
       @PathVariable("content") final String contentId, final //
       InputStream contentData, // Must not be annotated with @RequestBody for some reason...
@@ -383,9 +385,24 @@ public class ContentElementResource {
     contentElements.set(insertionPoint, contentElement);
 
     // persist document
-    documentResource.update(documentMapper.map(document, DocumentDto.class), document, requestedFacets);
+    DocumentDto updated = documentResource.update(documentMapper.map(document, DocumentDto.class), document,
+        requestedFacets);
 
-    return contentElement;
+    // build result
+    ContentElementDto updatedDto = documentMapper.map(contentElement, ContentElementDto.class);
+    String digestAlgorithmName = contentElement.getDigest().getAlgorithm().name().toLowerCase().replaceAll("_", "-");
+    String encodedDigest = Base64.getEncoder().encodeToString(contentElement.getDigest().getBytes());
+
+    return ResponseEntity.ok() //
+        .lastModified(document.getDateModified() != null
+            ? document.getDateModified().toEpochMilli()
+            : document.getDateCreated().toEpochMilli()) //
+        .header(VERSION_TIMESTAMP_HEADER,
+            updated.getVersionTimestamp() != null ? updated.getVersionTimestamp().toString() : "-") //
+        // add ETag header - yes, the specification proscribes the quotes
+        .header(HttpHeaders.ETAG, '"' + digestAlgorithmName + "_" + encodedDigest + '"') //
+        .header("Digest", digestAlgorithmName + "=" + encodedDigest) //
+        .body(updatedDto);
   }
 
   @DeleteMapping(value = "{documentID}/content/{element}")
