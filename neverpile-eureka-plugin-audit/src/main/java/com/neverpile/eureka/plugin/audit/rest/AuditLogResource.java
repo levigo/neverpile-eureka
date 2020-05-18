@@ -15,7 +15,6 @@ import javax.validation.constraints.NotNull;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -56,7 +55,6 @@ public class AuditLogResource {
   private VerificationService verificationService;
 
   @Autowired
-  @Qualifier("document")
   ModelMapper documentMapper;
 
   @PreSignedUrlEnabled

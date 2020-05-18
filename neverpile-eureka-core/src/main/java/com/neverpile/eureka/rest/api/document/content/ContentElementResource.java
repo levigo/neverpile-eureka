@@ -23,7 +23,6 @@ import org.modelmapper.TypeToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Import;
@@ -90,7 +89,6 @@ public class ContentElementResource {
   private ContentElementService contentElementService;
 
   @Autowired
-  @Qualifier("document")
   private ModelMapper documentMapper;
 
   @Autowired

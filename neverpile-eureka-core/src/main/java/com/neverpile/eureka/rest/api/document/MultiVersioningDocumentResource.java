@@ -7,7 +7,6 @@ import java.util.function.Consumer;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
@@ -42,7 +41,6 @@ public class MultiVersioningDocumentResource {
   private final List<DocumentFacet<?>> facets = new ArrayList<DocumentFacet<?>>();
 
   @Autowired
-  @Qualifier("document")
   private ModelMapper documentMapper;
 
   // GET - Return the version history
