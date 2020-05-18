@@ -107,7 +107,7 @@ public class NeverpileEurekaAutoConfiguration {
     }
 
     @Bean
-    public OpenApiFragment serversOpenApiFragment() throws IOException {
+    public OpenApiFragment serversOpenApiFragment() {
       return new ServersFragment("servers").withServer("/", "neverpile eureka");
     }
   }

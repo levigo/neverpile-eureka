@@ -86,10 +86,10 @@ public class DefaultMultiVersioningDocumentService
   private static final Instant NEW_VERSION_MARKER = Instant.ofEpochMilli(Long.MAX_VALUE);
 
   private enum State {
-    Unmodified, Created, Deleted, Modified;
+    Unmodified, Created, Deleted, Modified
   }
 
-  private class TransactionalDocument {
+  private static class TransactionalDocument {
     Map<String, JsonNode> sidecar = new HashMap<>();
     Instant initialTimestamp;
     DocumentPdo document;
