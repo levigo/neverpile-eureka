@@ -59,7 +59,7 @@ import io.restassured.http.ContentType;
 
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {BaseTestConfiguration.class, ContentElementResource.class})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = BaseTestConfiguration.class)
 public class DocumentAPITest extends AbstractRestAssuredTest {
   @TestConfiguration
   @Import({

@@ -39,7 +39,6 @@ import com.neverpile.eureka.model.Digest;
 import com.neverpile.eureka.model.Document;
 import com.neverpile.eureka.model.EncryptionType;
 import com.neverpile.eureka.model.HashAlgorithm;
-import com.neverpile.eureka.rest.api.document.content.MultiVersioningContentElementResource;
 import com.neverpile.eureka.rest.mocks.MockObjectStoreService;
 import com.neverpile.eureka.test.AbstractRestAssuredTest;
 
@@ -48,12 +47,11 @@ import io.restassured.http.ContentType;
 
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {BaseTestConfiguration.class, MultiVersioningContentElementResource.class})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = BaseTestConfiguration.class)
 public class MultiVersioningDocumentAPITest extends AbstractRestAssuredTest {
 //  @TestConfiguration
 //  @Import({
 //      ModelMapperConfiguration.class, SimpleContentElementService.class, ContentElementFacet.class,
-//      ContentElementResource.class, IdFacet.class, ModificationDateFacet.class, CreationDateFacet.class,
 //      MultiVersioningDocumentResource.class
 //  })
 //  public static class ServiceConfig {

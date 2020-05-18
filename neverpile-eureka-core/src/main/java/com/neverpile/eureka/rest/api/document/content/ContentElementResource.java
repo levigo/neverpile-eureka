@@ -24,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.hateoas.IanaLinkRelations;
@@ -71,7 +70,6 @@ import io.micrometer.core.annotation.Timed;
 @RequestMapping(path = "/api/v1/documents", produces = MediaType.APPLICATION_JSON_VALUE)
 @Import(ContentElementResourceConfiguration.class)
 @Transactional
-@ConditionalOnBean(ContentElementResource.class)
 public class ContentElementResource {
   private static final String VERSION_TIMESTAMP_HEADER = "X-NPE-Document-Version-Timestamp";
 
