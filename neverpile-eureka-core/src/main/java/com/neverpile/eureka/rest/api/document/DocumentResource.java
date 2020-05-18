@@ -96,8 +96,6 @@ public class DocumentResource {
 
     validate(f -> f.validateCreate(requestDto));
 
-    LOGGER.info("Registered jackson modules: " + mapper.getRegisteredModuleIds());
-
     Document newDocument = documentMapper.map(requestDto, Document.class);
     if (checkDocumentExist(newDocument.getDocumentId())) {
       throw new AlreadyExistsException("DocumentId already exists");
