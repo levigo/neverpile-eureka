@@ -5,7 +5,7 @@ on:
     branches:
       - master
     paths-ignore:
-      - '.github/**'
+      # - '.github/**'
       - '**/README.md'
       
 jobs:
@@ -78,7 +78,7 @@ jobs:
         git reset --hard HEAD      
 
         sed -ri "s,<version>.*</version>,<version>${{ steps.semanticversion.outputs.new_version }}</version>," README.md
-        sed -ri "s,version-[0-9.]+-,version-${{ steps.semanticversion.outputs.new_version }}-," README.md 
+        sed -ri "s,version-[0-9a-z.]+-,version-${{ steps.semanticversion.outputs.new_version }}-," README.md 
         sed -ri "s,neverpile-fusion/tree/[0-9a-z.]+,neverpile-fusion/tree/${{ steps.semanticversion.outputs.new_tag }}," README.md
 
         git add README.md
