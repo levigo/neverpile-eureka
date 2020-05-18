@@ -908,36 +908,54 @@ components:
           description: The ID of the used which triggered the event; may be null if
             the event wasn't triggered by a user
       description: An audit event associated with a document
-    ContentElement:
-      title: ContentElement
+    EncryptableElement:
+      description: An abstract schema class extended by types that support encryption.
       type: object
       properties:
-        digest:
-          $ref: '#/components/schemas/Digest'
         encryption:
           type: string
-          description: The type of encryption the content element is subject to
+          description: "Whether the element is encrypted. Possible values are:
+            * `shared` - The element's contents are shared with (visible to) the server.
+            * `private` - The element's contents are encrypted and therefor opaque to the server."
           enum:
           - shared
           - private
-        fileName:
+        keyHint:
           type: string
-        id:
-          type: string
-          description: The id of the content element - uniqueness is guaranteed only
-            within the document
-        length:
-          type: integer
-          description: The length of the element in bytes
-          format: int64
-        role:
-          type: string
-          description: The role of the content element
-        type:
-          type: string
-          description: The MIME-Type of the content element as specified in RFC 2045
-            without parameters
-      description: A content element associated with a document
+          description: A key hint that can be used for client-side key management. The content
+            is dependent on the key management scheme used.
+    ContentElement:
+      title: ContentElement
+      allOf:
+      - $ref: "#/components/schemas/EncryptableElement"
+      - type: object
+        properties:
+          digest:
+            $ref: '#/components/schemas/Digest'
+          encryption:
+            type: string
+            description: The type of encryption the content element is subject to
+            enum:
+            - shared
+            - private
+          fileName:
+            type: string
+          id:
+            type: string
+            description: The id of the content element - uniqueness is guaranteed only
+              within the document
+          length:
+            type: integer
+            description: The length of the element in bytes
+            format: int64
+          role:
+            type: string
+            description: The role of the content element
+          type:
+            type: string
+            description: The MIME-Type of the content element as specified in RFC 2045
+              without parameters
+        description: A content element associated with a document
     Digest:
       title: Digest
       type: object

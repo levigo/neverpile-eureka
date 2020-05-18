@@ -1,6 +1,7 @@
 package com.neverpile.eureka.autoconfig;
 
 import java.io.IOException;
+import java.time.Clock;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,9 +46,11 @@ import com.neverpile.eureka.rest.api.document.DocumentResource;
 import com.neverpile.eureka.rest.api.document.MultiVersioningDocumentResource;
 import com.neverpile.eureka.rest.api.document.content.ContentElementFacet;
 import com.neverpile.eureka.rest.api.document.content.ContentElementResource;
+import com.neverpile.eureka.rest.api.document.content.MultiVersioningContentElementResource;
 import com.neverpile.eureka.rest.api.document.core.CreationDateFacet;
 import com.neverpile.eureka.rest.api.document.core.IdFacet;
 import com.neverpile.eureka.rest.api.document.core.ModificationDateFacet;
+import com.neverpile.eureka.rest.api.document.core.VersionTimestampFacet;
 import com.neverpile.eureka.rest.api.exception.ExceptionHandlers;
 import com.neverpile.eureka.rest.configuration.FacetedDocumentDtoModule;
 import com.neverpile.eureka.rest.configuration.JacksonConfiguration;
@@ -80,8 +83,8 @@ public class NeverpileEurekaAutoConfiguration {
   @ConditionalOnWebApplication
   @ConditionalOnBean(value = DocumentService.class)
   @Import({
-      DocumentResource.class, CreationDateFacet.class, IdFacet.class, ModificationDateFacet.class,
-      ExceptionHandlers.class, ContentElementFacet.class, ContentElementResource.class, IndexResource.class
+      DocumentResource.class, CreationDateFacet.class, IdFacet.class, VersionTimestampFacet.class, ModificationDateFacet.class,
+      ExceptionHandlers.class, ContentElementFacet.class, MultiVersioningContentElementResource.class, ContentElementResource.class, IndexResource.class
   })
   public static class RestResourceConfiguration {
     @Bean
@@ -104,7 +107,7 @@ public class NeverpileEurekaAutoConfiguration {
     }
 
     @Bean
-    public OpenApiFragment serversOpenApiFragment() throws IOException {
+    public OpenApiFragment serversOpenApiFragment() {
       return new ServersFragment("servers").withServer("/", "neverpile eureka");
     }
   }
@@ -271,7 +274,7 @@ public class NeverpileEurekaAutoConfiguration {
   /**
    * Provide a default implementation of {@link DistributedAtomicReference} which is based on a purely local
    * implementation.
-   * Has To be annotated with {@link DistributedAtomicType} to work, which represents a unique name, to distingusch
+   * Has To be annotated with {@link DistributedAtomicType} to work, which represents a unique name, to distinguish
    * between references.
    * <p>
    * Back off if any other implementation is present.
@@ -284,5 +287,15 @@ public class NeverpileEurekaAutoConfiguration {
   @ConditionalOnMissingBean
   public DistributedAtomicReference<?> localAtomicReference(final InjectionPoint ip) {
     return new LocalAtomicReference<>(ip.getAnnotation(DistributedAtomicType.class).value());
+  }
+  
+  /**
+   * Provide a {@link Clock}-Bean if none is provided. Clocks are injected in order to improve testability.
+   * @return a default system clock
+   */
+  @ConditionalOnMissingBean(Clock.class)
+  @Bean
+  public Clock systemClock() {
+    return Clock.systemDefaultZone();
   }
 }

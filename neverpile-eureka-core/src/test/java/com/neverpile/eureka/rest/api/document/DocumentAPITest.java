@@ -125,19 +125,27 @@ public class DocumentAPITest extends AbstractRestAssuredTest {
       .when()
         .log().all()
         .post("/api/v1/documents")
-        .as(DocumentDto.class);
+      .then()
+        .log().all()
+        .statusCode(201)
+        .extract().as(DocumentDto.class);
 
 
     assertThat(resDoc.getDocumentId(), equalTo("TheAnswerIs42"));
 
     // store another one
-    Document res2Doc = given()
+    DocumentDto res2Doc = given()
         .accept(ContentType.JSON)
         .multiPart("doc", dto, ContentType.JSON.toString())
         .auth().preemptive().basic("user", "password")
       .when()
+        .log().all()
         .post("/api/v1/documents")
-        .as(Document.class);
+      .then()
+        .log().all()
+        .statusCode(201)
+        .extract().as(DocumentDto.class);
+    
     // @formatter:on
     assertThat(res2Doc.getDocumentId(), equalTo("TheAnswerIs43"));
   }

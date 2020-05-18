@@ -52,7 +52,6 @@ public class MultiVersioningDocumentAPITest extends AbstractRestAssuredTest {
 //  @TestConfiguration
 //  @Import({
 //      ModelMapperConfiguration.class, SimpleContentElementService.class, ContentElementFacet.class,
-//      ContentElementResource.class, IdFacet.class, ModificationDateFacet.class, CreationDateFacet.class,
 //      MultiVersioningDocumentResource.class
 //  })
 //  public static class ServiceConfig {

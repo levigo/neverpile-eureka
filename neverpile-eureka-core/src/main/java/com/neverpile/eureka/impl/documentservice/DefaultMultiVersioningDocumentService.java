@@ -3,6 +3,7 @@ package com.neverpile.eureka.impl.documentservice;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.Clock;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
@@ -73,6 +74,9 @@ public class DefaultMultiVersioningDocumentService
   @Autowired
   private ClusterLockFactory lock;
 
+  @Autowired
+  private Clock clock;
+  
   @VisibleForTesting
   public static final String DOCUMENT_PREFIX = "document";
 
@@ -82,10 +86,10 @@ public class DefaultMultiVersioningDocumentService
   private static final Instant NEW_VERSION_MARKER = Instant.ofEpochMilli(Long.MAX_VALUE);
 
   private enum State {
-    Unmodified, Created, Deleted, Modified;
+    Unmodified, Created, Deleted, Modified
   }
 
-  private class TransactionalDocument {
+  private static class TransactionalDocument {
     Map<String, JsonNode> sidecar = new HashMap<>();
     Instant initialTimestamp;
     DocumentPdo document;
@@ -136,7 +140,7 @@ public class DefaultMultiVersioningDocumentService
           k -> new TransactionalDocument(doRetrieveDocument(documentId, effectiveTimestamp)));
     }
 
-    public void create(final DocumentPdo document) {
+    public Instant create(final DocumentPdo document) {
       if (!mutable)
         throw new IllegalStateException("Mutations not supported outside transactions");
 
@@ -146,13 +150,15 @@ public class DefaultMultiVersioningDocumentService
         throw new IllegalStateException("Document already created");
 
       // set version timestamp for creation
-      document.setVersionTimestamp(Instant.now());
+      document.setVersionTimestamp(clock.instant());
 
       txd.update(document);
       txd.state = State.Created;
 
       // store with new version timestamp as "alias"
       documents.put(new CompositeKey(document.getDocumentId(), document.getVersionTimestamp()), txd);
+      
+      return document.getVersionTimestamp();
     }
 
     public void delete(final String id) {
@@ -167,7 +173,7 @@ public class DefaultMultiVersioningDocumentService
       DocumentPdo deletionMarker = modelMapper.map(current.document, DocumentPdo.class);
       deletionMarker.setDeleted(true);
       deletionMarker.setDocumentId(id);
-      deletionMarker.setVersionTimestamp(Instant.now());
+      deletionMarker.setVersionTimestamp(clock.instant());
 
       current.state = State.Deleted;
       current.update(deletionMarker);
@@ -197,7 +203,7 @@ public class DefaultMultiVersioningDocumentService
             currentDocument.getVersionTimestamp().toString(), updated.getVersionTimestamp().toString());
 
       // ok, we can go ahead with the update
-      updated.setVersionTimestamp(Instant.now());
+      updated.setVersionTimestamp(clock.instant());
 
       current.state = State.Modified;
       current.update(updated);
@@ -316,7 +322,9 @@ public class DefaultMultiVersioningDocumentService
     if (txEntityRegistry().document(document.getDocumentId(), document.getVersionTimestamp()).document != null)
       throw new DocumentAlreadyExistsException(document);
 
-    txEntityRegistry().create(modelMapper.map(document, DocumentPdo.class));
+    Instant versionTimestamp = txEntityRegistry().create(modelMapper.map(document, DocumentPdo.class));
+    
+    document.setVersionTimestamp(versionTimestamp);
 
     return document;
   }
