@@ -5,7 +5,7 @@ on:
     branches:
       - master
     paths-ignore:
-      - '.github/**'
+      # - '.github/**'
       - '**/README.md'
       
 jobs:
@@ -23,8 +23,14 @@ jobs:
         release_branches: master
         github_token: ${{ secrets.GITHUB_TOKEN }}
         
-    - name: Print new build number
-      run: "echo tag: '${{ steps.semanticversion.outputs.new_tag }}', new_version: '${{ steps.semanticversion.outputs.new_version }}', changelog: '${{ steps.semanticversion.outputs.changelog }}'" 
+    - name: Verify and print new build number
+      run: |
+        if echo '${{ steps.semanticversion.outputs.new_tag }}' |grep -Eq '^v[0-9]+[.][0-9]+[.][0-9]+$'; then 
+          echo Tag '${{ steps.semanticversion.outputs.new_tag }}', New version '${{ steps.semanticversion.outputs.new_version }}', Changelog '${{ steps.semanticversion.outputs.changelog }}'
+        else
+          echo 'unexpected tag format - aborting'
+          exit -1
+        fi
 
     ## Enable Caching
     - uses: actions/cache@v1
