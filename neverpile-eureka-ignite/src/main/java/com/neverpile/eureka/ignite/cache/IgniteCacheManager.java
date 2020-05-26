@@ -60,7 +60,8 @@ public class IgniteCacheManager implements CacheManager {
       Object v = cache.get(key);
       if (null == v)
         try {
-          return (T) cache.getAndPutIfAbsent(key, valueLoader.call());
+          v = valueLoader.call();
+          cache.getAndPutIfAbsent(key, v);
         } catch (Exception e) {
           throw new ValueRetrievalException(key, valueLoader, e);
         }

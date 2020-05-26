@@ -23,6 +23,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import com.neverpile.eureka.ignite.cache.IgniteCacheManager;
 import com.neverpile.eureka.ignite.queue.IgniteTaskQueue;
 import com.neverpile.eureka.tasks.DistributedPersistentQueueType;
 import com.neverpile.eureka.tasks.TaskQueue;
@@ -90,5 +91,10 @@ public class TestConfig {
   @Scope("prototype")
   public TaskQueue<?> getQueue(final InjectionPoint ip) {
     return new IgniteTaskQueue<>(ip.getAnnotation(DistributedPersistentQueueType.class).value());
+  }
+  
+  @Bean
+  public IgniteCacheManager igniteCacheManager() {
+    return new IgniteCacheManager();
   }
 }
