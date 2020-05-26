@@ -34,7 +34,11 @@ public class IgniteCacheManager implements CacheManager {
 
     @Override
     public ValueWrapper get(final Object key) {
-      return new SimpleValueWrapper(cache.get(key));
+      Object value = cache.get(key);
+      if (value != null)
+        return new SimpleValueWrapper(value);
+      else
+        return null;
     }
 
     @SuppressWarnings("unchecked")
