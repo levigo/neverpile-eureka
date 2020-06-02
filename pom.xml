@@ -15,7 +15,7 @@
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <spring-boot.version>2.2.2.RELEASE</spring-boot.version>
+    <spring-boot.version>2.3.0.RELEASE</spring-boot.version>
 
     <spring-boot-admin.version>2.1.6</spring-boot-admin.version>
     <springfox.version>2.9.2</springfox.version>
@@ -56,7 +56,7 @@
     <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
     <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
 
-    <neverpile-commons.version>1.0.4</neverpile-commons.version>
+    <neverpile-commons.version>1.0.8</neverpile-commons.version>
   </properties>
 
   <repositories>

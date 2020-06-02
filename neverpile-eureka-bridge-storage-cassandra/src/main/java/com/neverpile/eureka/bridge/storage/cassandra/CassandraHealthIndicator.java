@@ -3,14 +3,14 @@ package com.neverpile.eureka.bridge.storage.cassandra;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.cassandra.SessionFactory;
 import org.springframework.data.cassandra.core.CassandraOperations;
 import org.springframework.stereotype.Component;
 
-import com.datastax.driver.core.Session;
+import com.datastax.oss.driver.api.core.CqlSession;
+import com.datastax.oss.driver.api.core.metrics.DefaultSessionMetric;
 
 @Component("CassandraHealthIndicator")
 @ConditionalOnExpression("${neverpile-eureka.cassandra.enabled}")
@@ -34,35 +34,23 @@ public class CassandraHealthIndicator implements HealthIndicator {
 
 
   private Health.Builder doHealthCheck(final Health.Builder builder) {
-    this.checkSessionState();
-    Session.State state = this.sessionFactory.getSession().getState();
+    this.checkSessionState(builder);
+    
+    CqlSession session = this.sessionFactory.getSession();
 
-    builder.withDetail("ConnectionHost Size", state.getConnectedHosts().size());
-    state.getConnectedHosts().forEach(f -> {
-      builder.withDetail("Host ID", f.getHostId());
-      builder.withDetail("BroadcastAddress", f.getBroadcastAddress());
-      builder.withDetail("Datacenter", f.getDatacenter());
-      builder.withDetail("Host Address", f.getAddress());
-      builder.withDetail("Cassandra Version", f.getCassandraVersion().toString());
-      builder.withDetail("Open Queries", state.getInFlightQueries(f));
-      builder.withDetail("Open Connections", state.getOpenConnections(f));
-      builder.withDetail("Trashed Connections", state.getTrashedConnections(f));
-
-      if (!f.getState().equals(Status.UP.getCode()) && checkSessionState()) {
-        builder.up();
-      } else {
-        builder.down();
-      }
+    session.getMetrics().ifPresent(m -> {
+      builder.withDetail("ConnectionHost Size", session.getMetrics().get().getSessionMetric(DefaultSessionMetric.CONNECTED_NODES));
     });
+    
     return builder;
   }
 
-  private boolean checkSessionState() {
+  private void checkSessionState(final Health.Builder builder) {
     try {
       this.operations.getCqlOperations().execute("SELECT now() FROM system.local");
-      return true;
+      builder.up();
     } catch (DataAccessException ex) {
-      return false;
+      builder.down(ex);
     }
   }
 }
