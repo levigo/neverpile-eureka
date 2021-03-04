@@ -1,0 +1,27 @@
+{"properties": [
+  {
+    "name": "neverpile-eureka.storage.oam.enabled",
+    "type": "java.lang.String",
+    "description": "Switch to activate OamObjectStore"
+  },
+  {
+    "name": "neverpile-eureka.storage.oam.jdbc.driver",
+    "type": "java.lang.String",
+    "description": "Driver class name"
+  },
+  {
+    "name": "neverpile-eureka.storage.oam.jdbc.url",
+    "type": "java.lang.String",
+    "description": "Database url"
+  },
+  {
+    "name": "neverpile-eureka.storage.oam.jdbc.username",
+    "type": "java.lang.String",
+    "description": "Database username'"
+  },
+  {
+    "name": "neverpile-eureka.storage.oam.jdbc.password",
+    "type": "java.lang.String",
+    "description": "Database password'"
+  }
+]}

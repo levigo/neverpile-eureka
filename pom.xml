@@ -67,6 +67,22 @@
     </repository>
   </repositories>
 
+  <modules>
+    <module>neverpile-eureka-core</module>
+    <module>neverpile-eureka-bridge-storage-cassandra</module>
+    <module>neverpile-eureka-bridge-storage-filesystem</module>
+    <module>neverpile-eureka-bridge-storage-s3</module>
+    <module>neverpile-eureka-objectstore-oam</module>
+    <module>neverpile-eureka-security-oauth2</module>
+    <module>neverpile-eureka-search-elastic</module>
+    <module>neverpile-eureka-ignite</module>
+    <module>neverpile-eureka-hazelcast</module>
+    <module>neverpile-eureka-authorization</module>
+    <module>neverpile-eureka-plugin-metadata</module>
+    <module>neverpile-eureka-plugin-audit</module>
+    <module>neverpile-eureka-bom</module>
+  </modules>
+
   <dependencyManagement>
     <dependencies>
       <!-- Spring-Boot -->
@@ -364,21 +380,6 @@
       </exclusions>
     </dependency>
   </dependencies>
-
-  <modules>
-    <module>neverpile-eureka-core</module>
-    <module>neverpile-eureka-bridge-storage-filesystem</module>
-    <module>neverpile-eureka-bridge-storage-s3</module>
-    <module>neverpile-eureka-security-oauth2</module>
-    <module>neverpile-eureka-search-elastic</module>
-    <module>neverpile-eureka-ignite</module>
-    <module>neverpile-eureka-bridge-storage-cassandra</module>
-    <module>neverpile-eureka-hazelcast</module>
-    <module>neverpile-eureka-authorization</module>
-    <module>neverpile-eureka-plugin-metadata</module>
-    <module>neverpile-eureka-plugin-audit</module>
-    <module>neverpile-eureka-bom</module>
-  </modules>
 
   <build>
     <pluginManagement>

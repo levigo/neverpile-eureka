@@ -1,0 +1,20 @@
+spring:
+  jta.atomikos.properties:
+    default-jta-timeout: 60000
+  cache:    type: generic
+    cache-names:
+    - oamstoragegroups    - oamvolumes 
+
+logging:  level:     com: 
+      neverpile:
+        storage:
+          oam: debug              
+neverpile-eureka:
+  storage:
+    oam:
+      enabled: true
+      jdbc:
+        driver: x
+        url: x
+        username: x
+        password: x
