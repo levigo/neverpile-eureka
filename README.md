@@ -16,7 +16,7 @@ __Import BOM__
         <dependency>
           <groupId>com.neverpile.eureka</groupId>
           <artifactId>neverpile-eureka-bom</artifactId>
-          <version>0.2.62</version>
+          <version>0.1.0</version>
           <type>pom</type>
           <scope>import</scope>
         </dependency>
@@ -28,5 +28,5 @@ __Import Spring-Boot starter__
     <dependency>
       <groupId>com.neverpile.eureka</groupId>
       <artifactId>neverpile-eureka-spring-boot-starter</artifactId>
-      <version>0.2.62</version>
+      <version>0.1.0</version>
     </dependency>
