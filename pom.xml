@@ -6,7 +6,7 @@
   <groupId>com.neverpile.eureka</groupId>
   <artifactId>neverpile-eureka</artifactId>
   <packaging>pom</packaging>
-  <version>0.2-SNAPSHOT</version>
+  <version>1.0.0-SNAPSHOT</version>
 
   <properties>
     <java.version>11</java.version>
@@ -66,6 +66,21 @@
       <url>https://registry.neverpile.com/repository/maven-releases/</url>
     </repository>
   </repositories>
+
+  <modules>
+    <module>neverpile-eureka-core</module>
+    <module>neverpile-eureka-objectstore-filesystem</module>
+    <module>neverpile-eureka-objectstore-s3</module>
+    <module>neverpile-eureka-objectstore-cassandra</module>
+    <module>neverpile-eureka-security-oauth2</module>
+    <module>neverpile-eureka-search-elastic</module>
+    <module>neverpile-eureka-ignite</module>
+    <module>neverpile-eureka-hazelcast</module>
+    <module>neverpile-eureka-authorization</module>
+    <module>neverpile-eureka-plugin-metadata</module>
+    <module>neverpile-eureka-plugin-audit</module>
+    <module>neverpile-eureka-bom</module>
+  </modules>
 
   <dependencyManagement>
     <dependencies>
@@ -211,7 +226,17 @@
       </dependency>
       <dependency>
         <groupId>com.neverpile.eureka</groupId>
-        <artifactId>neverpile-eureka-bridge-storage-filesystem</artifactId>
+        <artifactId>neverpile-eureka-objectstore-filesystem</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.neverpile.eureka</groupId>
+        <artifactId>neverpile-eureka-objectstore-cassandra</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.neverpile.eureka</groupId>
+        <artifactId>neverpile-eureka-objectstore-s3</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -222,16 +247,6 @@
       <dependency>
         <groupId>com.neverpile.eureka</groupId>
         <artifactId>neverpile-eureka-search-elastic</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.neverpile.eureka</groupId>
-        <artifactId>neverpile-eureka-bridge-storage-cassandra</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.neverpile.eureka</groupId>
-        <artifactId>neverpile-eureka-bridge-storage-s3</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -364,21 +379,6 @@
       </exclusions>
     </dependency>
   </dependencies>
-
-  <modules>
-    <module>neverpile-eureka-core</module>
-    <module>neverpile-eureka-bridge-storage-filesystem</module>
-    <module>neverpile-eureka-bridge-storage-s3</module>
-    <module>neverpile-eureka-security-oauth2</module>
-    <module>neverpile-eureka-search-elastic</module>
-    <module>neverpile-eureka-ignite</module>
-    <module>neverpile-eureka-bridge-storage-cassandra</module>
-    <module>neverpile-eureka-hazelcast</module>
-    <module>neverpile-eureka-authorization</module>
-    <module>neverpile-eureka-plugin-metadata</module>
-    <module>neverpile-eureka-plugin-audit</module>
-    <module>neverpile-eureka-bom</module>
-  </modules>
 
   <build>
     <pluginManagement>
