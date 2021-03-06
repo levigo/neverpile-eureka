@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.neverpile.eureka</groupId>
     <artifactId>neverpile-eureka</artifactId>
-    <version>0.2-SNAPSHOT</version>
+    <version>0.1.0</version>
   </parent>
 
   <artifactId>neverpile-eureka-plugin-metadata</artifactId>
