@@ -27,7 +27,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.stream.Stream;
 
-import org.apache.tomcat.util.http.fileupload.IOUtils;
+import org.apache.commons.io.IOUtils;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
