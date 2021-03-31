@@ -32,7 +32,7 @@
 
     <lucene.version>8.2.0</lucene.version>
 
-    <guava.version>25.0-jre</guava.version>
+    <guava.version>29.0-jre</guava.version>
 
     <cassandra-driver-core.version>3.7.2</cassandra-driver-core.version>
 
