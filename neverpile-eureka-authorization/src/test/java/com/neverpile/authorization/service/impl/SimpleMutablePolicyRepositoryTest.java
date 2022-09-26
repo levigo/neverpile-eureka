@@ -24,6 +24,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -48,6 +49,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.neverpile.authorization.service.impl.SimpleMutablePolicyRepository.CacheEntry;
 import com.neverpile.common.authorization.policy.AccessPolicy;
 import com.neverpile.common.authorization.policy.Effect;
+import com.neverpile.common.authorization.policy.impl.AuthenticationMatcher;
 import com.neverpile.eureka.api.ObjectStoreService;
 import com.neverpile.eureka.model.ObjectName;
 
@@ -109,6 +111,9 @@ public class SimpleMutablePolicyRepositoryTest {
 
   @MockBean
   Cache cache;
+
+  @MockBean
+  List<AuthenticationMatcher> authenticationMatchers;
 
   @Autowired
   SimpleMutablePolicyRepository policyRepository;

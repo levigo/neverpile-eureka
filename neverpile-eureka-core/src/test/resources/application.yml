@@ -1,2 +1,12 @@
 spring:
   jackson.serialization.WRITE_DATES_AS_TIMESTAMPS: false
+
+neverpile:
+  url-crypto:
+    shared-secret:
+      enabled: true
+      secret-key: default-encryption-secret
+
+server:
+  error:
+    include-message: always

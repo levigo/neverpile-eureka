@@ -7,14 +7,18 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.IAtomicReference;
 import com.hazelcast.core.IFunction;
+import com.hazelcast.cp.CPSubsystem;
+import com.hazelcast.cp.IAtomicReference;
 import com.neverpile.eureka.tx.atomic.DistributedAtomicReference;
 
 public class HazelcastReference<E extends Serializable> implements DistributedAtomicReference<E> {
 
   @Autowired
   private HazelcastInstance hazelcast;
+
+  @Autowired
+  private CPSubsystem cpSubsystem;
 
   IAtomicReference<E> ref;
 
@@ -26,7 +30,7 @@ public class HazelcastReference<E extends Serializable> implements DistributedAt
 
   @PostConstruct
   public void start(){
-    this.ref = hazelcast.getAtomicReference(name);
+    this.ref = cpSubsystem.getAtomicReference(name);
   }
 
   @Override

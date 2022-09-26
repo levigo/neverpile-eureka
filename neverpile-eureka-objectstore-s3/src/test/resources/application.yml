@@ -1,0 +1,7 @@
+spring.main.allow-circular-references: true
+
+neverpile:
+  url-crypto:
+    shared-secret:
+      enabled: true
+      secret-key: default-encryption-secret

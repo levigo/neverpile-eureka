@@ -1,3 +1,8 @@
 spring:
   jta.atomikos.properties:
     default-jta-timeout: 60000
+neverpile:
+  url-crypto:
+    shared-secret:
+      enabled: true
+      secret-key: default-encryption-secret

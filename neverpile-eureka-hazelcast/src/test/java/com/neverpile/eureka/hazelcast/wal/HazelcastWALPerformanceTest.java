@@ -31,7 +31,7 @@ public class HazelcastWALPerformanceTest {
   }
 
   @Test
-  public void measuerOverheadPerCommit() {
+  public void measureOverheadPerCommit() {
     for (int i = 0; i < 100; i++) {
       String id = "warmup" + i;
       wal.logAction(id, ActionType.COMMIT, new AnAction());

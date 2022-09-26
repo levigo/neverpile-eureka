@@ -32,7 +32,7 @@ import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.client.indices.GetMappingsRequest;
 import org.elasticsearch.client.indices.GetMappingsResponse;
 import org.elasticsearch.common.compress.CompressedXContent;
-import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.xcontent.XContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -432,7 +432,7 @@ public class ElasticsearchDocumentIndex {
     GetMappingsResponse mapping = client.indices().getMapping((new GetMappingsRequest()).indices(indexName),
         RequestOptions.DEFAULT);
     CompressedXContent xContent = mapping.mappings().get(indexName).source();
-    return objectMapper.readTree(xContent.uncompressed());
+    return objectMapper.readTree(xContent.uncompressed().streamInput());
   }
 
   @SuppressWarnings("unchecked")

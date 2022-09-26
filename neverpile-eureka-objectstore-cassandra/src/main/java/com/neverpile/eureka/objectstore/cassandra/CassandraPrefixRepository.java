@@ -11,10 +11,10 @@ import com.neverpile.eureka.model.ObjectName;
 @Repository
 public interface CassandraPrefixRepository extends CassandraRepository<CassandraObjectPrefix, String> {
 
-  @Query("select suffix, prefix from prefix where prefix = ?0 order by suffix ASC ;")
+  @Query("select suffix, prefix from prefix where \"prefix\" = ?0 order by \"suffix\" ASC ;")
   Stream<CassandraObjectPrefix> findPrefixes(String prefix);
 
-  @Query("select count(*) from prefix where prefix = ?0 ;")
+  @Query("select count(*) from prefix where \"prefix\" = ?0 ;")
   int countSuffixes(String prefix);
   
   default Stream<CassandraObjectPrefix> findPrefixes(final ObjectName prefix) {
