@@ -80,7 +80,7 @@
 											<port>${cassandra.host}:9160:9160</port>
 										</ports>
 										<wait>
-											<time>30000</time>
+											<time>60000</time>
 										</wait>
 										<log>
 											<enabled>true</enabled>

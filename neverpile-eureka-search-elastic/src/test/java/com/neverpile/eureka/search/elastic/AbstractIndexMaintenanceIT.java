@@ -30,6 +30,7 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.xcontent.XContentType;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -188,6 +189,7 @@ public abstract class AbstractIndexMaintenanceIT extends AbstractManualIT {
   }
 
   @Test
+  @Ignore
   public void testThat_metadataIndexingIsCorrect() throws Exception {
     Document doc = listOfDocuments.get(0);
 

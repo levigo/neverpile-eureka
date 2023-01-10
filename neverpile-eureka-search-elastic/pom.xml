@@ -35,6 +35,36 @@
       <version>${elasticsearch.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.elasticsearch</groupId>
+      <artifactId>elasticsearch-x-content</artifactId>
+      <version>${elasticsearch.version}</version>
+    </dependency>
+
+    <!-- Lucene -->
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-core</artifactId>
+      <version>${lucene.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-join</artifactId>
+      <version>${lucene.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.carrotsearch</groupId>
+      <artifactId>hppc</artifactId>
+      <version>0.9.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+      <version>2.12.2</version>
+    </dependency>
+
+    <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-actuator</artifactId>
     </dependency>
@@ -62,23 +92,17 @@
                 <!-- Docker Image to use -->
                 <image>
                   <alias>elasticsearch</alias>
-                  <name>elasticsearch:7.17.5</name>
+                  <name>elasticsearch:7.17.8</name>
                   <run>
                     <namingStrategy>none</namingStrategy>
                     <env>
                       <discovery.type>single-node</discovery.type>
                     </env>
                     <ports>
-                      <port>${elastic.host}:${elastic.port}:9200</port>
+                      <port>9200:9200</port>
                     </ports>
                     <wait>
-                      <http>
-                        <url>http://${elastic.host}:${elastic.port}/</url>
-                        <method>GET</method>
-                        <status>200</status>
-                      </http>
-                      <time>120000</time>
-                      <shutdown>500</shutdown>
+                      <time>60000</time>
                     </wait>
                     <log>
                       <enabled>true</enabled>
@@ -94,6 +118,7 @@
                   </watch>
                 </image>
               </images>
+              <verbose>true</verbose>
             </configuration>
           </execution>
           <execution>
@@ -114,8 +139,8 @@
           <skipITs>false</skipITs>
           <forkMode>once</forkMode>
           <systemPropertyVariables>
-            <elastic.host>${elastic.host}</elastic.host>
-            <elastic.port>${elastic.port}</elastic.port>
+<!--            <elastic.host>${elastic.host}</elastic.host>-->
+<!--            <elastic.port>${elastic.port}</elastic.port>-->
           </systemPropertyVariables>
         </configuration>
         <executions>

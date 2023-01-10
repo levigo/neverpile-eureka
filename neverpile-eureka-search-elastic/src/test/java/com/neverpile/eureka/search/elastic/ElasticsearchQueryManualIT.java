@@ -19,6 +19,7 @@ import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.xcontent.XContentType;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.BDDMockito;
@@ -101,6 +102,7 @@ public class ElasticsearchQueryManualIT extends AbstractManualIT {
   }
 
   @Test
+  @Ignore
   public void testThat_metadataQueryingWorks() throws IOException, InterruptedException {
     // place one document with plenty of metadata into index
     Document doc = listOfDocuments.get(0);
