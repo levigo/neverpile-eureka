@@ -17,9 +17,7 @@ import com.neverpile.eureka.api.objectstore.AbstractObjectStoreServiceTest;
 @RunWith(SpringRunner.class)
 @SpringBootTest(properties = "neverpile-eureka.bridge.storage.filesystem.rootPath=target/test-store")
 @ContextConfiguration(classes = TestConfig.class)
-@EnableAutoConfiguration(exclude = {
-    CassandraDataAutoConfiguration.class
-})
+@EnableAutoConfiguration()
 public class FilesystemObjectStoreServiceTest extends AbstractObjectStoreServiceTest {
   @Before
   public void cleanStore() throws IOException {

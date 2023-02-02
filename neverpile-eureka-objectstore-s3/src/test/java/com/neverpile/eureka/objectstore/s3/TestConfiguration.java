@@ -3,6 +3,7 @@ package com.neverpile.eureka.objectstore.s3;
 import java.io.File;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.cassandra.CassandraDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,7 +27,6 @@ import com.neverpile.eureka.tx.wal.local.FileBasedWAL;
 import com.neverpile.urlcrypto.config.UrlCryptoAutoConfiguration;
 
 @Configuration
-@EnableTransactionManagement
 public class TestConfiguration {
   @Bean
   ObjectStoreService s3OSS() {
@@ -66,15 +66,5 @@ public class TestConfiguration {
   @Bean
   ClusterLockFactory lock() {
     return new LocalLockFactory();
-  }
-
-  @Bean
-  AuthenticationConfiguration d1(){
-    return  null;
-  }
-
-  @Bean
-  ObjectPostProcessor<Object> d2() {
-    return null;
   }
 }
