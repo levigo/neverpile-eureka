@@ -67,7 +67,7 @@
 								<!-- Docker Image to use -->
 								<image>
 									<alias>cassandra</alias>
-									<name>cassandra:4.0.5</name>
+									<name>cassandra:4.1.0</name>
 									<run>
 										<namingStrategy>none</namingStrategy>
 										<env>
@@ -80,7 +80,7 @@
 											<port>${cassandra.host}:9160:9160</port>
 										</ports>
 										<wait>
-											<time>60000</time>
+											<time>120000</time>
 										</wait>
 										<log>
 											<enabled>true</enabled>
