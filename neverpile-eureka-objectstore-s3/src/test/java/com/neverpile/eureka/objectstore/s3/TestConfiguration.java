@@ -2,17 +2,9 @@ package com.neverpile.eureka.objectstore.s3;
 
 import java.io.File;
 
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.cassandra.CassandraDataAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.security.config.annotation.ObjectPostProcessor;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.context.annotation.RequestScope;
 
 import com.amazonaws.Protocol;
@@ -24,7 +16,6 @@ import com.neverpile.eureka.tx.wal.TransactionWAL;
 import com.neverpile.eureka.tx.wal.WriteAheadLog;
 import com.neverpile.eureka.tx.wal.local.DefaultTransactionWAL;
 import com.neverpile.eureka.tx.wal.local.FileBasedWAL;
-import com.neverpile.urlcrypto.config.UrlCryptoAutoConfiguration;
 
 @Configuration
 public class TestConfiguration {
@@ -42,12 +33,9 @@ public class TestConfiguration {
     cc.setAccessStyle(AccessStyle.Path);
     cc.setAccessKeyId("foo");
     cc.setSecretAccessKey("bar");
-    
-    cc.getClientConfiguration()
-      .withProtocol(Protocol.HTTP)
-      .withTcpKeepAlive(false)
-      .withUseExpectContinue(false);
-    
+
+    cc.getClientConfiguration().withProtocol(Protocol.HTTP).withTcpKeepAlive(false).withUseExpectContinue(false);
+
     return cc;
   }
 
@@ -62,7 +50,7 @@ public class TestConfiguration {
   TransactionWAL wal() {
     return new DefaultTransactionWAL();
   }
-  
+
   @Bean
   ClusterLockFactory lock() {
     return new LocalLockFactory();
