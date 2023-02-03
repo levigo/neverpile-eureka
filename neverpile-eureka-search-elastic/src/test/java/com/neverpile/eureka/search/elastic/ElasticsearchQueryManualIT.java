@@ -102,7 +102,6 @@ public class ElasticsearchQueryManualIT extends AbstractManualIT {
   }
 
   @Test
-  @Ignore
   public void testThat_metadataQueryingWorks() throws IOException, InterruptedException {
     // place one document with plenty of metadata into index
     Document doc = listOfDocuments.get(0);
@@ -127,12 +126,8 @@ public class ElasticsearchQueryManualIT extends AbstractManualIT {
     MetadataElement xmlElement = new MetadataElement();
     xmlElement.setContent(XMLDoc.newDocument().addRoot("root") //
         .addTag("someTag") //
-        .addAttribute("anAttribute", "anAttributeValue") //
-        .addAttribute("anotherAttribute", "anotherAttributeValue") //
-        .addText("first 'someTag' text value") //
+        .addText("'someTag' text value") //
         .gotoParent() //
-        .addTag("someTag") //
-        .addText("second 'someTag' text value") //
         .addTag("someNestedTag") //
         .addAttribute("yetAnotherAttribute", "yetAnotherAttributeValue") //
         .toBytes());
