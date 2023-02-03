@@ -106,12 +106,12 @@
 						</goals>
 					</execution>
 				</executions>
-				<version>0.31.0</version>
+				<version>${docker-maven-plugin.version}</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
-				<version>2.19.1</version>
+				<version>${maven-failsafe-plugin.version}</version>
 				<configuration>
 					<skipITs>false</skipITs>
 					<forkMode>once</forkMode>
