@@ -9,54 +9,58 @@
   <version>0.1.0</version>
 
   <properties>
-    <java.version>11</java.version>
+    <java.version>17</java.version>
 
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <spring-boot.version>2.2.2.RELEASE</spring-boot.version>
+    <spring-boot.version>2.7.8</spring-boot.version>
+    <spring-security-oauth2.version>2.6.8</spring-security-oauth2.version>
 
-    <spring-boot-admin.version>2.1.6</spring-boot-admin.version>
-    <springfox.version>2.9.2</springfox.version>
-    <swagger.version>2.0.10</swagger.version>
+    <spring-boot-admin.version>2.7.10</spring-boot-admin.version>
+    <springfox.version>3.0.0</springfox.version>
+    <swagger.version>2.2.8</swagger.version>
 
     <feign.version>8.18.0</feign.version>
-    <jetty.version>9.4.3.v20170317</jetty.version>
+    <jetty.version>9.4.48.v20220622</jetty.version>
 
-    <jmockit.version>1.31</jmockit.version>
+    <jmockit.version>1.49</jmockit.version>
 
-    <elasticsearch.version>7.4.2</elasticsearch.version>
+    <elasticsearch.version>7.17.8</elasticsearch.version>
 
-    <ignite.version>2.7.6</ignite.version>
+    <ignite.version>2.14.0</ignite.version>
+    <ignite-cloud.version>2.13.0</ignite-cloud.version>
+    <ignite-aws.version>2.11.1</ignite-aws.version>
 
-    <lucene.version>8.2.0</lucene.version>
+    <lucene.version>8.11.1</lucene.version>
 
-    <guava.version>25.0-jre</guava.version>
+    <guava.version>31.1-jre</guava.version>
 
-    <cassandra-driver-core.version>3.7.2</cassandra-driver-core.version>
+    <cassandra-driver-core.version>4.15.0</cassandra-driver-core.version>
 
+    <url-crypto-kit.version>1.4.1</url-crypto-kit.version>
     <eureka-webjar.version>1.0.19</eureka-webjar.version>
 
-    <opentracing.version>0.32.0</opentracing.version>
+    <opentracing.version>0.33.0</opentracing.version>
 
-    <mockito-core.version>2.13.0</mockito-core.version>
-    <metrics-core.version>3.2.2</metrics-core.version>
+    <mockito-core.version>4.11.0</mockito-core.version>
+    <metrics-core.version>4.2.15</metrics-core.version>
     <modelmapper.version>1.1.3</modelmapper.version>
 
-    <aws-s3.version>1.11.683</aws-s3.version>
-    <s3mock.version>2.1.16</s3mock.version>
-    <minio.version>4.0.2</minio.version>
+    <aws-s3.version>1.12.397</aws-s3.version>
+    <s3mock.version>2.11.0</s3mock.version>
 
     <!-- plugins -->
-    <docker-maven-plugin.version>0.31.0</docker-maven-plugin.version>
-    <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+    <docker-maven-plugin.version>0.40.3</docker-maven-plugin.version>
+    <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
     <maven-javadoc-plugin.version>3.1.1</maven-javadoc-plugin.version>
     <maven-failsafe-plugin.version>2.22.2</maven-failsafe-plugin.version>
     <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
-    <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
+    <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
+    <dependency-check-maven.version>8.0.2</dependency-check-maven.version>
 
-    <neverpile-commons.version>1.0.4</neverpile-commons.version>
+    <neverpile-commons.version>1.6.4</neverpile-commons.version>
   </properties>
 
   <repositories>
@@ -163,29 +167,7 @@
       <dependency>
         <groupId>com.h2database</groupId>
         <artifactId>h2</artifactId>
-        <version>1.4.195</version>
-      </dependency>
-
-      <!-- Lucene -->
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-core</artifactId>
-        <version>${lucene.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-analyzers-common</artifactId>
-        <version>${lucene.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-queryparser</artifactId>
-        <version>${lucene.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-join</artifactId>
-        <version>${lucene.version}</version>
+        <version>2.1.214</version>
       </dependency>
 
       <!-- other stuff -->
@@ -195,8 +177,8 @@
         <version>${guava.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.datastax.cassandra</groupId>
-        <artifactId>cassandra-driver-core</artifactId>
+        <groupId>com.datastax.oss</groupId>
+        <artifactId>java-driver-core</artifactId>
         <version>${cassandra-driver-core.version}</version>
       </dependency>
       <dependency>
@@ -215,7 +197,7 @@
       <dependency>
         <groupId>com.neverpile</groupId>
         <artifactId>url-crypto-kit</artifactId>
-        <version>1.0-31</version>
+        <version>${url-crypto-kit.version}</version>
       </dependency>
 
       <!-- internal dependencies -->
@@ -256,7 +238,7 @@
       </dependency>
       <dependency>
         <groupId>io.springfox</groupId>
-        <artifactId>springfox-swagger2</artifactId>
+        <artifactId>springfox-boot-starter</artifactId>
         <version>${springfox.version}</version>
       </dependency>
       <dependency>
@@ -300,15 +282,6 @@
         <version>${project.version}</version>
       </dependency>
 
-      <!-- Needed with eclipse 2019-09, see https://bugs.eclipse.org/bugs/show_bug.cgi?id=551298 -->
-      <!-- and https://stackoverflow.com/questions/57040675/java-lang-noclassdeffounderror-org-junit-platform-commons-preconditionviolation -->
-      <!-- FIXME: remove once everyone is on JUnit 5.5.2+ -->
-      <dependency>
-        <groupId>org.junit.platform</groupId>
-        <artifactId>junit-platform-commons</artifactId>
-        <scope>test</scope>
-        <version>1.5.2</version>
-      </dependency>
       <dependency>
         <groupId>io.opentracing</groupId>
         <artifactId>opentracing-api</artifactId>
@@ -322,7 +295,7 @@
       <dependency>
         <groupId>io.rest-assured</groupId>
         <artifactId>rest-assured</artifactId>
-        <version>3.3.0</version>
+        <version>4.5.1</version>
         <scope>test</scope>
         <exclusions>
           <exclusion>
@@ -371,12 +344,11 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>junit</groupId>
-          <artifactId>junit</artifactId>
-        </exclusion>
-      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-validation</artifactId>
     </dependency>
   </dependencies>
 
@@ -418,6 +390,30 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${maven-surefire-plugin.version}</version>
         <configuration>
+          <!--
+            Fix for Ignite problem:
+            "Ignite uses proprietary SDK APIs that are not available by default. You need to pass specific flags to JVM to make these APIs available." [1]
+            [1]:https://ignite.apache.org/docs/2.14.0/quick-start/java#running-ignite-with-java-11-or-later
+           -->
+          <argLine>
+            --add-opens=java.base/jdk.internal.misc=ALL-UNNAMED
+            --add-opens=java.base/sun.nio.ch=ALL-UNNAMED
+            --add-opens=java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED
+            --add-opens=jdk.internal.jvmstat/sun.jvmstat.monitor=ALL-UNNAMED
+            --add-opens=java.base/sun.reflect.generics.reflectiveObjects=ALL-UNNAMED
+            --add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED
+            --add-opens=java.base/java.io=ALL-UNNAMED
+            --add-opens=java.base/java.nio=ALL-UNNAMED
+            --add-opens=java.base/java.util=ALL-UNNAMED
+            --add-opens=java.base/java.util.concurrent=ALL-UNNAMED
+            --add-opens=java.base/java.util.concurrent.locks=ALL-UNNAMED
+            --add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED
+            --add-opens=java.base/java.lang=ALL-UNNAMED
+            --add-opens=java.base/java.lang.invoke=ALL-UNNAMED
+            --add-opens=java.base/java.math=ALL-UNNAMED
+            --add-opens=java.base/java.time=ALL-UNNAMED
+            --add-opens=java.sql/java.sql=ALL-UNNAMED
+          </argLine>
           <excludes>
             <exclude>**/*IT.java</exclude>
           </excludes>
@@ -466,12 +462,28 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>3.2.0</version>
+        <version>3.2.1</version>
         <executions>
           <execution>
             <id>attach-sources</id>
             <goals>
               <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.owasp</groupId>
+        <artifactId>dependency-check-maven</artifactId>
+        <version>${dependency-check-maven.version}</version>
+        <configuration>
+          <assemblyAnalyzerEnabled>true</assemblyAnalyzerEnabled>
+          <failOnError>true</failOnError>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
             </goals>
           </execution>
         </executions>

@@ -2,11 +2,9 @@ package com.neverpile.eureka.objectstore.s3;
 
 import java.io.File;
 
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.context.annotation.RequestScope;
 
 import com.amazonaws.Protocol;
@@ -20,8 +18,6 @@ import com.neverpile.eureka.tx.wal.local.DefaultTransactionWAL;
 import com.neverpile.eureka.tx.wal.local.FileBasedWAL;
 
 @Configuration
-@EnableAutoConfiguration
-@EnableTransactionManagement
 public class TestConfiguration {
   @Bean
   ObjectStoreService s3OSS() {
@@ -37,12 +33,9 @@ public class TestConfiguration {
     cc.setAccessStyle(AccessStyle.Path);
     cc.setAccessKeyId("foo");
     cc.setSecretAccessKey("bar");
-    
-    cc.getClientConfiguration()
-      .withProtocol(Protocol.HTTP)
-      .withTcpKeepAlive(false)
-      .withUseExpectContinue(false);
-    
+
+    cc.getClientConfiguration().withProtocol(Protocol.HTTP).withTcpKeepAlive(false).withUseExpectContinue(false);
+
     return cc;
   }
 
@@ -57,7 +50,7 @@ public class TestConfiguration {
   TransactionWAL wal() {
     return new DefaultTransactionWAL();
   }
-  
+
   @Bean
   ClusterLockFactory lock() {
     return new LocalLockFactory();

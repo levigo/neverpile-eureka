@@ -150,7 +150,7 @@
       <dependency>
         <groupId>com.neverpile</groupId>
         <artifactId>url-crypto-kit</artifactId>
-        <version>1.0-31</version>
+        <version>${url-crypto-kit.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

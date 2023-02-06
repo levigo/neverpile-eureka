@@ -44,13 +44,13 @@
     <dependency>
       <groupId>org.apache.ignite</groupId>
       <artifactId>ignite-cloud</artifactId>
-      <version>${ignite.version}</version>
+      <version>${ignite-cloud.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.ignite</groupId>
       <artifactId>ignite-aws</artifactId>
-      <version>${ignite.version}</version>
+      <version>${ignite-aws.version}</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>

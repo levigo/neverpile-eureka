@@ -10,6 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 import java.util.Optional;
 
 import javax.ws.rs.core.MediaType;
@@ -33,6 +34,7 @@ import com.neverpile.common.authorization.policy.AccessPolicy;
 import com.neverpile.common.authorization.policy.AccessRule;
 import com.neverpile.common.authorization.policy.Effect;
 import com.neverpile.common.authorization.policy.PolicyRepository;
+import com.neverpile.common.authorization.policy.impl.AuthenticationMatcher;
 import com.neverpile.eureka.api.MultiVersioningDocumentService;
 import com.neverpile.eureka.event.EventPublisher;
 import com.neverpile.eureka.model.ContentElement;
@@ -75,6 +77,9 @@ public class MetadataAuthorizationIntegrationTest extends AbstractRestAssuredTes
 
   @MockBean
   PolicyRepository policyRepository;
+
+  @MockBean
+  List<AuthenticationMatcher> authenticationMatchers;
 
   @Before
   public void initMock() {

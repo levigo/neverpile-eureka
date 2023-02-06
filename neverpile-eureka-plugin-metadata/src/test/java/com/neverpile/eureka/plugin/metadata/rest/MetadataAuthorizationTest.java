@@ -14,6 +14,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 import javax.ws.rs.core.MediaType;
@@ -28,6 +29,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.neverpile.common.authorization.policy.impl.AuthenticationMatcher;
 import com.neverpile.eureka.api.DocumentAuthorizationService;
 import com.neverpile.eureka.api.MultiVersioningDocumentService;
 import com.neverpile.eureka.event.EventPublisher;
@@ -58,6 +60,9 @@ public class MetadataAuthorizationTest extends AbstractRestAssuredTest {
 
   @MockBean
   DocumentAuthorizationService mockAuthService;
+
+  @MockBean
+  List<AuthenticationMatcher> authenticationMatchers;
 
   @Before
   public void initMock() {

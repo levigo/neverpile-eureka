@@ -10,16 +10,16 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CassandraObjectRepository extends CassandraRepository<CassandraObject, Void> {
 
-  @Query("select * from object where objectName = ?0 order by version DESC limit 1;")
+  @Query("SELECT * FROM object WHERE \"objectName\" = ?0 order by \"version\" DESC limit 1;")
   Optional<CassandraObject> findByObjectName(String objectName);
 
-  @Query("delete from object where objectName = ?0 ;")
+  @Query("delete from object where \"objectName\" = ?0 ;")
   void deleteByObjectName(String objectName);
 
-  @Query("delete from object where objectName = ?0 and version = ?1 ;")
+  @Query("delete from object where \"objectName\" = ?0 and \"version\" = ?1 ;")
   void deleteByObjectNameAndByVersion(String objectName, int version);
 
-  @Query("delete from object where objectName = ?0 and version > ?1 ;")
+  @Query("delete from object where \"objectName\" = ?0 and \"version\" > ?1 ;")
   void deleteByObjectNameAndVersionGreaterThan(String objectName, int version);
 
   // https://github.com/spring-projects/spring-data-examples/tree/master/cassandra/java8

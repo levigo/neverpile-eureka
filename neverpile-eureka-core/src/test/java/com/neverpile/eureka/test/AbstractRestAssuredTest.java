@@ -19,7 +19,7 @@ import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
 import io.restassured.http.ContentType;
-import io.restassured.mapper.factory.Jackson2ObjectMapperFactory;
+import io.restassured.path.json.mapper.factory.Jackson2ObjectMapperFactory;
 import io.restassured.specification.RequestSpecification;
 
 

@@ -20,9 +20,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.ILock;
-import com.hazelcast.core.IMap;
-import com.hazelcast.core.MultiMap;
+import com.hazelcast.cp.CPSubsystem;
+import com.hazelcast.cp.lock.FencedLock;
+import com.hazelcast.map.IMap;
+import com.hazelcast.multimap.MultiMap;
 import com.neverpile.common.opentracing.Tag;
 import com.neverpile.common.opentracing.TraceInvocation;
 import com.neverpile.eureka.tx.wal.TransactionWAL.TransactionalAction;
@@ -78,6 +79,9 @@ public class HazelcastWAL implements WriteAheadLog {
   @Autowired
   private HazelcastInstance hazelcast;
 
+  @Autowired
+  private CPSubsystem cpSubsystem;
+
   private IMap<String, TransactionRecord> transactions;
 
   private MultiMap<String, Entry> entries;
@@ -101,7 +105,7 @@ public class HazelcastWAL implements WriteAheadLog {
 
   @Scheduled(fixedRateString = "${neverpile.wal.hazelcast.prune-interval:10000}")
   public void pruneTransactions() throws InterruptedException {
-    ILock lock = hazelcast.getLock(getClass().getName() + "-TxPrune");
+    FencedLock lock = cpSubsystem.getLock(getClass().getName() + "-TxPrune");
     if (lock.tryLock(100, TimeUnit.MILLISECONDS)) {
       try {
         Instant rollbackTransactionsStartedBefore = Instant.now().minus(autoRollbackTimeout, ChronoUnit.SECONDS);

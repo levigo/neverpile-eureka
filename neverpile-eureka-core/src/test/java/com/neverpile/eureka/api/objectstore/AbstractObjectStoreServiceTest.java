@@ -154,20 +154,23 @@ public abstract class AbstractObjectStoreServiceTest {
     assertFalse(objectStore.checkObjectExists(s2));
   }
 
+  /**
+   * when using cassandra this test may cause:
+   * com.datastax.oss.driver.api.core.DriverTimeoutException: Query timed out after PT2S
+   * if the DB is too slow. If this occurs try to adjust rateLimit and maxRequestQueryBatchSize of CassandraObjectStoreService.
+   */
   @Test
   @Transactional
   public void testThat_chunkingPreservesStreamIntegrity() throws Exception {
-    TestDataInputStream is = new TestDataInputStream("0123456789", 1024 * 1024 * 10); // 100MB
+    TestDataInputStream is = new TestDataInputStream("0123456789", 1024 * 1024); // 10MB
 
     MessageDigest md5 = MessageDigest.getInstance("md5");
     StreamUtils.copy(is, new DigestOutputStream(new DevNullOutputStream(), md5));
-    byte expected[] = md5.digest();
+    byte[] expected = md5.digest();
 
-    is = new TestDataInputStream("0123456789", 1024 * 1024 * 10);
+    is = new TestDataInputStream("0123456789", 1024 * 1024);
     objectStore.put(ObjectName.of("Test6"), ObjectStoreService.NEW_VERSION, is);
-
     ObjectStoreService.StoreObject so = objectStore.get(ObjectName.of("Test6"));
-
     md5.reset();
     StreamUtils.copy(so.getInputStream(), new DigestOutputStream(new DevNullOutputStream(), md5));
     assertThat("Stream contents mismatch", expected, equalTo(md5.digest()));

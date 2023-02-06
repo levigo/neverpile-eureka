@@ -1,6 +1,10 @@
 package com.neverpile.eureka.objectstore.cassandra;
 
+import java.net.InetSocketAddress;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
@@ -12,16 +16,16 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.cassandra.core.cql.CqlIdentifier;
 import org.springframework.data.cassandra.repository.config.EnableCassandraRepositories;
 
-import com.datastax.driver.core.Cluster;
-import com.datastax.driver.core.Session;
+import com.datastax.oss.driver.api.core.CqlIdentifier;
+import com.datastax.oss.driver.api.core.CqlSession;
+import com.datastax.oss.driver.api.core.metadata.schema.TableMetadata;
 
 @Configuration
 @AutoConfigureBefore(value = CassandraAutoConfiguration.class,
     name = "com.neverpile.eureka.server.configuration.SimpleServiceConfiguration")
-@EnableCassandraRepositories(basePackages = "com.neverpile.eureka.bridge.storage.cassandra")
+@EnableCassandraRepositories(basePackages = "com.neverpile.eureka.objectstore.cassandra")
 @Import(CassandraTransactionConfiguration.class)
 @EnableAutoConfiguration
 public class CassandraTestConfig extends AbstractNeverpileCassandraConfig {
@@ -41,16 +45,19 @@ public class CassandraTestConfig extends AbstractNeverpileCassandraConfig {
     LOGGER.info("Cassandra host: '{}'", cassandraHost);
     LOGGER.info("-----");
 
-    final Cluster cluster = Cluster.builder().addContactPoints(cassandraHost).withPort(
-        cassandraPort).build();
+    Collection<InetSocketAddress> cassandraHostCollection = Collections.singletonList(new InetSocketAddress(cassandraHost, cassandraPort));
 
-    final Session cassandraSession = cluster.connect();
-    cassandraSession.execute(creationQuery());
-    cassandraSession.execute(activationQuery());
+    final CqlSession session = CqlSession.builder().withLocalDatacenter("datacenter1").addContactPoints(cassandraHostCollection).build();
 
-    cassandraTemplate().createTable(true, CqlIdentifier.of("object"), CassandraObject.class, new HashMap<>());
-    cassandraTemplate().createTable(true, CqlIdentifier.of("objectdata"), CassandraObjectData.class, new HashMap<>());
-    cassandraTemplate().createTable(true, CqlIdentifier.of("prefix"), CassandraObjectPrefix.class, new HashMap<>());
+    session.execute(creationQuery());
+    session.execute(activationQuery());
+
+    cassandraTemplate().createTable(true, CqlIdentifier.fromCql("object"), CassandraObject.class, new HashMap<>());
+    Optional<TableMetadata> m = cassandraTemplate().getTableMetadata(CqlIdentifier.fromCql(getKeyspaceName()),
+        CqlIdentifier.fromCql("object"));
+
+    cassandraTemplate().createTable(true, CqlIdentifier.fromCql("objectdata"), CassandraObjectData.class, new HashMap<>());
+    cassandraTemplate().createTable(true, CqlIdentifier.fromCql("prefix"), CassandraObjectPrefix.class, new HashMap<>());
   }
 
   @Override

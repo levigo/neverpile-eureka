@@ -1,16 +1,21 @@
 package com.neverpile.eureka.objectstore.cassandra;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.cassandra.SessionFactory;
 import org.springframework.data.cassandra.core.CassandraOperations;
 import org.springframework.stereotype.Component;
 
-import com.datastax.driver.core.Session;
+import com.datastax.oss.driver.api.core.CqlSession;
+import com.datastax.oss.driver.api.core.metadata.Node;
+import com.datastax.oss.driver.api.core.metadata.NodeState;
 
 @Component("CassandraHealthIndicator")
 @ConditionalOnExpression("${neverpile-eureka.cassandra.enabled}")
@@ -18,7 +23,7 @@ public class CassandraHealthIndicator implements HealthIndicator {
 
   @Autowired(required = false)
   private SessionFactory sessionFactory;
-  
+
   @Autowired(required = false)
   private CassandraOperations operations;
 
@@ -27,34 +32,32 @@ public class CassandraHealthIndicator implements HealthIndicator {
     if (operations == null) {
       builder.outOfService();
     } else {
-      builder = this.doHealthCheck(builder);
+      this.doHealthCheck(builder);
     }
     return builder.build();
   }
 
 
-  private Health.Builder doHealthCheck(final Health.Builder builder) {
+  private void doHealthCheck(final Health.Builder builder) {
     this.checkSessionState();
-    Session.State state = this.sessionFactory.getSession().getState();
+    CqlSession session = this.sessionFactory.getSession();
 
-    builder.withDetail("ConnectionHost Size", state.getConnectedHosts().size());
-    state.getConnectedHosts().forEach(f -> {
-      builder.withDetail("Host ID", f.getHostId());
-      builder.withDetail("BroadcastAddress", f.getBroadcastAddress());
-      builder.withDetail("Datacenter", f.getDatacenter());
-      builder.withDetail("Host Address", f.getAddress());
-      builder.withDetail("Cassandra Version", f.getCassandraVersion().toString());
-      builder.withDetail("Open Queries", state.getInFlightQueries(f));
-      builder.withDetail("Open Connections", state.getOpenConnections(f));
-      builder.withDetail("Trashed Connections", state.getTrashedConnections(f));
+    Collection<Node> nodes = session.getMetadata().getNodes().values();
+    List<Node> nodeUp = nodes.stream().filter((node) -> node.getState() == NodeState.UP).collect(Collectors.toList());
 
-      if (!f.getState().equals(Status.UP.getCode()) && checkSessionState()) {
+    if (!nodeUp.isEmpty()) {
+      builder.withDetail("ConnectionHost Size", nodes.size());
+      nodeUp.forEach(f -> {
+        builder.withDetail("Host ID", f.getHostId());
+        builder.withDetail("BroadcastAddress", f.getBroadcastAddress());
+        builder.withDetail("Datacenter", f.getDatacenter());
+        builder.withDetail("Cassandra Version", f.getCassandraVersion().toString());
+        builder.withDetail("Open Connections", f.getOpenConnections());
         builder.up();
-      } else {
-        builder.down();
-      }
-    });
-    return builder;
+      });
+    } else {
+      builder.down();
+    }
   }
 
   private boolean checkSessionState() {

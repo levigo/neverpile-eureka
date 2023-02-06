@@ -272,6 +272,14 @@ public class CassandraObjectStoreService implements ObjectStoreService {
    */
   private int maxRequestQueryBatchSize = 10;
 
+  /**
+   * The cool down time in ms between request to not overwhelm the DB with too many requests at once.
+   * This has to be balanced with maxRequestQueryBatchSize to optimize the DB load.
+   * Rate limiting can be turned of by setting this to 0 or below.
+   * Default: 0.
+   */
+   private int rateLimit = 0;
+
   int getMaxResponseQueryBatchSize() {
     return maxResponseQueryBatchSize;
   }
@@ -298,6 +306,14 @@ public class CassandraObjectStoreService implements ObjectStoreService {
 
   int getMaxRequestQueryBatchSize() {
     return maxRequestQueryBatchSize;
+  }
+
+  public int getRateLimit() {
+    return rateLimit;
+  }
+
+  public void setRateLimit(int rateLimit) {
+    this.rateLimit = rateLimit;
   }
 
   void setMaxRequestQueryBatchSize(final int maxRequestQueryBatchSize) {
@@ -381,6 +397,13 @@ public class CassandraObjectStoreService implements ObjectStoreService {
           new CassandraObjectData(objectNameToString(objectName), version, chunkNo, ByteBuffer.wrap(bytes, 0, read)));
       if (query.size() >= maxRequestQueryBatchSize) {
         objectDataRepository.saveAll(query);
+        if(rateLimit > 0) {
+          try {
+            Thread.sleep(rateLimit);
+          } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+          }
+        }
         query = new Stack<>();
       }
       bytes = new byte[getBufferSize(length)];

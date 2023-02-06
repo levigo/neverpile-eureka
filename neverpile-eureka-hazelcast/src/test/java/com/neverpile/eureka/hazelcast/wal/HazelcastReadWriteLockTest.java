@@ -55,8 +55,8 @@ public class HazelcastReadWriteLockTest {
   }
 
 
-  // the @HazelcastSimpleLockFactory implementionin is a simple lock without andy read write functionallity.
-  // TODO: has to be reenabled, wehn the rw-lock implementation is done.
+  // the @HazelcastSimpleLockFactory implementation is a simple lock without any read/write functionality.
+  // TODO: has to be reenabled, when the rw-lock implementation is done.
   @Test
   @Ignore
   public void testThat_multipleReadersCanAccess() throws InterruptedException {

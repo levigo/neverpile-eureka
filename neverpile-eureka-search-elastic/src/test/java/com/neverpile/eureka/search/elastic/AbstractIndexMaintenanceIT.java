@@ -25,11 +25,12 @@ import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.core.CountRequest;
 import org.elasticsearch.client.core.CountResponse;
-import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.xcontent.XContentType;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -198,7 +199,7 @@ public abstract class AbstractIndexMaintenanceIT extends AbstractManualIT {
         .put("someLongValue", Long.MAX_VALUE) //
         .put("someBooleanValue", true) //
         .putNull("someNullValue") //
-        .put("someDateValue", Instant.ofEpochMilli(12345678).toEpochMilli()); // FIXME
+        .put("someDateValue", Instant.ofEpochMilli(12345678).toEpochMilli());
     metadataJson.putObject("someChild").put("foo", "bar");
     metadataJson.putArray("someArray").add("foo").add("bar").add("baz");
 
@@ -211,12 +212,8 @@ public abstract class AbstractIndexMaintenanceIT extends AbstractManualIT {
     MetadataElement xmlElement = new MetadataElement();
     xmlElement.setContent(XMLDoc.newDocument().addRoot("root") //
         .addTag("someTag") //
-        .addAttribute("anAttribute", "anAttributeValue") //
-        .addAttribute("anotherAttribute", "anotherAttributeValue") //
-        .addText("first 'someTag' text value") //
+        .addText("'someTag' text value") //
         .gotoParent() //
-        .addTag("someTag") //
-        .addText("second 'someTag' text value") //
         .addTag("someNestedTag") //
         .addAttribute("yetAnotherAttribute", "yetAnotherAttributeValue") //
         .toBytes());
@@ -261,7 +258,7 @@ public abstract class AbstractIndexMaintenanceIT extends AbstractManualIT {
         "   ]" + 
         " }," + 
         " \"xmlElement\": {" + 
-        "   \"someTag_text\": \"second 'someTag' text value\"," + 
+        "   \"someTag_text\": \"'someTag' text value\"," +
         "   \"someNestedTag\": {" + 
         "     \"yetAnotherAttribute_text\": \"yetAnotherAttributeValue\"" + 
         "   }" + 

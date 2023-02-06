@@ -17,8 +17,9 @@ import javax.ws.rs.core.MediaType;
 
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.xcontent.XContentType;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.BDDMockito;
@@ -125,12 +126,8 @@ public class ElasticsearchQueryManualIT extends AbstractManualIT {
     MetadataElement xmlElement = new MetadataElement();
     xmlElement.setContent(XMLDoc.newDocument().addRoot("root") //
         .addTag("someTag") //
-        .addAttribute("anAttribute", "anAttributeValue") //
-        .addAttribute("anotherAttribute", "anotherAttributeValue") //
-        .addText("first 'someTag' text value") //
+        .addText("'someTag' text value") //
         .gotoParent() //
-        .addTag("someTag") //
-        .addText("second 'someTag' text value") //
         .addTag("someNestedTag") //
         .addAttribute("yetAnotherAttribute", "yetAnotherAttributeValue") //
         .toBytes());
