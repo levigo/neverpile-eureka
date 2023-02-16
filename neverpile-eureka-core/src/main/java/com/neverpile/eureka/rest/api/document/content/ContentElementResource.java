@@ -11,6 +11,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -202,11 +203,17 @@ public class ContentElementResource {
     if (null != acceptHeader && !acceptHeader.contains("*/*"))
       elements = elements.filter(ce -> //
       acceptHeader.stream() //
-          .map(h -> javax.ws.rs.core.MediaType.valueOf(h)) //
+          .map(h -> {
+            try {
+              return javax.ws.rs.core.MediaType.valueOf(h);
+            } catch (Exception e) {
+              return null;
+            }
+          }) //
+          .filter(Objects::nonNull)
           .anyMatch(m -> m.isCompatible(ce.getType())));
 
-    List<ContentElement> matches = elements.collect(Collectors.toList());
-    return matches;
+    return elements.collect(Collectors.toList());
   }
 
   private static ResponseEntity<MultiValueMap<String, HttpEntity<?>>> returnMultipleElementsAsMultipart(
