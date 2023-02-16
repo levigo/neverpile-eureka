@@ -255,7 +255,7 @@ public class FilesystemObjectStoreService implements ObjectStoreService {
 
   }
 
-  @Value("${neverpile-eureka.bridge.storage.filesystem.rootPath:./neverpile-eureka_default}")
+  @Value("${neverpile-eureka.storage.filesystem.rootPath:./neverpile-eureka_default}")
   private String rootPath;
 
   private static ReadWriteLocker readWriteLocker = new SimpleReadWriteLocker();

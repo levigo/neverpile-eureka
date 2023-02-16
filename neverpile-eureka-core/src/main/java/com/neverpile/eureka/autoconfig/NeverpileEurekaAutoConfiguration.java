@@ -95,19 +95,19 @@ public class NeverpileEurekaAutoConfiguration {
     
     @Bean
     @ConditionalOnBean(value = MultiVersioningDocumentService.class)
-    public OpenApiFragment multiVersioningOpenApiFragment() {
+    public OpenApiFragment eurekaMultiVersioningOpenApiFragment() {
       return new ResourceOpenApiFragment("eureka", "core-multiversioning",
           new ClassPathResource("com/neverpile/eureka/eureka-core-multiversioning.yaml"));
     }
 
     @Bean
-    public OpenApiFragment coreOpenApiFragment() {
+    public OpenApiFragment eurekaCoreOpenApiFragment() {
       return new ResourceOpenApiFragment("eureka", "core",
           new ClassPathResource("com/neverpile/eureka/eureka-core.yaml"));
     }
 
     @Bean
-    public OpenApiFragment serversOpenApiFragment() {
+    public OpenApiFragment eurekaServersOpenApiFragment() {
       return new ServersFragment("servers").withServer("/", "neverpile eureka");
     }
   }

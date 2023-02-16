@@ -120,10 +120,6 @@ public class S3ObjectStoreService implements ObjectStoreService {
 
   @Autowired
   private TransactionWAL writeAheadLog;
-
-  // Hack used to route calls from StoreObjects across an instrumented/intercepted method call  
-  @Autowired
-  private S3ObjectStoreService myself;
   
   private AmazonS3 s3client;
 
@@ -239,8 +235,7 @@ public class S3ObjectStoreService implements ObjectStoreService {
 
         @Override
         public InputStream getInputStream() {
-          // route this call across an instrumented invocation to let @TraceInvocation do its thing
-          return myself.get(getObjectName()).getInputStream();
+          return S3ObjectStoreService.this.get(getObjectName()).getInputStream();
         }
       };
     }
