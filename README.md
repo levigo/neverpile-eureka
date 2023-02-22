@@ -6,7 +6,7 @@
 neverpile eureka - The archive system for the cloud generation.
 
 # Getting started
-The easiest way to get started delevoping with neverpile eureka is to follow [our getting started tutorials](https://github.com/levigo/neverpile-eureka-getting-started/wiki). We also have [a couple of demos](https://github.com/levigo/neverpile-eureka-demos) illustrating further concepts.
+The easiest way to get started developing with neverpile eureka is to follow [our getting started tutorials](https://github.com/levigo/neverpile-eureka-getting-started/wiki). We also have [a couple of demos](https://github.com/levigo/neverpile-eureka-demos) illustrating further concepts.
 
 # Current version
 __Import BOM__
