@@ -60,7 +60,7 @@
     <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
     <dependency-check-maven.version>8.0.2</dependency-check-maven.version>
 
-    <neverpile-commons.version>1.6.4</neverpile-commons.version>
+    <neverpile-commons.version>1.6.5</neverpile-commons.version>
   </properties>
 
   <repositories>
