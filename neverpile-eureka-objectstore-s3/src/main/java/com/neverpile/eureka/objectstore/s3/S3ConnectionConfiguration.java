@@ -11,9 +11,9 @@ import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.Region;
 
 /**
  * Configuration properties for an S3 connection.
@@ -33,12 +33,12 @@ public class S3ConnectionConfiguration implements Serializable {
      * syntax, however, requires that you use the region-specific endpoint when attempting to access
      * a bucket.
      */
-    Path, 
-    
+    Path,
+
     /**
      * The default behaviour is to detect which access style to use based on the configured
      * endpoint (an IP will result in path-style access) and the bucket being accessed (some buckets
-     * are not valid DNS names). 
+     * are not valid DNS names).
      */
     Automatic
   }
@@ -60,15 +60,17 @@ public class S3ConnectionConfiguration implements Serializable {
   private ClientConfiguration clientConfiguration = new ClientConfiguration();
 
   private boolean disableCertificateChecking;
-  
+
   public AmazonS3 createClient() {
     AWSCredentials credentials = new BasicAWSCredentials(getAccessKeyId(), getSecretAccessKey());
 
-    System.setProperty(SDKGlobalConfiguration.DISABLE_CERT_CHECKING_SYSTEM_PROPERTY, Boolean.toString(disableCertificateChecking));
-    
+    System.setProperty(SDKGlobalConfiguration.DISABLE_CERT_CHECKING_SYSTEM_PROPERTY,
+        Boolean.toString(disableCertificateChecking));
+
     return AmazonS3ClientBuilder.standard() //
         .withCredentials(new AWSStaticCredentialsProvider(credentials)) //
-        .withEndpointConfiguration(new EndpointConfiguration(this.getEndpoint(), Regions.US_EAST_1.name())) //
+        .withEndpointConfiguration(
+            new EndpointConfiguration(this.getEndpoint(), Region.EU_Frankfurt.getFirstRegionId())) //
         .withClientConfiguration(getClientConfiguration()) //
         .withPathStyleAccessEnabled(accessStyle == AccessStyle.Path) //
         .build();

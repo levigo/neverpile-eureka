@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.ws.rs.core.MediaType;
 
-import com.neverpile.eureka.api.ObjectStoreService.StoreObject;
 import com.neverpile.eureka.model.ContentElement;
 import com.neverpile.eureka.model.Document;
 import com.neverpile.eureka.model.ObjectName;

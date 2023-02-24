@@ -14,19 +14,18 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.data.cassandra.repository.config.EnableCassandraRepositories;
+import org.springframework.context.annotation.Primary;
 
 import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.metadata.schema.TableMetadata;
+import com.neverpile.eureka.api.ObjectStoreService;
 
 @Configuration
 @AutoConfigureBefore(value = CassandraAutoConfiguration.class,
     name = "com.neverpile.eureka.server.configuration.SimpleServiceConfiguration")
-@EnableCassandraRepositories(basePackages = "com.neverpile.eureka.objectstore.cassandra")
-@Import(CassandraTransactionConfiguration.class)
 @EnableAutoConfiguration
 public class CassandraTestConfig extends AbstractNeverpileCassandraConfig {
 
@@ -45,9 +44,11 @@ public class CassandraTestConfig extends AbstractNeverpileCassandraConfig {
     LOGGER.info("Cassandra host: '{}'", cassandraHost);
     LOGGER.info("-----");
 
-    Collection<InetSocketAddress> cassandraHostCollection = Collections.singletonList(new InetSocketAddress(cassandraHost, cassandraPort));
+    Collection<InetSocketAddress> cassandraHostCollection = Collections.singletonList(
+        new InetSocketAddress(cassandraHost, cassandraPort));
 
-    final CqlSession session = CqlSession.builder().withLocalDatacenter("datacenter1").addContactPoints(cassandraHostCollection).build();
+    final CqlSession session = CqlSession.builder().withLocalDatacenter("datacenter1").addContactPoints(
+        cassandraHostCollection).build();
 
     session.execute(creationQuery());
     session.execute(activationQuery());
@@ -56,12 +57,20 @@ public class CassandraTestConfig extends AbstractNeverpileCassandraConfig {
     Optional<TableMetadata> m = cassandraTemplate().getTableMetadata(CqlIdentifier.fromCql(getKeyspaceName()),
         CqlIdentifier.fromCql("object"));
 
-    cassandraTemplate().createTable(true, CqlIdentifier.fromCql("objectdata"), CassandraObjectData.class, new HashMap<>());
-    cassandraTemplate().createTable(true, CqlIdentifier.fromCql("prefix"), CassandraObjectPrefix.class, new HashMap<>());
+    cassandraTemplate().createTable(true, CqlIdentifier.fromCql("objectdata"), CassandraObjectData.class,
+        new HashMap<>());
+    cassandraTemplate().createTable(true, CqlIdentifier.fromCql("prefix"), CassandraObjectPrefix.class,
+        new HashMap<>());
   }
 
   @Override
   protected String getContactPoints() {
     return cassandraHost;
+  }
+
+  @Bean
+  @Primary
+  public ObjectStoreService cassandraObjectStoreService() {
+    return new CassandraObjectStoreService();
   }
 }
