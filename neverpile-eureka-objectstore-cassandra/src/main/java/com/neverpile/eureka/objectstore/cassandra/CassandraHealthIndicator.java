@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.cassandra.SessionFactory;
 import org.springframework.data.cassandra.core.CassandraOperations;
@@ -18,7 +19,7 @@ import com.datastax.oss.driver.api.core.metadata.Node;
 import com.datastax.oss.driver.api.core.metadata.NodeState;
 
 @Component("CassandraHealthIndicator")
-@ConditionalOnExpression("${neverpile-eureka.cassandra.enabled}")
+@ConditionalOnProperty(prefix = "neverpile-eureka.storage.cassandra", value = "enabled")
 public class CassandraHealthIndicator implements HealthIndicator {
 
   @Autowired(required = false)
