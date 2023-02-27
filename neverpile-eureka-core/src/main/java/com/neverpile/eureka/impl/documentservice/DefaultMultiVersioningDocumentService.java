@@ -23,7 +23,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -76,7 +76,7 @@ public class DefaultMultiVersioningDocumentService
 
   @Autowired
   private Clock clock;
-  
+
   @VisibleForTesting
   public static final String DOCUMENT_PREFIX = "document";
 
@@ -157,7 +157,7 @@ public class DefaultMultiVersioningDocumentService
 
       // store with new version timestamp as "alias"
       documents.put(new CompositeKey(document.getDocumentId(), document.getVersionTimestamp()), txd);
-      
+
       return document.getVersionTimestamp();
     }
 
@@ -254,7 +254,7 @@ public class DefaultMultiVersioningDocumentService
   }
 
   @Order(Ordered.HIGHEST_PRECEDENCE) // Flush entities as soon as possible during commit phase
-  private class FlushEntitiesSynchronization extends TransactionSynchronizationAdapter {
+  private class FlushEntitiesSynchronization implements TransactionSynchronization {
     private final EntityRegistry registry;
 
     public FlushEntitiesSynchronization(final EntityRegistry scopedObjects) {
@@ -323,7 +323,7 @@ public class DefaultMultiVersioningDocumentService
       throw new DocumentAlreadyExistsException(document);
 
     Instant versionTimestamp = txEntityRegistry().create(modelMapper.map(document, DocumentPdo.class));
-    
+
     document.setVersionTimestamp(versionTimestamp);
 
     return document;
@@ -404,7 +404,7 @@ public class DefaultMultiVersioningDocumentService
 
   /**
    * Perform the actual retrieval of a document based on a given id.
-   * 
+   *
    * @param documentId the id of the document to retrieve
    * @param versionTimestamp timestamp acting as document version identifier
    * @return the document
@@ -426,7 +426,7 @@ public class DefaultMultiVersioningDocumentService
 
   /**
    * Persist changes to or create the given document.
-   * 
+   *
    * @param document the document to persist
    * @param initialTimestamp timestamp acting as document version identifier
    * @return the document
@@ -487,7 +487,7 @@ public class DefaultMultiVersioningDocumentService
   /**
    * Retrieve the list of versions for a given document id. List will be empty if document does not
    * exist.
-   * 
+   *
    * @param documentId the id of the document for which to retrieve the version list
    * @return the list of version timestamps - the empty list for documents that do not exist
    */
@@ -500,7 +500,7 @@ public class DefaultMultiVersioningDocumentService
 
   /**
    * The actual work of retrieving the list of versions of a document. Not cached.
-   * 
+   *
    * @param documentId the id of the document to retrieve the version list from
    * @return a list of versions to the corresponding document
    */
