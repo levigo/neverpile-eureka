@@ -3,7 +3,6 @@ package com.neverpile.eureka.api;
 import java.io.InputStream;
 import java.util.stream.Stream;
 
-import com.neverpile.eureka.model.Document;
 import com.neverpile.eureka.model.ObjectName;
 
 /**

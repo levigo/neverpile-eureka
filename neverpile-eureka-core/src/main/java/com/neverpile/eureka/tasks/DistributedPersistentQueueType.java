@@ -7,7 +7,6 @@ import java.lang.annotation.Target;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.neverpile.eureka.tx.atomic.DistributedAtomicReference;
 
 /**
  * This Type is to differentiate between Types of {@link TaskQueue}s. With this Annotation it is
