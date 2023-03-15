@@ -42,7 +42,7 @@ public interface ContentElementService {
   ObjectName createObjectName(final String documentId, final String contentId);
 
   /**
-   * Get a {@link ContentElement} as an generic {@link InputStream}.
+   * Get a {@link ContentElement} as a generic {@link InputStream}.
    *
    * @param documentId {@link Document#documentId} of the associated
    *                   {@link Document}.

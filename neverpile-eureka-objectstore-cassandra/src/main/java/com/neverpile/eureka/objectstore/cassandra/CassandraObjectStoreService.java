@@ -259,7 +259,7 @@ public class CassandraObjectStoreService implements ObjectStoreService {
   private int maxBufferSize = MB;
 
   /**
-   * Maximum batch size for a a single request. <br>
+   * Maximum batch size for a single request. <br>
    * maxBufferSize * maxResponseQueryBatchSize < 256 MB. <br>
    * Default: 100.
    */
@@ -275,7 +275,7 @@ public class CassandraObjectStoreService implements ObjectStoreService {
   /**
    * The cool down time in ms between request to not overwhelm the DB with too many requests at once.
    * This has to be balanced with maxRequestQueryBatchSize to optimize the DB load.
-   * Rate limiting can be turned of by setting this to 0 or below.
+   * Rate limiting can be turned off by setting this to 0 or below.
    * Default: 0.
    */
    private int rateLimit = 0;
