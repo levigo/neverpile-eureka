@@ -284,7 +284,7 @@ public class ContentElementResource {
      */
     documentResource.validate(f -> f.validateCreate(doc));
 
-    if (StringUtils.isEmpty(doc.getDocumentId())) {
+    if (!StringUtils.hasLength(doc.getDocumentId())) {
       doc.setDocumentId(idGenerationStrategy.createDocumentId());
     }
 
