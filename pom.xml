@@ -9,25 +9,25 @@
   <version>0.1.0</version>
 
   <properties>
-    <java.version>17</java.version>
+    <java.version>11</java.version>
 
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <spring-boot.version>2.7.8</spring-boot.version>
+    <spring-boot.version>2.7.10</spring-boot.version>
     <spring-security-oauth2.version>2.6.8</spring-security-oauth2.version>
 
     <spring-boot-admin.version>2.7.10</spring-boot-admin.version>
     <springfox.version>3.0.0</springfox.version>
-    <swagger.version>2.2.8</swagger.version>
+    <swagger.version>2.2.9</swagger.version>
 
     <feign.version>8.18.0</feign.version>
-    <jetty.version>9.4.48.v20220622</jetty.version>
+    <jetty.version>9.4.51.v20230217</jetty.version>
 
     <jmockit.version>1.49</jmockit.version>
 
-    <elasticsearch.version>7.17.8</elasticsearch.version>
+    <elasticsearch.version>7.17.9</elasticsearch.version>
 
     <ignite.version>2.14.0</ignite.version>
     <ignite-cloud.version>2.13.0</ignite-cloud.version>
@@ -40,25 +40,25 @@
     <cassandra-driver-core.version>4.15.0</cassandra-driver-core.version>
 
     <url-crypto-kit.version>1.4.1</url-crypto-kit.version>
-    <eureka-webjar.version>1.0.19</eureka-webjar.version>
+    <eureka-webjar.version>1.0.25</eureka-webjar.version>
 
     <opentracing.version>0.33.0</opentracing.version>
 
     <mockito-core.version>4.11.0</mockito-core.version>
-    <metrics-core.version>4.2.15</metrics-core.version>
+    <metrics-core.version>4.2.18</metrics-core.version>
     <modelmapper.version>1.1.3</modelmapper.version>
 
     <aws-s3.version>1.12.397</aws-s3.version>
     <s3mock.version>2.11.0</s3mock.version>
 
     <!-- plugins -->
-    <docker-maven-plugin.version>0.40.3</docker-maven-plugin.version>
-    <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
-    <maven-javadoc-plugin.version>3.1.1</maven-javadoc-plugin.version>
-    <maven-failsafe-plugin.version>2.22.2</maven-failsafe-plugin.version>
-    <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
+    <docker-maven-plugin.version>0.42.1</docker-maven-plugin.version>
+    <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
+    <maven-javadoc-plugin.version>3.5.0</maven-javadoc-plugin.version>
+    <maven-failsafe-plugin.version>3.0.0</maven-failsafe-plugin.version>
+    <maven-surefire-plugin.version>3.0.0</maven-surefire-plugin.version>
     <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
-    <dependency-check-maven.version>8.0.2</dependency-check-maven.version>
+    <dependency-check-maven.version>8.2.1</dependency-check-maven.version>
 
     <neverpile-commons.version>1.6.5</neverpile-commons.version>
   </properties>
@@ -331,14 +331,6 @@
       <artifactId>junit-vintage-engine</artifactId>
       <scope>test</scope>
     </dependency>
-    <!-- Needed with eclipse 2019-09, see https://bugs.eclipse.org/bugs/show_bug.cgi?id=551298 -->
-    <!-- and https://stackoverflow.com/questions/57040675/java-lang-noclassdeffounderror-org-junit-platform-commons-preconditionviolation -->
-    <!-- FIXME: remove once everyone is on JUnit 5.5.2+ -->
-    <dependency>
-      <groupId>org.junit.platform</groupId>
-      <artifactId>junit-platform-commons</artifactId>
-      <scope>test</scope>
-    </dependency>
 
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -417,7 +409,7 @@
           <excludes>
             <exclude>**/*IT.java</exclude>
           </excludes>
-          <forkMode>once</forkMode>
+          <forkCount>1</forkCount>
         </configuration>
       </plugin>
       <plugin>
@@ -426,7 +418,7 @@
         <version>${maven-failsafe-plugin.version}</version>
         <configuration>
           <skipITs>${skipIntegrationTests}</skipITs>
-          <forkMode>once</forkMode>
+          <forkCount>1</forkCount>
         </configuration>
         <executions>
           <execution>
@@ -447,10 +439,6 @@
             <goals>
               <goal>jar</goal>
             </goals>
-            <configuration>
-              <!-- <additionalparam>-Xdoclint:none</additionalparam> -->
-              <!-- <failOnError>false</failOnError> -->
-            </configuration>
           </execution>
         </executions>
       </plugin>
