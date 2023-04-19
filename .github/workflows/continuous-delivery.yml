@@ -10,19 +10,18 @@ on:
       
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
-    - name: Bump version and push tag
+    - name: Bump version and create tag
       id: semanticversion
-      uses: hennejg/github-tag-action@v4.1.jh5
+      uses: mathieudutour/github-tag-action@v6.1
       with:
         release_branches: master
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        
+
     - name: Verify and print new build number
       run: |
         if echo '${{ steps.semanticversion.outputs.new_tag }}' |grep -Eq '^v[0-9]+[.][0-9]+[.][0-9]+$'; then 
@@ -32,19 +31,12 @@ jobs:
           exit -1
         fi
 
-    ## Enable Caching
-    - uses: actions/cache@v1
-      with:
-        path: ~/.m2/repository
-        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-maven-
-
-    ## Configure JDK 11
     - name: Set up JDK 11
-      uses: actions/setup-java@v1
+      uses: actions/setup-java@v3
       with:
-        java-version: 11
+        distribution: 'temurin'
+        java-version: '11'
+        cache: 'maven'
 
     ## Build with maven
     - name: Prepare maven settings
@@ -66,10 +58,10 @@ jobs:
     ## Deploy
     - name: Deploy package
       env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            REPOSITORY_URL: ${{ secrets.REPOSITORY_URL }}
-            REPOSITORY_USERID: ${{ secrets.REPOSITORY_USERID }}
-            REPOSITORY_CREDENTIALS: ${{ secrets.REPOSITORY_CREDENTIALS }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        REPOSITORY_URL: ${{ secrets.REPOSITORY_URL }}
+        REPOSITORY_USERID: ${{ secrets.REPOSITORY_USERID }}
+        REPOSITORY_CREDENTIALS: ${{ secrets.REPOSITORY_CREDENTIALS }}
       run: |
         mkdir -p ~/.m2
         echo "<settings><servers><server><id>neverpile</id><username>${REPOSITORY_USERID}</username><password>${REPOSITORY_CREDENTIALS}</password></server></servers></settings>" > ~/.m2/settings.xml 
@@ -95,14 +87,15 @@ jobs:
       with:
         branch: master
         github_token: ${{ secrets.GITHUB_TOKEN }}    
-        
-    ## Notify Slack
-    - name: Notify slack
-      uses: hennejg/slack-build-notifier@v1.1
+
+    - name: Notify developers
+      uses: 8398a7/action-slack@v3
       with:
         username: GitHub
         icon_emoji: octocat
-        text: Released new version `${{ steps.semanticversion.outputs.new_version }}` of *${{ github.repository }}* to ${{ secrets.REPOSITORY_URL }}
+        status: ${{ job.status }}
+        fields: repo,message,commit,author,action,eventName,ref
+        text: Released new version `${{ steps.semanticversion.outputs.new_version }}` of *${{ github.repository }}* ${{ github.workflow }} ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      if: always()
