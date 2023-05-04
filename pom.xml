@@ -84,6 +84,7 @@
     <module>neverpile-eureka-plugin-metadata</module>
     <module>neverpile-eureka-plugin-audit</module>
     <module>neverpile-eureka-bom</module>
+    <module>neverpile-eureka-objectstore-oam</module>
   </modules>
 
   <dependencyManagement>
