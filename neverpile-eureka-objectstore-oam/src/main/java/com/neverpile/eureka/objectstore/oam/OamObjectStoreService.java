@@ -62,9 +62,11 @@ public class OamObjectStoreService implements ObjectStoreService {
 
   @Override
   public StoreObject get(ObjectName objectName) {
+    String oamIdentifierString = objectName.element(2);
+    String schema = oamIdentifierString.split("-")[0];
+    String oamObjectName = oamIdentifierString.split("-")[1];
     try {
-      return new OamObjectStoreObject(oamConnector.getOamObject(objectName.element(0), objectName.element(1)),
-          objectName);
+      return new OamObjectStoreObject(oamConnector.getOamObject(schema, oamObjectName), objectName);
     } catch (InputMismatchException e) {
       throw new ObjectNotFoundException(objectName, e);
     }
@@ -77,8 +79,13 @@ public class OamObjectStoreService implements ObjectStoreService {
 
   @Override
   public boolean checkObjectExists(ObjectName objectName) {
-    // TODO Auto-generated method stub
-    return false;
+    try {
+      get(objectName);
+    } catch (ObjectNotFoundException e) {
+      return false;
+    }
+    return true;
   }
+
 
 }
