@@ -16,7 +16,7 @@ import com.neverpile.eureka.api.ObjectStoreService;
 public class OamAutoConfiguration {
 
   @Bean
-  ObjectStoreService fsObjectStoreService() {
+  ObjectStoreService oamObjectStoreService() {
     return new OamObjectStoreService();
   }
 
