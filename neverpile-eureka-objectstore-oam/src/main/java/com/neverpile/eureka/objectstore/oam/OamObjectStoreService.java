@@ -1,6 +1,7 @@
 package com.neverpile.eureka.objectstore.oam;
 
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.InputMismatchException;
 import java.util.stream.Stream;
 
@@ -56,17 +57,15 @@ public class OamObjectStoreService implements ObjectStoreService {
 
   @Override
   public Stream<StoreObject> list(ObjectName prefix) {
-    // TODO Auto-generated method stub
-    return null;
+    return Collections.<StoreObject> emptyList().stream();
   }
 
   @Override
   public StoreObject get(ObjectName objectName) {
-    String oamIdentifierString = objectName.element(2);
-    String schema = oamIdentifierString.split("-")[0];
-    String oamObjectName = oamIdentifierString.split("-")[1];
+    String[] objectIdentification = objectName.element(2).split("-");
     try {
-      return new OamObjectStoreObject(oamConnector.getOamObject(schema, oamObjectName), objectName);
+      return new OamObjectStoreObject(oamConnector.getOamObject(objectIdentification[0], objectIdentification[1]),
+          objectName);
     } catch (InputMismatchException e) {
       throw new ObjectNotFoundException(objectName, e);
     }
