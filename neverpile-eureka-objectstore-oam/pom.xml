@@ -21,7 +21,7 @@
 		<dependency>
 			<groupId>com.levigo.oam</groupId>
 			<artifactId>oam-connector</artifactId>
-			<version>0.1.3</version>
+			<version>0.1.11</version>
 		</dependency>
 		<!-- Test dependencies -->
 		<dependency>
