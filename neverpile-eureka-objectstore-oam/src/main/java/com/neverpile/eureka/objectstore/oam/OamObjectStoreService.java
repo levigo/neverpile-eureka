@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.InputMismatchException;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +17,9 @@ import com.neverpile.eureka.api.ObjectStoreService;
 import com.neverpile.eureka.model.ObjectName;
 
 @Service
+
 public class OamObjectStoreService implements ObjectStoreService {
+  private static final Logger LOGGER = LoggerFactory.getLogger(OamObjectStoreService.class);
 
   @Autowired
   private OamConnector oamConnector;
@@ -28,6 +32,7 @@ public class OamObjectStoreService implements ObjectStoreService {
 
     public OamObjectStoreObject(OamObject oamObject, ObjectName objectName) {
       this.oamObject = oamObject;
+      this.objectName = objectName;
     }
 
     @Override
@@ -62,6 +67,9 @@ public class OamObjectStoreService implements ObjectStoreService {
 
   @Override
   public StoreObject get(ObjectName objectName) {
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Getting oamObject for ObjectName: " + objectName);
+    }
     String[] objectIdentification = objectName.element(2).split("-");
     try {
       return new OamObjectStoreObject(oamConnector.getOamObject(objectIdentification[0], objectIdentification[1]),
