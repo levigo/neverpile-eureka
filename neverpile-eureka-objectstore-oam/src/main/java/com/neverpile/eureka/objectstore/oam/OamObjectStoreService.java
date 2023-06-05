@@ -70,7 +70,7 @@ public class OamObjectStoreService implements ObjectStoreService {
     if (LOGGER.isDebugEnabled()) {
       LOGGER.debug("Getting oamObject for ObjectName: " + objectName);
     }
-    String[] objectIdentification = objectName.element(2).split("-");
+    String[] objectIdentification = objectName.element(1).split("-");
     try {
       return new OamObjectStoreObject(oamConnector.getOamObject(objectIdentification[0], objectIdentification[1]),
           objectName);
