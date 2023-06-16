@@ -25,7 +25,7 @@ public class OamObjectStoreService implements ObjectStoreService {
   private OamConnector oamConnector;
 
 
-  private static class OamObjectStoreObject implements StoreObject {
+  public static class OamObjectStoreObject implements StoreObject {
 
     private OamObject oamObject;
     private ObjectName objectName;
