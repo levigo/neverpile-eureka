@@ -241,13 +241,16 @@ public class ContentElementResource {
 
     LOGGER.info("add Content response");
 
-    ContentDisposition contentDisposition = ContentDisposition //
-        .builder("inline") //
-        .name(contentElement.getRole()).filename(contentElement.getFileName()) //
-        .creationDate(document.getDateCreated().atZone(ZoneId.systemDefault())) //
-        .modificationDate(document.getDateModified().atZone(ZoneId.systemDefault())) //
-        .size(contentElement.getLength()) //
-        .build();
+    var cdBuilder = ContentDisposition //
+      .builder("inline") //
+      .name(contentElement.getRole())
+      .creationDate(document.getDateCreated().atZone(ZoneId.systemDefault())) //
+      .modificationDate(document.getDateModified().atZone(ZoneId.systemDefault())) //
+      .size(contentElement.getLength());
+    if (StringUtils.hasText(contentElement.getFileName())) {
+      cdBuilder.filename(contentElement.getFileName());
+    }
+    ContentDisposition contentDisposition = cdBuilder.build();
 
     // try to canonicalize the algorithm name
     String digestAlgorithmName = contentElement.getDigest().getAlgorithm().name().toLowerCase().replaceAll("_", "-");
@@ -312,7 +315,7 @@ public class ContentElementResource {
   /**
    * Try to find a part named {@value #DOCUMENT_FORM_ELEMENT_NAME} and try to map that to a
    * {@link DocumentDto}. Return an empty {@link Optional} if there is no such part.
-   * 
+   *
    * @param files all request parts
    * @return an optional DocumentDto.
    */
