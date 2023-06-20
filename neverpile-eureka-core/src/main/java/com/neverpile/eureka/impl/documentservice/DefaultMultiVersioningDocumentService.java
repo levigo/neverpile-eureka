@@ -322,9 +322,9 @@ public class DefaultMultiVersioningDocumentService
     if (txEntityRegistry().document(document.getDocumentId(), document.getVersionTimestamp()).document != null)
       throw new DocumentAlreadyExistsException(document);
 
-    Instant versionTimestamp = txEntityRegistry().create(modelMapper.map(document, DocumentPdo.class));
+    DefaultDocumentService.ensureBasicMetadataPresent(document);
 
-    document.setVersionTimestamp(versionTimestamp);
+    document.setVersionTimestamp(txEntityRegistry().create(modelMapper.map(document, DocumentPdo.class)));
 
     return document;
   }
@@ -341,6 +341,8 @@ public class DefaultMultiVersioningDocumentService
   @CacheEvict(cacheNames = "documentVersions", key = "#document.documentId")
   @TraceInvocation
   public Optional<Document> update(final Document document) {
+    DefaultDocumentService.ensureBasicMetadataPresent(document);
+
     return Optional.of(txEntityRegistry().update(modelMapper.map(document, DocumentPdo.class)));
   }
 

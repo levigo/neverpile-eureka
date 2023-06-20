@@ -362,6 +362,10 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
     doc.setVersionTimestamp(Instant.ofEpochMilli(42L));
     doc.setDocumentId(D);
 
+    // we want to be robust for these cases as well
+    doc.setDateCreated(null);
+    doc.setDateModified(null);
+
     // CE has no type, role
     ContentElement ce = new ContentElement();
     ce.setType(MediaType.TEXT_PLAIN_TYPE);

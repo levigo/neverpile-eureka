@@ -244,9 +244,13 @@ public class ContentElementResource {
     var cdBuilder = ContentDisposition //
       .builder("inline") //
       .name(contentElement.getRole())
-      .creationDate(document.getDateCreated().atZone(ZoneId.systemDefault())) //
-      .modificationDate(document.getDateModified().atZone(ZoneId.systemDefault())) //
       .size(contentElement.getLength());
+    if(document.getDateCreated() != null) {
+      cdBuilder.creationDate(document.getDateCreated().atZone(ZoneId.systemDefault()));
+    }
+    if(document.getDateModified() != null) {
+      cdBuilder.modificationDate(document.getDateModified().atZone(ZoneId.systemDefault()));
+    }
     if (StringUtils.hasText(contentElement.getFileName())) {
       cdBuilder.filename(contentElement.getFileName());
     }
@@ -259,7 +263,9 @@ public class ContentElementResource {
     return ResponseEntity.ok() //
         .lastModified(document.getDateModified() != null
             ? document.getDateModified().toEpochMilli()
-            : document.getDateCreated().toEpochMilli()) //
+            : document.getDateCreated() != null
+                ? document.getDateCreated().toEpochMilli()
+                : Instant.now().toEpochMilli()) //
         .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString()) //
         .header(HttpHeaders.CONTENT_TYPE, contentElement.getType().toString()) //
         .header(HttpHeaders.CONTENT_LENGTH, Long.toString(contentElement.getLength())) //

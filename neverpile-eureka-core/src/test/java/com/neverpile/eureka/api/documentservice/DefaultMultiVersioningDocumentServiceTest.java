@@ -3,12 +3,8 @@ package com.neverpile.eureka.api.documentservice;
 import static com.neverpile.eureka.impl.documentservice.DefaultMultiVersioningDocumentService.DOCUMENT_PREFIX;
 import static com.neverpile.eureka.impl.documentservice.DefaultMultiVersioningDocumentService.VERSION_FORMATTER;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -90,13 +86,13 @@ public class DefaultMultiVersioningDocumentServiceTest {
 
   @Autowired
   CacheManager cacheManager;
-  
+
   @Before
   public void clearCache() {
     // The cache isn't automatically cleared between test methods
     cacheManager.getCacheNames().forEach(n -> cacheManager.getCache(n).clear());
   }
-  
+
   @Test
   public void testThat_documentCanBeCreated() throws Exception {
     mockNonexistentDocument();
@@ -127,6 +123,8 @@ public class DefaultMultiVersioningDocumentServiceTest {
 
     assertThat(readBack.getVersionTimestamp().toEpochMilli(),
         allOf(greaterThanOrEqualTo(then), lessThanOrEqualTo(now)));
+    assertThat(readBack.getDateCreated(), notNullValue());
+    assertThat(readBack.getDateModified(), notNullValue());
   }
 
   private DocumentPdo readBackFromStream(final ArgumentCaptor<InputStream> isC)
@@ -165,6 +163,8 @@ public class DefaultMultiVersioningDocumentServiceTest {
     assertThat(readBack.getDocumentId(), equalTo(D));
     assertThat(readBack.getVersionTimestamp(), equalTo(updated.getVersionTimestamp()));
     assertThat(readBack.getSidecarElement("foo"), equalTo(mapper.createObjectNode().put("bar", "baz")));
+    assertThat(readBack.getDateCreated(), notNullValue());
+    assertThat(readBack.getDateModified(), notNullValue());
   }
 
   private ArgumentCaptor<InputStream> verifyStorePut() {
@@ -208,7 +208,7 @@ public class DefaultMultiVersioningDocumentServiceTest {
   public void testThat_documentCanBeUpdateMultipleTimesWithinATx() throws Exception {
     DocumentPdo existing = prepareEmptyDocument();
     existing.getAssociatedFacetData().put("foo", mapper.createObjectNode().put("bar", "baz"));
-    
+
     mockExistingVersion(existing);
 
     Document updated = transactionTemplate.execute(status -> {
@@ -247,13 +247,13 @@ public class DefaultMultiVersioningDocumentServiceTest {
     assertThat(readBack.getSidecarElement("foo"), equalTo(mapper.createObjectNode().put("bar", "baz2")));
     assertThat(readBack.getSidecarElement("bar"), equalTo(mapper.createObjectNode().put("baz", "baz")));
   }
-  
+
   @Test
   public void testThat_updatePreservesSidecar() throws Exception {
     // existing document with sidecar
     DocumentPdo existing = prepareEmptyDocument();
     existing.getAssociatedFacetData().put("foo", mapper.createObjectNode().put("bar", "baz"));
-    
+
     mockExistingVersion(existing);
 
     // just some spurious update
@@ -289,22 +289,22 @@ public class DefaultMultiVersioningDocumentServiceTest {
 
     return name;
   }
-  
+
   @Test(expected = VersionMismatchException.class)
   public void testThat_documentUpdateFailsOnVersionClashOnObjectStore() throws Exception {
     Document existing = prepareEmptyDocument();
     mockExistingVersion(existing);
-    
+
     transactionTemplate.execute(status -> {
       // prime the tx cache with the current version
       documentService.getDocument(existing.getDocumentId());
-      
+
       try {
         Thread.sleep(10);
       } catch (InterruptedException e) {
         throw new RuntimeException(e);
       }
-      
+
       // replace the mockery with a new version which appears as having changed outside the scope of the current transaction
       Document lostUpdateCandidate = prepareEmptyDocument();
       mockExistingVersion(lostUpdateCandidate);
@@ -313,7 +313,7 @@ public class DefaultMultiVersioningDocumentServiceTest {
       } catch (InterruptedException e) {
         throw new RuntimeException(e);
       }
-      
+
       // update has correct timestamp but we have a clash on the object store since it is no longer the current version
       Document update = prepareEmptyDocument();
       update.setVersionTimestamp(existing.getVersionTimestamp());
@@ -330,7 +330,7 @@ public class DefaultMultiVersioningDocumentServiceTest {
     assertThat(documentService.documentExists(D), equalTo(true));
     assertThat(documentService.documentExists("someNonexistentId"), equalTo(false));
   }
-  
+
   @Test
   public void testThat_documentCanBeFound() throws IOException {
     Document doc = anEmptyDocument();
@@ -363,19 +363,19 @@ public class DefaultMultiVersioningDocumentServiceTest {
     assertThat(readBack.getDocumentId(), equalTo(D));
     assertThat(readBack.isDeleted(), is(true));
   }
-  
+
   @Test(expected = NotFoundException.class)
   public void testThat_deletedDocumentsCannotBeRetrievedAsCurrent() throws Exception {
     DocumentPdo deletionMarker = prepareEmptyDocument();
     deletionMarker.setDeleted(true);
-    
+
     mockExistingVersion(deletionMarker);
 
     // should throw not found!
     documentService.getDocument(D).get();
   }
 
-  
+
   @Test
   public void testThat_versionListCanBeRetrieved() throws IOException {
     mockThreeVersions();
@@ -386,44 +386,44 @@ public class DefaultMultiVersioningDocumentServiceTest {
   @Test
   public void testThat_cachedVersionListIsInvalidatedOnCreate() throws IOException {
     mockNonexistentDocument();
-    
+
     // prime cache
     assertThat(documentService.getVersions(D), hasSize(0));
-    
+
     mockExistingVersion(prepareEmptyDocument());
 
     // list supposed to be cached
     assertThat(documentService.getVersions(D), hasSize(0));
-    
+
     // now simulate a create so that the list is invalidated
     mockNonexistentDocument();
     transactionTemplate.execute(c -> documentService.createDocument(prepareEmptyDocument()));
     mockExistingVersion(prepareEmptyDocument());
-    
+
     // now the new size must be visible
     assertThat(documentService.getVersions(D), hasSize(1));
   }
-  
+
   @Test
   public void testThat_cachedVersionListIsInvalidatedOnUpdate() throws IOException {
     Document docv1 = anEmptyDocument();
     docv1.setVersionTimestamp(Instant.ofEpochMilli(1234567L));
     Document docv2 = anEmptyDocument();
     docv2.setVersionTimestamp(Instant.ofEpochMilli(2345678L));
-    
+
     ObjectName base = ObjectName.of(DOCUMENT_PREFIX, D);
     ObjectName meta = base.append("meta");
     ObjectName namev1 = meta.append(VERSION_FORMATTER.format(docv1.getVersionTimestamp()));
     ObjectName namev2 = meta.append(VERSION_FORMATTER.format(docv2.getVersionTimestamp()));
-    
+
     given(objectStoreService.list(eq(meta))).will(i -> Stream.of( //
         new DocObject(mapper, docv1, namev1)
     ));
     given(objectStoreService.get(eq(namev1))).will(i -> new DocObject(mapper, docv1, namev1));
-    
+
     // prime cache
     assertThat(documentService.getVersions(D), hasSize(1));
-    
+
     // re-mock with two versions
     given(objectStoreService.list(eq(meta))).will(i -> Stream.of( //
         new DocObject(mapper, docv1, namev1),
@@ -434,33 +434,33 @@ public class DefaultMultiVersioningDocumentServiceTest {
 
     // list supposed to be cached
     assertThat(documentService.getVersions(D), hasSize(1));
-    
+
     // now simulate an update so that the list is invalidated
     transactionTemplate.execute(c -> documentService.update(docv2));
-    
+
     // now the new size must be visible
     assertThat(documentService.getVersions(D), hasSize(2));
   }
-  
+
   @Test
   public void testThat_cachedVersionListIsInvalidatedOnDelete() throws IOException {
     mockExistingVersion(prepareEmptyDocument());
-    
+
     // prime cache
     assertThat(documentService.getVersions(D), hasSize(1));
-    
+
     mockNonexistentDocument();
-    
+
     // list supposed to be cached
     assertThat(documentService.getVersions(D), hasSize(1));
-    
+
     mockExistingVersion(prepareEmptyDocument());
-    
+
     // now simulate a create so that the list is invalidated
     transactionTemplate.execute(c -> documentService.deleteDocument(D));
-    
+
     mockNonexistentDocument();
-    
+
     // now the new size must be visible
     assertThat(documentService.getVersions(D), hasSize(0));
   }
@@ -574,7 +574,7 @@ public class DefaultMultiVersioningDocumentServiceTest {
 
     // In this particular case there won't be a get from the object store since the the service can tell
     // from the version list that it isn't there.
-    assertSchemaF(verifyPersistOnce()); 
+    assertSchemaF(verifyPersistOnce());
   }
 
   @Test
@@ -600,7 +600,7 @@ public class DefaultMultiVersioningDocumentServiceTest {
     DocumentPdo existing = prepareEmptyDocument();
     existing.setAssociatedFacetData(new HashMap<>());
     existing.getAssociatedFacetData().put("preexisting", mapper.createObjectNode().put("foo", "bar"));
-    
+
     mockExistingVersion(existing);
 
     transactionTemplate.execute(status -> {
