@@ -2,6 +2,7 @@ package com.neverpile.eureka.api.documentservice;
 
 import static com.neverpile.eureka.api.ObjectStoreService.NEW_VERSION;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -95,6 +96,8 @@ public class DefaultDocumentServiceTest {
     IOUtils.copy(isC.getValue(), baos);
     Document readBack = mapper.readValue(new ByteArrayInputStream(baos.toByteArray()), Document.class);
     assertThat(readBack.getDocumentId(), equalTo("aDocument"));
+    assertThat(readBack.getDateCreated(), notNullValue());
+    assertThat(readBack.getDateModified(), notNullValue());
   }
 
   @Test(
