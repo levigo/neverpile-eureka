@@ -3,6 +3,7 @@ package com.neverpile.eureka.impl.documentservice;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -236,9 +237,22 @@ public class DefaultDocumentService implements DocumentService, DocumentAssociat
     if (txEntityRegistry().document(document.getDocumentId()).document.isPresent())
       throw new DocumentAlreadyExistsException(document);
 
+    ensureBasicMetadataPresent(document);
+
     txEntityRegistry().create(modelMapper.map(document, DocumentPdo.class));
 
     return document;
+  }
+
+  static void ensureBasicMetadataPresent(Document document) {
+    // make sure that some basic metadata is present
+    var now = Instant.now();
+    if(document.getDateCreated() == null) {
+      document.setDateCreated(now);
+    }
+    if(document.getDateModified() == null) {
+      document.setDateModified(now);
+    }
   }
 
   @Override
@@ -250,6 +264,8 @@ public class DefaultDocumentService implements DocumentService, DocumentAssociat
 
   @Override
   public Optional<Document> update(final Document deltaDocument) {
+    ensureBasicMetadataPresent(deltaDocument);
+
     return txEntityRegistry().update(modelMapper.map(deltaDocument, DocumentPdo.class)).map(d -> (Document) d);
   }
 
@@ -306,7 +322,7 @@ public class DefaultDocumentService implements DocumentService, DocumentAssociat
 
   /**
    * Perform the actual retrieval of a document based on a given id.
-   * 
+   *
    * @param documentId the id of the document to retrieve
    * @return the document
    */
@@ -328,7 +344,7 @@ public class DefaultDocumentService implements DocumentService, DocumentAssociat
 
   /**
    * Persist changes to or create the given document.
-   * 
+   *
    * @param document the document to persist
    * @return the document
    */
@@ -361,7 +377,7 @@ public class DefaultDocumentService implements DocumentService, DocumentAssociat
 
   /**
    * Delete the document identified by the given id.
-   * 
+   *
    * @param documentId the id of the document to delete
    */
   private void doDeleteDocument(final String documentId) {

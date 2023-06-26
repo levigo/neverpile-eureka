@@ -154,9 +154,9 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
       .given(mockDocumentService.createDocument(storedDocumentC.capture()))
         .willAnswer(i -> i.getArgument(0));
 
-      Document returnedDocument = 
+      Document returnedDocument =
         requestConfigurer.apply(RestAssured.given())
-        .accept(ContentType.JSON) 
+        .accept(ContentType.JSON)
         .multiPart("base", "foo.txt", "foo".getBytes(), ContentType.TEXT.toString())
         .multiPart("annotation", "foo.xml", "<foo>foobar</foo>".getBytes(), ContentType.XML.toString())
         .multiPart("stuff", "foo.dat", new byte[]{0,1,2,3}, ContentType.BINARY.toString())
@@ -237,10 +237,10 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
     BDDMockito
       .given(mockDocumentService.createDocument(any()))
         .willAnswer(i -> i.getArgument(0));
-    
-    Document returnedDocument = 
+
+    Document returnedDocument =
         ((Function<RequestSpecification, RequestSpecification>) r -> r).apply(RestAssured.given())
-        .accept(ContentType.JSON) 
+        .accept(ContentType.JSON)
         .multiPart("__DOC", "{\"documentId\": \"myProvidedId\"}")
         .multiPart("base", "foo.txt", "foo".getBytes(), ContentType.TEXT.toString())
         .auth().preemptive().basic("user", "password")
@@ -254,10 +254,10 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
         .body("documentId", equalTo("myProvidedId"))
         .body("contentElements.size()", equalTo(1))
         .extract().as(Document.class);
-    
+
     // verify returned document
     assertThat(returnedDocument.getDocumentId()).isEqualTo("myProvidedId");
-    
+
     // @formatter:on
   }
 
@@ -282,7 +282,7 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
           .contentType("text/plain")
           .header("Content-Disposition", Matchers.startsWith("inline; name=\"part\"; filename=\"foo.txt\""))
           .header("Digest", Matchers.equalTo("sha-256=LCa0a2j/xo/5m0U8HTBBNBNCLXBkg7+g+YpeiGJm564="))
-          .header("ETag", Matchers.equalTo("\"sha-256_LCa0a2j/xo/5m0U8HTBBNBNCLXBkg7+g+YpeiGJm564=\""))          
+          .header("ETag", Matchers.equalTo("\"sha-256_LCa0a2j/xo/5m0U8HTBBNBNCLXBkg7+g+YpeiGJm564=\""))
           .body(equalTo("foo"));
 
     RestAssured
@@ -320,6 +320,86 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
   }
 
   @Test
+  public void testThat_contentElementsWithSomeMissingMetadataRetrieved() throws Exception {
+    Document doc = createTestDocument();
+    doc.setVersionTimestamp(Instant.ofEpochMilli(42L));
+    doc.setDocumentId(D);
+
+    // CE has no type, role
+    ContentElement ce = new ContentElement();
+    ce.setType(MediaType.TEXT_PLAIN_TYPE);
+    ce.setContentElementId("2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae");
+    ce.setEncryption(EncryptionType.SHARED);
+    ce.setDigest(new Digest());
+    ce.getDigest().setAlgorithm(HashAlgorithm.SHA_256);
+    ce.getDigest().setBytes(Base64.getDecoder().decode("LCa0a2j/xo/5m0U8HTBBNBNCLXBkg7+g+YpeiGJm564="));
+    ce.setLength(3);
+    doc.setContentElements(Arrays.asList(ce));
+
+    primeObjectStore(doc);
+
+    // @formatter:off
+    BDDMockito.given(mockDocumentService.getDocument(D)).willReturn(Optional.of(doc));
+
+    // retrieve and verify parts
+    RestAssured
+      .given()
+        .log().all()
+        .accept(ContentType.ANY)
+        .auth().preemptive().basic("user", "password")
+      .when().get("/api/v1/documents/{documentID}/content/{part}", D, doc.getContentElements().get(0).getId())
+      .then()
+        .log().all()
+        .statusCode(200)
+        .header("Content-Disposition", Matchers.startsWith("inline; size=3"))
+        .body(equalTo("foo"));
+    // @formatter:on
+  }
+
+  @Test
+  public void testThat_contentElementsWithSomeEmptyMetadataRetrieved() throws Exception {
+    Document doc = createTestDocument();
+    doc.setVersionTimestamp(Instant.ofEpochMilli(42L));
+    doc.setDocumentId(D);
+
+    // we want to be robust for these cases as well
+    doc.setDateCreated(null);
+    doc.setDateModified(null);
+
+    // CE has no type, role
+    ContentElement ce = new ContentElement();
+    ce.setType(MediaType.TEXT_PLAIN_TYPE);
+    ce.setContentElementId("2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae");
+    ce.setEncryption(EncryptionType.SHARED);
+    ce.setDigest(new Digest());
+    ce.getDigest().setAlgorithm(HashAlgorithm.SHA_256);
+    ce.getDigest().setBytes(Base64.getDecoder().decode("LCa0a2j/xo/5m0U8HTBBNBNCLXBkg7+g+YpeiGJm564="));
+    ce.setLength(3);
+    ce.setRole(""); // provide zero-length role
+    ce.setFileName(""); // provide zero-length file name
+    doc.setContentElements(Arrays.asList(ce));
+
+    primeObjectStore(doc);
+
+    // @formatter:off
+    BDDMockito.given(mockDocumentService.getDocument(D)).willReturn(Optional.of(doc));
+
+    // retrieve and verify parts
+    RestAssured
+      .given()
+        .log().all()
+        .accept(ContentType.ANY)
+        .auth().preemptive().basic("user", "password")
+      .when().get("/api/v1/documents/{documentID}/content/{part}", D, doc.getContentElements().get(0).getId())
+      .then()
+        .log().all()
+        .statusCode(200)
+        .header("Content-Disposition", Matchers.startsWith("inline; name=\"\"; size=3"))
+        .body(equalTo("foo"));
+    // @formatter:on
+  }
+
+  @Test
   public void testThat_contentQueryReturnsSinglePart() throws Exception {
     Document doc = createTestDocumentWithContent();
 
@@ -353,7 +433,7 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
 
     // @formatter:off
     BDDMockito.given(mockDocumentService.getDocument(D)).willReturn(Optional.of(doc));
-    
+
     // retrieve and verify parts
     RestAssured
     .given()
@@ -378,7 +458,7 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
 
     // @formatter:off
     BDDMockito.given(mockDocumentService.getDocument(D)).willReturn(Optional.of(doc));
-    
+
     // retrieve and verify parts
     RestAssured
     .given()
@@ -404,7 +484,7 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
 
     // @formatter:off
     BDDMockito.given(mockDocumentService.getDocument(D)).willReturn(Optional.of(doc));
-    
+
     // retrieve and verify parts
     ExtractableResponse<Response> response = RestAssured
       .given()
@@ -418,7 +498,7 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
         .log().all()
         .statusCode(200)
         .contentType("multipart/mixed").extract();
-    
+
     byte[] responseBytes = response.response().asByteArray();
     // @formatter:on
 
@@ -483,7 +563,7 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
 
     // @formatter:off
     BDDMockito.given(mockDocumentService.getDocument(D)).willReturn(Optional.of(doc));
-    
+
     // retrieve and verify parts
     ExtractableResponse<Response> response = RestAssured
         .given()
@@ -498,7 +578,7 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
         .log().all()
         .statusCode(200)
         .contentType("multipart/mixed").extract();
-    
+
     byte[] responseBytes = response.response().asByteArray();
     // @formatter:on
 
@@ -524,7 +604,7 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
 
     // @formatter:off
     BDDMockito.given(mockDocumentService.getDocument(D)).willReturn(Optional.of(doc));
-    
+
     // retrieve and verify parts
     ExtractableResponse<Response> response = RestAssured
         .given()
@@ -539,7 +619,7 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
         .log().all()
         .statusCode(200)
         .contentType("multipart/mixed").extract();
-    
+
     byte[] responseBytes = response.response().asByteArray();
     // @formatter:on
 
@@ -565,7 +645,7 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
 
     // @formatter:off
     BDDMockito.given(mockDocumentService.getDocument(D)).willReturn(Optional.of(doc));
-    
+
     // retrieve and verify parts
     ExtractableResponse<Response> response = RestAssured
       .given()
@@ -579,7 +659,7 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
         .log().all()
         .statusCode(200)
         .contentType("multipart/mixed").extract();
-    
+
     byte[] responseBytes = response.response().asByteArray();
     // @formatter:on
 
@@ -599,7 +679,7 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
 
     // @formatter:off
     BDDMockito.given(mockDocumentService.getDocument(D)).willReturn(Optional.of(doc));
-    
+
     // retrieve and verify parts
     ExtractableResponse<Response> response = RestAssured
       .given()
@@ -614,7 +694,7 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
         .log().all()
         .statusCode(200)
         .contentType("multipart/mixed").extract();
-    
+
     byte[] responseBytes = response.response().asByteArray();
     // @formatter:on
 
@@ -639,7 +719,7 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
 
     // @formatter:off
     BDDMockito.given(mockDocumentService.getDocument(D)).willReturn(Optional.of(doc));
-    
+
     // retrieve and verify parts
     RestAssured
         .given()
@@ -663,7 +743,7 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
 
     // @formatter:off
     BDDMockito.given(mockDocumentService.getDocument(D)).willReturn(Optional.of(doc));
-    
+
     // retrieve and verify parts
     RestAssured
         .given()
@@ -746,7 +826,7 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
   /**
    * Prime the object store with content matching the elements defined
    * {@link #createTestDocumentWithContent()}.
-   * 
+   *
    * @param doc
    */
   private void primeObjectStore(final Document doc) {
@@ -853,7 +933,7 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
           .contentType("application/x-foo")
           .auth().preemptive().basic("user", "password")
         .when()
-          .put("/api/v1/documents/{document}/content/{content}", 
+          .put("/api/v1/documents/{document}/content/{content}",
               doc.getDocumentId(), "4938d873b6755092912b54f97033052206192a4eaae5ce9a4f235a1067d04b0d")
         .then()
           .log().all()

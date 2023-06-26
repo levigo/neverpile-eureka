@@ -241,13 +241,20 @@ public class ContentElementResource {
 
     LOGGER.info("add Content response");
 
-    ContentDisposition contentDisposition = ContentDisposition //
-        .builder("inline") //
-        .name(contentElement.getRole()).filename(contentElement.getFileName()) //
-        .creationDate(document.getDateCreated().atZone(ZoneId.systemDefault())) //
-        .modificationDate(document.getDateModified().atZone(ZoneId.systemDefault())) //
-        .size(contentElement.getLength()) //
-        .build();
+    var cdBuilder = ContentDisposition //
+      .builder("inline") //
+      .name(contentElement.getRole())
+      .size(contentElement.getLength());
+    if(document.getDateCreated() != null) {
+      cdBuilder.creationDate(document.getDateCreated().atZone(ZoneId.systemDefault()));
+    }
+    if(document.getDateModified() != null) {
+      cdBuilder.modificationDate(document.getDateModified().atZone(ZoneId.systemDefault()));
+    }
+    if (StringUtils.hasText(contentElement.getFileName())) {
+      cdBuilder.filename(contentElement.getFileName());
+    }
+    ContentDisposition contentDisposition = cdBuilder.build();
 
     // try to canonicalize the algorithm name
     String digestAlgorithmName = contentElement.getDigest().getAlgorithm().name().toLowerCase().replaceAll("_", "-");
@@ -256,7 +263,9 @@ public class ContentElementResource {
     return ResponseEntity.ok() //
         .lastModified(document.getDateModified() != null
             ? document.getDateModified().toEpochMilli()
-            : document.getDateCreated().toEpochMilli()) //
+            : document.getDateCreated() != null
+                ? document.getDateCreated().toEpochMilli()
+                : Instant.now().toEpochMilli()) //
         .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString()) //
         .header(HttpHeaders.CONTENT_TYPE, contentElement.getType().toString()) //
         .header(HttpHeaders.CONTENT_LENGTH, Long.toString(contentElement.getLength())) //
@@ -312,7 +321,7 @@ public class ContentElementResource {
   /**
    * Try to find a part named {@value #DOCUMENT_FORM_ELEMENT_NAME} and try to map that to a
    * {@link DocumentDto}. Return an empty {@link Optional} if there is no such part.
-   * 
+   *
    * @param files all request parts
    * @return an optional DocumentDto.
    */
