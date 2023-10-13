@@ -1,7 +1,7 @@
 package com.neverpile.eureka.ignite;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 
 import org.apache.ignite.IgniteSpringBean;
 

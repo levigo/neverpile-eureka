@@ -3,8 +3,8 @@ package com.neverpile.eureka.plugin.metadata.rest;
 import java.time.Instant;
 import java.util.Arrays;
 
-import javax.validation.constraints.Pattern;
-import javax.ws.rs.core.MediaType;
+import jakarta.validation.constraints.Pattern;
+import jakarta.ws.rs.core.MediaType;
 
 import org.springframework.hateoas.RepresentationModel;
 

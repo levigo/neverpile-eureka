@@ -9,13 +9,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.locks.Lock;
 
-import javax.annotation.PostConstruct;
 import javax.cache.Cache;
 import javax.cache.event.CacheEntryEvent;
 import javax.cache.event.CacheEntryEventFilter;
 import javax.cache.event.CacheEntryListenerException;
 import javax.cache.event.EventType;
 import javax.cache.expiry.EternalExpiryPolicy;
+
+import jakarta.annotation.PostConstruct;
 
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;

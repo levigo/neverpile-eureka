@@ -7,8 +7,10 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
@@ -30,10 +32,9 @@ public class BaseTestConfiguration {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
       http //
-          .csrf().disable() //
-          .httpBasic().and() //
-          .authorizeRequests() //
-          .antMatchers("/api/**").hasRole("USER");
+          .csrf(AbstractHttpConfigurer::disable)
+          .httpBasic(Customizer.withDefaults())
+          .authorizeHttpRequests(e -> e.requestMatchers("/api/**").hasRole("USER"));
       return http.build();
     }
 

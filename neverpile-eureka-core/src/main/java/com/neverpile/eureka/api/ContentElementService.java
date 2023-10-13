@@ -4,7 +4,7 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.util.List;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import com.neverpile.eureka.model.ContentElement;
 import com.neverpile.eureka.model.Document;

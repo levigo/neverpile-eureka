@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,6 +29,7 @@ import com.neverpile.urlcrypto.PreSignedUrlEnabled;
 import io.micrometer.core.annotation.Timed;
 
 @RestController
+@Controller
 @RequestMapping(path = "/api/v1/documents", produces = MediaType.APPLICATION_JSON_VALUE)
 @Import(ContentElementResourceConfiguration.class)
 @ConditionalOnBean(MultiVersioningDocumentService.class)

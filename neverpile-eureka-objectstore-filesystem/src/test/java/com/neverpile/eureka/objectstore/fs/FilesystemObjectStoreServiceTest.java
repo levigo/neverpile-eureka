@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.data.cassandra.CassandraDataAutoCo
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.util.FileSystemUtils;
 
 import com.neverpile.eureka.api.objectstore.AbstractObjectStoreServiceTest;
@@ -18,6 +19,7 @@ import com.neverpile.eureka.api.objectstore.AbstractObjectStoreServiceTest;
 @SpringBootTest(properties = "neverpile-eureka.bridge.storage.filesystem.rootPath=target/test-store")
 @ContextConfiguration(classes = TestConfig.class)
 @EnableAutoConfiguration()
+@EnableTransactionManagement
 public class FilesystemObjectStoreServiceTest extends AbstractObjectStoreServiceTest {
   @Before
   public void cleanStore() throws IOException {

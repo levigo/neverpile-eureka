@@ -1,6 +1,6 @@
 package com.neverpile.eureka.objectstore.cassandra;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

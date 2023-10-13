@@ -6,17 +6,22 @@ import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.annotation.Order;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionException;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.neverpile.eureka.impl.tx.lock.LocalLockFactory;
@@ -47,12 +52,12 @@ public class BaseTestConfiguration {
   @Order(SecurityProperties.BASIC_AUTH_ORDER)
   public static class SecurityConfig {
     @Bean
-    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain web(HttpSecurity http) throws Exception {
+//      TODO: set requestMatchers back to "/api/**"
       http //
-          .csrf().disable() //
-          .httpBasic().and() //
-          .authorizeRequests() //
-          .antMatchers("/api/**").hasRole("USER");
+          .csrf(AbstractHttpConfigurer::disable)
+          .httpBasic(Customizer.withDefaults())
+          .authorizeHttpRequests(e -> e.requestMatchers("**").hasRole("USER"));
       return http.build();
     }
 
@@ -74,5 +79,28 @@ public class BaseTestConfiguration {
   @Bean
   ClusterLockFactory noOpLock() {
     return new LocalLockFactory();
+  }
+
+
+//  TODO: replace this with a real transaction manager
+  @Primary
+  @Bean
+  public PlatformTransactionManager transactionManager() {
+    return new PlatformTransactionManager() {
+      @Override
+      public TransactionStatus getTransaction(TransactionDefinition definition) throws TransactionException {
+        return null;
+      }
+
+      @Override
+      public void commit(TransactionStatus status) throws TransactionException {
+
+      }
+
+      @Override
+      public void rollback(TransactionStatus status) throws TransactionException {
+
+      }
+    };
   }
 }

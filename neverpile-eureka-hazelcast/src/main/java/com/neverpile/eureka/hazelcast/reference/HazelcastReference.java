@@ -2,7 +2,7 @@ package com.neverpile.eureka.hazelcast.reference;
 
 import java.io.Serializable;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 

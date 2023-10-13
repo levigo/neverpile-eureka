@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,6 +46,7 @@ import com.neverpile.common.authorization.policy.impl.PolicyBasedAuthorizationSe
 import io.micrometer.core.annotation.Timed;
 
 @RestController
+@Controller
 @RequestMapping(path = "/api/v1/authorization/policy", produces = {
     MediaType.APPLICATION_JSON_VALUE
 })

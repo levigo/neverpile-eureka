@@ -42,72 +42,10 @@
       <scope>test</scope>
     </dependency>
 
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-jta-atomikos</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
   <build>
     <plugins>
-      <plugin>
-        <groupId>io.fabric8</groupId>
-        <artifactId>docker-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>start-docker-image</id>
-            <phase>pre-integration-test</phase>
-            <goals>
-              <goal>start</goal>
-            </goals>
-            <configuration>
-              <autoCreateCustomNetworks>true</autoCreateCustomNetworks>
-              <images>
-                <!-- Docker Image to use -->
-                <image>
-                  <alias>cassandra</alias>
-                  <name>cassandra:4.1.0</name>
-                  <run>
-                    <namingStrategy>none</namingStrategy>
-                    <env>
-                      <discovery.type>single-node</discovery.type>
-                    </env>
-                    <ports>
-                      <port>${cassandra.host}:7000:7000</port>
-                      <port>${cassandra.host}:7001:7001</port>
-                      <port>${cassandra.host}:9042:9042</port>
-                      <port>${cassandra.host}:9160:9160</port>
-                    </ports>
-                    <wait>
-                      <time>120000</time>
-                    </wait>
-                    <log>
-                      <enabled>true</enabled>
-                      <color>red</color>
-                    </log>
-                    <tmpfs>
-                      <mount>/var/lib/temp:size=10m</mount>
-                    </tmpfs>
-                    <net>neverpile-net</net>
-                  </run>
-                  <watch>
-                    <mode>none</mode>
-                  </watch>
-                </image>
-              </images>
-            </configuration>
-          </execution>
-          <execution>
-            <id>stop-docker-image</id>
-            <phase>post-integration-test</phase>
-            <goals>
-              <goal>stop</goal>
-            </goals>
-          </execution>
-        </executions>
-        <version>${docker-maven-plugin.version}</version>
-      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>

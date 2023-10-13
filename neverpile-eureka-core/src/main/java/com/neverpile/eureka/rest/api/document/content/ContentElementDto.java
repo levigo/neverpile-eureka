@@ -2,9 +2,9 @@ package com.neverpile.eureka.rest.api.document.content;
 
 import java.util.Objects;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.Pattern;
-import javax.ws.rs.core.MediaType;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Pattern;
+import jakarta.ws.rs.core.MediaType;
 
 import org.springframework.hateoas.RepresentationModel;
 

@@ -2,9 +2,9 @@ package com.neverpile.eureka.model;
 
 import java.util.Objects;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.Pattern;
-import javax.ws.rs.core.MediaType;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Pattern;
+import jakarta.ws.rs.core.MediaType;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;

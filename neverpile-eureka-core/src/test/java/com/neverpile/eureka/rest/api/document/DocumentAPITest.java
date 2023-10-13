@@ -20,7 +20,7 @@ import java.util.Base64;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import org.junit.Before;
 import org.junit.Test;

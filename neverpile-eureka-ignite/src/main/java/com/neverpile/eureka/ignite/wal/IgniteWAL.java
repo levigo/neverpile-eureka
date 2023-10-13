@@ -13,8 +13,9 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.annotation.PostConstruct;
 import javax.cache.expiry.EternalExpiryPolicy;
+
+import jakarta.annotation.PostConstruct;
 
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;

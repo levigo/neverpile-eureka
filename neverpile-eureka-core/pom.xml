@@ -32,6 +32,7 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-undertow</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-security</artifactId>
@@ -47,6 +48,7 @@
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-config</artifactId>
+      <version>6.1.4</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.hateoas</groupId>
@@ -97,6 +99,7 @@
       <groupId>javax.validation</groupId>
       <artifactId>validation-api</artifactId>
       <scope>provided</scope>
+      <version>2.0.1.Final</version>
     </dependency>
 
     <!-- Pre-signed-URL spport -->
@@ -106,11 +109,6 @@
     </dependency>
 
     <!-- Test dependencies -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-jta-atomikos</artifactId>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>io.rest-assured</groupId>
       <artifactId>rest-assured</artifactId>

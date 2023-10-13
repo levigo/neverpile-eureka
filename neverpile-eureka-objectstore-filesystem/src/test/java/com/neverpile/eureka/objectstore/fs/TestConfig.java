@@ -1,7 +1,10 @@
 package com.neverpile.eureka.objectstore.fs;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.context.annotation.RequestScope;
 
 import com.neverpile.eureka.api.ObjectStoreService;

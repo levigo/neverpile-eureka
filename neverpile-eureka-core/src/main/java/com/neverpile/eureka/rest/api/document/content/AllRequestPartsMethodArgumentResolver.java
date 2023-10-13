@@ -23,9 +23,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.Part;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.Part;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ResolvableType;
@@ -123,7 +123,7 @@ public class AllRequestPartsMethodArgumentResolver implements HandlerMethodArgum
    * <ul>
    * <li>annotated with {@code @RequestPart}
    * <li>of type {@link MultipartFile} unless annotated with {@code @RequestParam}
-   * <li>of type {@code javax.servlet.http.Part} unless annotated with {@code @RequestParam}
+   * <li>of type {@code jakarta.servlet.http.Part} unless annotated with {@code @RequestParam}
    * </ul>
    */
   @Override

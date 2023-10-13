@@ -5,8 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.annotation.PostConstruct;
-import javax.transaction.Transactional;
+import jakarta.annotation.PostConstruct;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,6 +15,9 @@ import org.springframework.boot.autoconfigure.data.cassandra.CassandraDataAutoCo
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.neverpile.eureka.api.ObjectStoreService;
 import com.neverpile.eureka.model.ObjectName;
@@ -24,6 +26,7 @@ import com.neverpile.eureka.model.ObjectName;
 @SpringBootTest
 @ContextConfiguration(classes = CassandraTestConfig.class)
 @EnableAutoConfiguration(exclude={CassandraDataAutoConfiguration.class})
+@EnableTransactionManagement
 public class CassandraLoadIT {
 
   @Autowired
@@ -41,7 +44,7 @@ public class CassandraLoadIT {
 
 
   @Test
-  @Transactional
+  @Transactional(propagation = Propagation.NEVER)
   public void test_1mb_1_1() {
     test(1024 * 1024, 1, 1);
   }
