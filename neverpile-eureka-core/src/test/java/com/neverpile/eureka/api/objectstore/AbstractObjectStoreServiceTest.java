@@ -42,7 +42,7 @@ import com.neverpile.eureka.model.ObjectName;
 public abstract class AbstractObjectStoreServiceTest {
 
   @Autowired
-  private ObjectStoreService objectStore;
+  protected ObjectStoreService objectStore;
 
   @Autowired
   TransactionTemplate transactionTemplate;
@@ -340,6 +340,7 @@ public abstract class AbstractObjectStoreServiceTest {
     objectStore.put(defaultName().append("c").append("1").append("1"), ObjectStoreService.NEW_VERSION, defaultStream());
 
     // We expect: a, b (the object), b (the prefix) and c
+    objectStore.list(defaultName()).forEach(System.out::println);
     assertEquals(4, objectStore.list(defaultName()).count());
   }
 
