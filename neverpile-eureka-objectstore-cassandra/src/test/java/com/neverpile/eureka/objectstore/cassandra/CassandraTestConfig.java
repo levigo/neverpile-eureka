@@ -7,10 +7,15 @@ import java.util.HashMap;
 import java.util.Optional;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.transaction.HeuristicMixedException;
+import jakarta.transaction.HeuristicRollbackException;
+import jakarta.transaction.NotSupportedException;
+import jakarta.transaction.RollbackException;
+import jakarta.transaction.SystemException;
+import jakarta.transaction.UserTransaction;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -20,17 +25,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionException;
-import org.springframework.transaction.TransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.transaction.jta.JtaTransactionManager;
 
 import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.core.CqlSession;
-import com.datastax.oss.driver.api.core.CqlSessionBuilder;
 import com.datastax.oss.driver.api.core.metadata.schema.TableMetadata;
 import com.neverpile.eureka.api.ObjectStoreService;
+import com.neverpile.eureka.tx.wal.TransactionWAL;
+import com.neverpile.eureka.tx.wal.local.DefaultTransactionWAL;
 
 @Configuration
 @AutoConfigureBefore(value = {CassandraAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class},
@@ -83,29 +85,46 @@ public class CassandraTestConfig extends AbstractNeverpileCassandraConfig {
     return new CassandraObjectStoreService();
   }
 
-  @Primary
   @Bean
+  @Primary
   public PlatformTransactionManager transactionManager() {
-    return new PlatformTransactionManager() {
+    JtaTransactionManager jtaTransactionManager = new JtaTransactionManager();
+    jtaTransactionManager.setUserTransaction(new UserTransaction() {
       @Override
-      public TransactionStatus getTransaction(TransactionDefinition definition) throws TransactionException {
-        return null;
-      }
-
-      @Override
-      public void commit(TransactionStatus status) throws TransactionException {
+      public void begin() throws NotSupportedException, SystemException {
 
       }
 
       @Override
-      public void rollback(TransactionStatus status) throws TransactionException {
+      public void commit() throws RollbackException, HeuristicMixedException, HeuristicRollbackException, SecurityException, IllegalStateException, SystemException {
 
       }
-    };
+
+      @Override
+      public void rollback() throws IllegalStateException, SecurityException, SystemException {
+
+      }
+
+      @Override
+      public void setRollbackOnly() throws IllegalStateException, SystemException {
+
+      }
+
+      @Override
+      public int getStatus() throws SystemException {
+        return 0;
+      }
+
+      @Override
+      public void setTransactionTimeout(int seconds) throws SystemException {
+
+      }
+    });
+    return jtaTransactionManager;
   }
 
   @Bean
-  public TransactionTemplate transactionTemplate() {
-    return new TransactionTemplate(transactionManager());
+  public TransactionWAL transactionWAL() {
+    return new DefaultTransactionWAL();
   }
 }

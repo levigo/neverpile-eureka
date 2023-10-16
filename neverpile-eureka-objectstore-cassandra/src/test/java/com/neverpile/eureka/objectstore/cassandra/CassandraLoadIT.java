@@ -1,6 +1,7 @@
 package com.neverpile.eureka.objectstore.cassandra;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,9 +13,11 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.cassandra.CassandraDataAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +29,6 @@ import com.neverpile.eureka.model.ObjectName;
 @SpringBootTest
 @ContextConfiguration(classes = CassandraTestConfig.class)
 @EnableAutoConfiguration(exclude={CassandraDataAutoConfiguration.class})
-@EnableTransactionManagement
 public class CassandraLoadIT {
 
   @Autowired
@@ -44,7 +46,7 @@ public class CassandraLoadIT {
 
 
   @Test
-  @Transactional(propagation = Propagation.NEVER)
+  @Transactional
   public void test_1mb_1_1() {
     test(1024 * 1024, 1, 1);
   }
