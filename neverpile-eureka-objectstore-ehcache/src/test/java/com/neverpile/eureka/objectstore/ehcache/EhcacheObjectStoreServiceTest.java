@@ -25,15 +25,7 @@ import com.neverpile.eureka.api.objectstore.AbstractObjectStoreServiceTest;
 public class EhcacheObjectStoreServiceTest extends AbstractObjectStoreServiceTest {
 
   @BeforeEach
-  public void setNewCache() throws IOException {
+  public void setNewCache() {
     objectStore = new EhcacheObjectStoreService("./target/testdir", "1000", "100");
-  }
-
-  @AfterEach
-  public void cleanCache() {
-//    if (objectStore instanceof EhcacheObjectStoreService) {
-//      EhcacheObjectStoreService ehcacheObjectStoreService = (EhcacheObjectStoreService) objectStore;
-//      ehcacheObjectStoreService.clear();
-//    }
   }
 }

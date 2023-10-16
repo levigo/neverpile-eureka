@@ -340,7 +340,6 @@ public abstract class AbstractObjectStoreServiceTest {
     objectStore.put(defaultName().append("c").append("1").append("1"), ObjectStoreService.NEW_VERSION, defaultStream());
 
     // We expect: a, b (the object), b (the prefix) and c
-    objectStore.list(defaultName()).forEach(System.out::println);
     assertEquals(4, objectStore.list(defaultName()).count());
   }
 
