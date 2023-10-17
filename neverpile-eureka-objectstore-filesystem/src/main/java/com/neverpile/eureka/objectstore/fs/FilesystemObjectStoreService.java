@@ -198,6 +198,15 @@ public class FilesystemObjectStoreService implements ObjectStoreService {
 
     private final String version;
 
+    @Override
+    public String toString() {
+      return "FilesystemStoreObject{" +
+              "objectName=" + objectName +
+              ", file=" + file +
+              ", version='" + version + '\'' +
+              '}';
+    }
+
     public FilesystemStoreObject(final ObjectName objectName, final File file, final String version) {
       this.objectName = objectName;
       this.file = file;
@@ -498,6 +507,10 @@ public class FilesystemObjectStoreService implements ObjectStoreService {
   private StoreObject toPrefix(final Path key) {
     ObjectName objectName = toObjectName(key);
     return new StoreObject() {
+      @Override
+      public String toString() {
+        return ""+getObjectName()+ " "+getVersion();
+      }
 
       @Override
       public ObjectName getObjectName() {

@@ -6,7 +6,7 @@
   <groupId>com.neverpile.eureka</groupId>
   <artifactId>neverpile-eureka</artifactId>
   <packaging>pom</packaging>
-  <version>0.1.0</version>
+  <version>0.1.0-SNAPSHOT</version>
 
   <properties>
     <java.version>11</java.version>
@@ -50,6 +50,7 @@
 
     <aws-s3.version>1.12.564</aws-s3.version>
     <s3mock.version>2.17.0</s3mock.version>
+    <ehcache.version>3.10.8</ehcache.version>
 
     <!-- plugins -->
     <docker-maven-plugin.version>0.43.4</docker-maven-plugin.version>
@@ -74,6 +75,7 @@
   <modules>
     <module>neverpile-eureka-core</module>
     <module>neverpile-eureka-objectstore-filesystem</module>
+    <module>neverpile-eureka-objectstore-ehcache</module>
     <module>neverpile-eureka-objectstore-s3</module>
     <module>neverpile-eureka-objectstore-cassandra</module>
     <module>neverpile-eureka-security-oauth2</module>
@@ -214,6 +216,11 @@
       </dependency>
       <dependency>
         <groupId>com.neverpile.eureka</groupId>
+        <artifactId>neverpile-eureka-objectstore-ehcache</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.neverpile.eureka</groupId>
         <artifactId>neverpile-eureka-objectstore-cassandra</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -281,6 +288,11 @@
         <groupId>com.neverpile.eureka</groupId>
         <artifactId>neverpile-eureka-test-support</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ehcache</groupId>
+        <artifactId>ehcache</artifactId>
+        <version>${ehcache.version}</version>
       </dependency>
 
       <dependency>
