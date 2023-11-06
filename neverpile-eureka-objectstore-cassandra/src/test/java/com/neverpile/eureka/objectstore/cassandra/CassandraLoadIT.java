@@ -15,8 +15,6 @@ import org.springframework.boot.autoconfigure.data.cassandra.CassandraDataAutoCo
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.neverpile.eureka.api.ObjectStoreService;
@@ -26,7 +24,6 @@ import com.neverpile.eureka.model.ObjectName;
 @SpringBootTest
 @ContextConfiguration(classes = CassandraTestConfig.class)
 @EnableAutoConfiguration(exclude={CassandraDataAutoConfiguration.class})
-@EnableTransactionManagement
 public class CassandraLoadIT {
 
   @Autowired
@@ -44,7 +41,7 @@ public class CassandraLoadIT {
 
 
   @Test
-  @Transactional(propagation = Propagation.NEVER)
+  @Transactional
   public void test_1mb_1_1() {
     test(1024 * 1024, 1, 1);
   }

@@ -1,8 +1,7 @@
 spring.main.allow-circular-references: true
 spring:
-  data:
-    cassandra:
-      local-datacenter: datacenter1
+  cassandra:
+    local-datacenter: datacenter1
   jpa:
     show-sql: true
     properties:

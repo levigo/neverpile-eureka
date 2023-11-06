@@ -2,6 +2,7 @@ package com.neverpile.eureka.api.objectstore;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertEquals;

@@ -7,6 +7,8 @@ target/
 *.trace.db
 /*mv.tmp
 *.mv.db
+*.log
+*.lck
 
 ######################
 # Documents, Facets & Logs

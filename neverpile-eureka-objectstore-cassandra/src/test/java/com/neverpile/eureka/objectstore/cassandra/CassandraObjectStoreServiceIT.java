@@ -17,7 +17,7 @@ import com.neverpile.eureka.api.objectstore.AbstractObjectStoreServiceTest;
 @EnableAutoConfiguration(exclude = {
     CassandraDataAutoConfiguration.class
 })
-@TestPropertySource(properties = {"spring.data.cassandra.jmx-enabled=false"})
+@TestPropertySource(properties = {"spring.cassandra.jmx-enabled=false"})
 public class CassandraObjectStoreServiceIT extends AbstractObjectStoreServiceTest {
   @Autowired
   private CassandraObjectStoreService cassandraObjectStore;
