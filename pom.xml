@@ -39,7 +39,7 @@
 
     <url-crypto-kit.version>1.4.1</url-crypto-kit.version>
     <eureka-webjar.version>1.0.25</eureka-webjar.version>
-    <neverpile-commons.version>1.8.1</neverpile-commons.version>
+    <neverpile-commons.version>1.11.0</neverpile-commons.version>
 
     <opentracing.version>0.33.0</opentracing.version>
     <metrics-core.version>4.2.21</metrics-core.version>
