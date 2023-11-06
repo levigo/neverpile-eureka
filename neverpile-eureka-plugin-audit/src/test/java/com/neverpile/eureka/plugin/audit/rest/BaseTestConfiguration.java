@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
@@ -23,7 +22,6 @@ import com.neverpile.common.authorization.api.Action;
 import com.neverpile.common.authorization.api.AuthorizationService;
 import com.neverpile.common.authorization.basic.AllowAllAuthorizationService;
 import com.neverpile.eureka.api.DocumentAuthorizationService;
-import com.neverpile.eureka.impl.tx.lock.LocalLockFactory;
 import com.neverpile.eureka.model.Document;
 import com.neverpile.eureka.plugin.audit.verification.VerificationService;
 import com.neverpile.eureka.rest.api.document.DocumentResource;
@@ -31,8 +29,6 @@ import com.neverpile.eureka.rest.configuration.FacetedDocumentDtoModule;
 import com.neverpile.eureka.rest.configuration.JacksonConfiguration;
 import com.neverpile.eureka.rest.configuration.ModelMapperConfiguration;
 import com.neverpile.eureka.rest.mocks.MockObjectStoreService;
-import com.neverpile.eureka.tx.atomic.DistributedAtomicReference;
-import com.neverpile.eureka.tx.lock.ClusterLockFactory;
 
 @SpringBootConfiguration
 @EnableAutoConfiguration
