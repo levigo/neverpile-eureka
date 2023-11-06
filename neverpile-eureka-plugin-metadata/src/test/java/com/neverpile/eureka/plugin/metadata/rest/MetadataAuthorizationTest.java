@@ -22,6 +22,7 @@ import jakarta.ws.rs.core.MediaType;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -126,10 +127,10 @@ public class MetadataAuthorizationTest extends AbstractRestAssuredTest {
 
   @Test
   public void testThat_documentUpdateWithMetadataVerifiesAuthorization() throws JsonProcessingException {
-    given(mockAuthService.authorizeSubResourceUpdate(any(), any())).willReturn(true);
-    given(mockAuthService.authorizeSubResourceCreate(any(), any())).willReturn(true);
-    given(mockAuthService.authorizeSubResourceDelete(any(), any())).willReturn(true);
-    given(mockAuthService.authorizeSubResourceGet(any(), any())).willReturn(true);
+    given(mockAuthService.authorizeSubResourceUpdate(any(), any(String[].class))).willReturn(true);
+    given(mockAuthService.authorizeSubResourceCreate(any(), any(String[].class))).willReturn(true);
+    given(mockAuthService.authorizeSubResourceDelete(any(), any(String[].class))).willReturn(true);
+    given(mockAuthService.authorizeSubResourceGet(any(), any(String[].class))).willReturn(true);
 
     givenVanillaExistingMetadata();
 
@@ -182,10 +183,10 @@ public class MetadataAuthorizationTest extends AbstractRestAssuredTest {
 
   @Test
   public void testThat_metadataUpdateVerifiesAuthorization() throws JsonProcessingException {
-    given(mockAuthService.authorizeSubResourceUpdate(any(), any())).willReturn(true);
-    given(mockAuthService.authorizeSubResourceCreate(any(), any())).willReturn(true);
-    given(mockAuthService.authorizeSubResourceDelete(any(), any())).willReturn(true);
-    given(mockAuthService.authorizeSubResourceGet(any(), any())).willReturn(true);
+    given(mockAuthService.authorizeSubResourceUpdate(any(), any(String[].class))).willReturn(true);
+    given(mockAuthService.authorizeSubResourceCreate(any(), any(String[].class))).willReturn(true);
+    given(mockAuthService.authorizeSubResourceDelete(any(), any(String[].class))).willReturn(true);
+    given(mockAuthService.authorizeSubResourceGet(any(), any(String[].class))).willReturn(true);
 
     givenVanillaExistingMetadata();
 

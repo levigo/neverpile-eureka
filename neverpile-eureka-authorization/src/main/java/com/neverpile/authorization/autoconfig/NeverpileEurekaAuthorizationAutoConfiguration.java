@@ -52,25 +52,4 @@ public class NeverpileEurekaAuthorizationAutoConfiguration {
   public PolicyRepositoryResource policyRepositoryResource() {
     return new PolicyRepositoryResource();
   }
-
-  @Primary
-  @Bean
-  public PlatformTransactionManager transactionManager() {
-    return new PlatformTransactionManager() {
-      @Override
-      public TransactionStatus getTransaction(TransactionDefinition definition) throws TransactionException {
-        return null;
-      }
-
-      @Override
-      public void commit(TransactionStatus status) throws TransactionException {
-
-      }
-
-      @Override
-      public void rollback(TransactionStatus status) throws TransactionException {
-
-      }
-    };
-  }
 }
