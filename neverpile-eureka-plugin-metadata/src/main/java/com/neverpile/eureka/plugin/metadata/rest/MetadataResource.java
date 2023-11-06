@@ -4,7 +4,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,7 +22,6 @@ import com.neverpile.urlcrypto.PreSignedUrlEnabled;
 import io.micrometer.core.annotation.Timed;
 
 @RestController
-@Controller
 @RequestMapping(path = "/api/v1/documents/{documentID}/metadata", produces = {
     MediaType.APPLICATION_JSON_VALUE
 })

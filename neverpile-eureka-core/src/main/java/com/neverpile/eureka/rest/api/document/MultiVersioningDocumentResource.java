@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,7 +28,6 @@ import io.micrometer.core.annotation.Timed;
  * available.
  */
 @RestController
-@Controller
 @RequestMapping(path = "/api/v1/documents/{documentID}/history", produces = {
     MediaType.APPLICATION_JSON_VALUE
 })

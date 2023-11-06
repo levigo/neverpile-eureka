@@ -34,7 +34,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -69,7 +68,6 @@ import com.neverpile.urlcrypto.PreSignedUrlEnabled;
 import io.micrometer.core.annotation.Timed;
 
 @RestController
-@Controller
 @RequestMapping(path = "/api/v1/documents", produces = MediaType.APPLICATION_JSON_VALUE)
 @Import(ContentElementResourceConfiguration.class)
 @Transactional
