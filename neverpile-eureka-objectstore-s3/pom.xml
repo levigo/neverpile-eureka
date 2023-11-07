@@ -35,6 +35,12 @@
       <version>${s3mock.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>5.0.0</version>
+      <scope>test</scope>
+    </dependency>
 
     <dependency>
       <groupId>com.neverpile.eureka</groupId>
