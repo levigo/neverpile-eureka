@@ -109,7 +109,6 @@
         <version>${maven-failsafe-plugin.version}</version>
         <configuration>
           <skipITs>false</skipITs>
-          <forkMode>once</forkMode>
           <systemPropertyVariables>
             <cassandra.host>${cassandra.host}</cassandra.host>
             <cassandra.port>${cassandra.port}</cassandra.port>

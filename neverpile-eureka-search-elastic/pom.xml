@@ -118,7 +118,6 @@
                   </watch>
                 </image>
               </images>
-              <verbose>true</verbose>
             </configuration>
           </execution>
           <execution>
@@ -137,7 +136,6 @@
         <version>${maven-failsafe-plugin.version}</version>
         <configuration>
           <skipITs>false</skipITs>
-          <forkMode>once</forkMode>
           <systemPropertyVariables>
 <!--            <elastic.host>${elastic.host}</elastic.host>-->
 <!--            <elastic.port>${elastic.port}</elastic.port>-->
