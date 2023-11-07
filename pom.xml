@@ -58,7 +58,6 @@
     <maven-failsafe-plugin.version>3.1.2</maven-failsafe-plugin.version>
     <maven-surefire-plugin.version>3.1.2</maven-surefire-plugin.version>
     <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
-    <dependency-check-maven.version>8.4.0</dependency-check-maven.version>
 
     <neverpile-commons.version>1.9.0</neverpile-commons.version>
   </properties>
@@ -358,9 +357,9 @@
           <artifactId>maven-compiler-plugin</artifactId>
           <version>${maven-compiler-plugin.version}</version>
           <configuration>
-            <source>11</source>
-            <target>11</target>
-            <release>11</release>
+            <source>17</source>
+            <target>17</target>
+            <release>17</release>
             <forceJavacCompilerUse>true</forceJavacCompilerUse>
           </configuration>
         </plugin>
@@ -450,22 +449,6 @@
             <id>attach-sources</id>
             <goals>
               <goal>jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.owasp</groupId>
-        <artifactId>dependency-check-maven</artifactId>
-        <version>${dependency-check-maven.version}</version>
-        <configuration>
-          <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
-          <failOnError>true</failOnError>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>aggregate</goal>
             </goals>
           </execution>
         </executions>
