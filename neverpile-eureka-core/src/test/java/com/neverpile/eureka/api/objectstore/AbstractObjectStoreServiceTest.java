@@ -155,6 +155,27 @@ public abstract class AbstractObjectStoreServiceTest {
     assertFalse(objectStore.checkObjectExists(s2));
   }
 
+  @Test
+  public void testThat_objectWontGetDeletedIfSiblingGetsDeleted() {
+    ObjectName p1 = defaultName().append("Prefix1");
+    ObjectName s1 = p1.append("Suffix1");
+    ObjectName s2 = p1.append("Suffix2");
+
+    transactionTemplate.execute(status -> {
+      objectStore.put(s1, ObjectStoreService.NEW_VERSION, defaultStream());
+      objectStore.put(s2, ObjectStoreService.NEW_VERSION, defaultStream());
+
+      assertTrue(objectStore.checkObjectExists(s1));
+      assertTrue(objectStore.checkObjectExists(s2));
+
+      objectStore.delete(s2);
+      return null;
+    });
+
+    assertTrue(objectStore.checkObjectExists(s1));
+    assertFalse(objectStore.checkObjectExists(s2));
+  }
+
   /**
    * when using cassandra this test may cause:
    * com.datastax.oss.driver.api.core.DriverTimeoutException: Query timed out after PT2S
@@ -313,17 +334,17 @@ public abstract class AbstractObjectStoreServiceTest {
     ObjectName dotdotslash = r.append("../");
 
     // store all
-    Stream.of(weird, p1, p1_weird, dot, dotdot, dotslash, dotdotslash) //
+    Stream.of(weird, p1_weird, dot, dotdot, dotslash, dotdotslash) //
         .forEach(n -> objectStore.put(n, ObjectStoreService.NEW_VERSION, stream(name.toString())));
 
     // verify contents
-    Stream.of(weird, p1, p1_weird, dot, dotdot, dotslash, dotdotslash) //
+    Stream.of(weird, p1_weird, dot, dotdot, dotslash, dotdotslash) //
         .forEach(n -> assertContent(n, name.toString()));
 
     assertThat(objectStore.list(r) //
         .map(o -> o.getObjectName()) //
         .collect(Collectors.toList()), //
-        containsInAnyOrder(weird, p1, p1, dot, dotdot, dotslash, dotdotslash));
+        containsInAnyOrder(weird, p1, dot, dotdot, dotslash, dotdotslash));
 
     assertThat(objectStore.list(p1) //
         .map(o -> o.getObjectName()) //
