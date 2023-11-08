@@ -36,17 +36,26 @@ public class S3ObjectStoreServiceIT extends AbstractObjectStoreServiceTest {
     s3Client.createBucket(BUCKET_NAME);
   }
 
-  @Ignore // This is ignored because of a bug in MinIO that prevents an Object to be discovered with a prefix of an already existing object.
+  // For the problem with object collision using MinIO see:
+  // https://min.io/docs/minio/linux/operations/concepts/thresholds.html#conflicting-objects
+
+  // This is ignored because of a deviation in behaviour of MinIO that prevents an Object to be discovered
+  // with a prefix of an already existing object.
+  @Ignore
   @Override
   public void testThat_objectWontGetDeletedIfSuffixGetsDeleted() {
   }
 
-  @Ignore // This is ignored because of a bug in MinIO that prevents an Object to be discovered with a prefix of an already existing object.
+  // This is ignored because of a deviation in behaviour of MinIO that prevents an Object to be discovered
+  // with a prefix of an already existing object.
+  @Ignore
   @Override
   public void testThat_ObjectNamesCanBeListedViaPrefix() {
   }
 
-  @Ignore // This is ignored because of a bug in MinIO that prevents an Object to be discovered with a prefix of an already existing object.
+  // This is ignored because of a deviation in behaviour of MinIO that prevents an Object to be discovered
+  // with a prefix of an already existing object.
+  @Ignore
   @Override
   public void testThat_AllObjectsCanBeListed() {
   }
