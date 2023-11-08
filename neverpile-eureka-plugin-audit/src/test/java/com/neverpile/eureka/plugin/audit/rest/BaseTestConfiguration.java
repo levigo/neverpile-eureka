@@ -10,8 +10,10 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
@@ -45,10 +47,9 @@ public class BaseTestConfiguration {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
       http //
-          .csrf().disable() //
-          .httpBasic().and() //
-          .authorizeRequests() //
-          .requestMatchers("/api/**").hasRole("USER");
+          .csrf(AbstractHttpConfigurer::disable)
+          .httpBasic(Customizer.withDefaults())
+          .authorizeHttpRequests(e -> e.requestMatchers("/api/**").hasRole("USER").anyRequest().permitAll());
       return http.build();
     }
 
@@ -78,7 +79,7 @@ public class BaseTestConfiguration {
     return new DocumentAuthorizationService() {
       @Override
       public boolean authorizeSubResourceAction(final Document document, final Action action,
-          final String... subResourcePath) {
+                                                final String... subResourcePath) {
         return true;
       }
     };

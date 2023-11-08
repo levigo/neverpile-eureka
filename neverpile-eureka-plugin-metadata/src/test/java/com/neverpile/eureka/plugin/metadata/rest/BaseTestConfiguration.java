@@ -9,9 +9,10 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
@@ -34,7 +35,7 @@ import com.neverpile.eureka.tx.lock.ClusterLockFactory;
 
 @SpringBootConfiguration
 @EnableAutoConfiguration
-@EnableHypermediaSupport(type=HypermediaType.HAL)
+@EnableHypermediaSupport(type = HypermediaType.HAL)
 @Import({FacetedDocumentDtoModule.class, JacksonConfiguration.class, DocumentResource.class, ModelMapperConfiguration.class})
 @EnableTransactionManagement
 public class BaseTestConfiguration {
@@ -45,10 +46,9 @@ public class BaseTestConfiguration {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
       http //
-          .csrf().disable() //
-          .httpBasic().and() //
-          .authorizeRequests() //
-          .requestMatchers("/api/**").hasRole("USER");
+          .csrf(AbstractHttpConfigurer::disable)
+          .httpBasic(Customizer.withDefaults())
+          .authorizeHttpRequests(e -> e.requestMatchers("/api/**").hasRole("USER").anyRequest().permitAll());
       return http.build();
     }
 
@@ -62,7 +62,7 @@ public class BaseTestConfiguration {
       return new InMemoryUserDetailsManager(user);
     }
   }
-  
+
   @Bean
   MockObjectStoreService objectStoreService() {
     return new MockObjectStoreService();
@@ -72,18 +72,18 @@ public class BaseTestConfiguration {
   ClusterLockFactory noOpLock() {
     return new LocalLockFactory();
   }
-  
+
   @Bean
   AuthorizationService policyBasedAuthorizationService() {
     return new PolicyBasedAuthorizationService();
   }
-  
+
   @Bean
   public DocumentAuthorizationService defaultDocumentAuthorizationService() {
     return new DefaultDocumentAuthorizationService();
   }
-  
-  @Bean 
+
+  @Bean
   public PolicyRepository dummyPolicyRepository() {
     return new PolicyRepository() {
       @Override
