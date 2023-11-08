@@ -4,7 +4,7 @@
   <parent>
     <artifactId>neverpile-eureka</artifactId>
     <groupId>com.neverpile.eureka</groupId>
-    <version>0.1.0</version>
+    <version>0.1.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -85,7 +85,7 @@
         <version>${project.version}</version>
       </dependency>
 
-      <!-- neverpile-eureka-ignite has optional (provided) depenencies which we list here so that the correct versions are 
+      <!-- neverpile-eureka-ignite has optional (provided) depenencies which we list here so that the correct versions are
         managed automatically. -->
       <dependency>
         <groupId>com.neverpile.eureka</groupId>

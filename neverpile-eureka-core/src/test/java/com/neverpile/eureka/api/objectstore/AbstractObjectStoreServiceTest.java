@@ -43,7 +43,7 @@ import com.neverpile.eureka.model.ObjectName;
 public abstract class AbstractObjectStoreServiceTest {
 
   @Autowired
-  private ObjectStoreService objectStore;
+  protected ObjectStoreService objectStore;
 
   @Autowired
   TransactionTemplate transactionTemplate;

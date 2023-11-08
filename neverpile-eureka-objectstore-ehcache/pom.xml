@@ -9,7 +9,7 @@
 		<version>0.1.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>neverpile-eureka-objectstore-filesystem</artifactId>
+	<artifactId>neverpile-eureka-objectstore-ehcache</artifactId>
 	<packaging>jar</packaging>
 
 	<dependencies>
@@ -22,6 +22,10 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.ehcache</groupId>
+			<artifactId>ehcache</artifactId>
+		</dependency>
 
 		<!-- Test dependencies -->
 		<dependency>
@@ -32,6 +36,5 @@
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
-
 	</dependencies>
 </project>

@@ -6,7 +6,7 @@
   <groupId>com.neverpile.eureka</groupId>
   <artifactId>neverpile-eureka</artifactId>
   <packaging>pom</packaging>
-  <version>0.1.0</version>
+  <version>0.1.0-SNAPSHOT</version>
 
   <properties>
     <java.version>17</java.version>
@@ -15,57 +15,45 @@
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <spring-boot.version>3.1.5</spring-boot.version>
-    <spring-security-oauth2.version>2.6.8</spring-security-oauth2.version>
-
-    <spring-boot-admin.version>3.1.7</spring-boot-admin.version>
-    <springfox.version>3.0.0</springfox.version>
-    <swagger.version>2.2.16</swagger.version>
-
     <atomikos.version>6.0.0</atomikos.version>
-
-    <feign.version>8.18.0</feign.version>
-    <jetty.version>11.0.17</jetty.version>
-
-    <h2.version>2.1.214</h2.version>
-
-    <jmockit.version>1.49</jmockit.version>
-    <rest-assured.version>5.3.2</rest-assured.version>
-
+    <aws-s3.version>1.12.564</aws-s3.version>
+    <cassandra-driver-core.version>4.17.0</cassandra-driver-core.version>
+    <ehcache.version>3.10.8</ehcache.version>
     <elasticsearch.version>7.17.13</elasticsearch.version>
-
+    <eureka-webjar.version>1.0.25</eureka-webjar.version>
+    <feign.version>8.18.0</feign.version>
+    <guava.version>32.1.3-jre</guava.version>
+    <h2.version>2.1.214</h2.version>
     <ignite.version>2.14.0</ignite.version>
     <ignite-cloud.version>2.13.0</ignite-cloud.version>
     <ignite-aws.version>2.11.1</ignite-aws.version>
-
+    <jetty.version>11.0.17</jetty.version>
     <lucene.version>8.11.1</lucene.version>
-
-    <guava.version>32.1.2-jre</guava.version>
-
-    <cassandra-driver-core.version>4.17.0</cassandra-driver-core.version>
-
-    <url-crypto-kit.version>1.4.1</url-crypto-kit.version>
-    <eureka-webjar.version>1.0.25</eureka-webjar.version>
-
-    <opentracing.version>0.33.0</opentracing.version>
-
-    <mockito-core.version>5.4.0</mockito-core.version>
     <metrics-core.version>4.2.20</metrics-core.version>
     <modelmapper.version>1.1.3</modelmapper.version>
+    <neverpile-commons.version>1.8.1</neverpile-commons.version>
+    <opentracing.version>0.33.0</opentracing.version>
+    <spring-boot.version>3.1.5</spring-boot.version>
+    <spring-security-oauth2.version>2.6.8</spring-security-oauth2.version>
+    <spring-boot-admin.version>3.1.7</spring-boot-admin.version>
+    <springfox.version>3.0.0</springfox.version>
+    <swagger.version>2.2.17</swagger.version>
+    <url-crypto-kit.version>1.4.1</url-crypto-kit.version>
 
-    <aws-s3.version>1.12.564</aws-s3.version>
+    <!-- Test -->
     <commons-io.version>2.11.0</commons-io.version>
     <commons-fileupload.version>1.5</commons-fileupload.version>
+    <jmockit.version>1.49</jmockit.version>
+    <mockito-core.version>5.4.0</mockito-core.version>
+    <rest-assured.version>5.3.2</rest-assured.version>
 
     <!-- plugins -->
     <docker-maven-plugin.version>0.43.4</docker-maven-plugin.version>
     <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
     <maven-javadoc-plugin.version>3.6.0</maven-javadoc-plugin.version>
-    <maven-failsafe-plugin.version>3.1.2</maven-failsafe-plugin.version>
-    <maven-surefire-plugin.version>3.1.2</maven-surefire-plugin.version>
+    <maven-failsafe-plugin.version>3.2.1</maven-failsafe-plugin.version>
+    <maven-surefire-plugin.version>3.2.1</maven-surefire-plugin.version>
     <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
-
-    <neverpile-commons.version>1.9.0</neverpile-commons.version>
   </properties>
 
   <repositories>
@@ -79,6 +67,7 @@
   <modules>
     <module>neverpile-eureka-core</module>
     <module>neverpile-eureka-objectstore-filesystem</module>
+    <module>neverpile-eureka-objectstore-ehcache</module>
     <module>neverpile-eureka-objectstore-s3</module>
     <module>neverpile-eureka-objectstore-cassandra</module>
     <module>neverpile-eureka-security-oauth2</module>
@@ -138,24 +127,9 @@
         <version>${swagger.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.netflix.feign</groupId>
-        <artifactId>feign-core</artifactId>
-        <version>${feign.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.netflix.feign</groupId>
-        <artifactId>feign-jackson</artifactId>
-        <version>${feign.version}</version>
-      </dependency>
-      <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-servlet</artifactId>
         <version>${jetty.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jmockit</groupId>
-        <artifactId>jmockit</artifactId>
-        <version>${jmockit.version}</version>
       </dependency>
 
       <!-- elasticsearch -->
@@ -221,6 +195,11 @@
       <dependency>
         <groupId>com.neverpile.eureka</groupId>
         <artifactId>neverpile-eureka-objectstore-filesystem</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.neverpile.eureka</groupId>
+        <artifactId>neverpile-eureka-objectstore-ehcache</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -292,6 +271,11 @@
         <groupId>com.neverpile.eureka</groupId>
         <artifactId>neverpile-eureka-test-support</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ehcache</groupId>
+        <artifactId>ehcache</artifactId>
+        <version>${ehcache.version}</version>
       </dependency>
 
       <dependency>
