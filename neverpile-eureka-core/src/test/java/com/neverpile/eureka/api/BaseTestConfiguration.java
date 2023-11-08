@@ -53,11 +53,10 @@ public class BaseTestConfiguration {
   public static class SecurityConfig {
     @Bean
     SecurityFilterChain web(HttpSecurity http) throws Exception {
-//      TODO: set requestMatchers back to "/api/**"
       http //
           .csrf(AbstractHttpConfigurer::disable)
           .httpBasic(Customizer.withDefaults())
-          .authorizeHttpRequests(e -> e.requestMatchers("**").hasRole("USER"));
+          .authorizeHttpRequests(e -> e.requestMatchers("/api/**").hasRole("USER").anyRequest().permitAll());
       return http.build();
     }
 
