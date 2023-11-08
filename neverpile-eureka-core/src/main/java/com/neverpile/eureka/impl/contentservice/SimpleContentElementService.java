@@ -9,7 +9,7 @@ import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.util.List;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

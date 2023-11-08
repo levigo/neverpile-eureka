@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Optional;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,9 +22,11 @@ import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.metadata.schema.TableMetadata;
 import com.neverpile.eureka.api.ObjectStoreService;
+import com.neverpile.eureka.tx.wal.TransactionWAL;
+import com.neverpile.eureka.tx.wal.local.DefaultTransactionWAL;
 
 @Configuration
-@AutoConfigureBefore(value = CassandraAutoConfiguration.class,
+@AutoConfigureBefore(value = {CassandraAutoConfiguration.class},
     name = "com.neverpile.eureka.server.configuration.SimpleServiceConfiguration")
 @EnableAutoConfiguration
 public class CassandraTestConfig extends AbstractNeverpileCassandraConfig {
@@ -72,5 +74,10 @@ public class CassandraTestConfig extends AbstractNeverpileCassandraConfig {
   @Primary
   public ObjectStoreService cassandraObjectStoreService() {
     return new CassandraObjectStoreService();
+  }
+
+  @Bean
+  public TransactionWAL transactionWAL() {
+    return new DefaultTransactionWAL();
   }
 }

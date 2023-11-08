@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.introspect.AnnotationIntrospectorPair;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
+import com.fasterxml.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationIntrospector;
 
 @Configuration
 @ComponentScan
@@ -29,7 +29,7 @@ public class JacksonConfiguration {
       @Override
       public void customize(final Jackson2ObjectMapperBuilder b) {
         b.annotationIntrospector(new AnnotationIntrospectorPair(new JacksonAnnotationIntrospector(),
-            new JaxbAnnotationIntrospector(TypeFactory.defaultInstance())));
+            new JakartaXmlBindAnnotationIntrospector(TypeFactory.defaultInstance())));
         b.featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         b.dateFormat(new StdDateFormat());
       }

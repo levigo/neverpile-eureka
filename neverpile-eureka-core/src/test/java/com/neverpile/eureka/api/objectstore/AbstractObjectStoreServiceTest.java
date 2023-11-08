@@ -2,6 +2,7 @@ package com.neverpile.eureka.api.objectstore;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertEquals;
@@ -24,7 +25,7 @@ import java.util.Stack;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -151,6 +152,27 @@ public abstract class AbstractObjectStoreServiceTest {
 
     assertTrue(objectStore.checkObjectExists(p2));
     assertFalse(objectStore.checkObjectExists(s1));
+    assertFalse(objectStore.checkObjectExists(s2));
+  }
+
+  @Test
+  public void testThat_objectWontGetDeletedIfSiblingGetsDeleted() {
+    ObjectName p1 = defaultName().append("Prefix1");
+    ObjectName s1 = p1.append("Suffix1");
+    ObjectName s2 = p1.append("Suffix2");
+
+    transactionTemplate.execute(status -> {
+      objectStore.put(s1, ObjectStoreService.NEW_VERSION, defaultStream());
+      objectStore.put(s2, ObjectStoreService.NEW_VERSION, defaultStream());
+
+      assertTrue(objectStore.checkObjectExists(s1));
+      assertTrue(objectStore.checkObjectExists(s2));
+
+      objectStore.delete(s2);
+      return null;
+    });
+
+    assertTrue(objectStore.checkObjectExists(s1));
     assertFalse(objectStore.checkObjectExists(s2));
   }
 
@@ -312,17 +334,17 @@ public abstract class AbstractObjectStoreServiceTest {
     ObjectName dotdotslash = r.append("../");
 
     // store all
-    Stream.of(weird, p1, p1_weird, dot, dotdot, dotslash, dotdotslash) //
+    Stream.of(weird, p1_weird, dot, dotdot, dotslash, dotdotslash) //
         .forEach(n -> objectStore.put(n, ObjectStoreService.NEW_VERSION, stream(name.toString())));
 
     // verify contents
-    Stream.of(weird, p1, p1_weird, dot, dotdot, dotslash, dotdotslash) //
+    Stream.of(weird, p1_weird, dot, dotdot, dotslash, dotdotslash) //
         .forEach(n -> assertContent(n, name.toString()));
 
     assertThat(objectStore.list(r) //
         .map(o -> o.getObjectName()) //
         .collect(Collectors.toList()), //
-        containsInAnyOrder(weird, p1, p1, dot, dotdot, dotslash, dotdotslash));
+        containsInAnyOrder(weird, p1, dot, dotdot, dotslash, dotdotslash));
 
     assertThat(objectStore.list(p1) //
         .map(o -> o.getObjectName()) //

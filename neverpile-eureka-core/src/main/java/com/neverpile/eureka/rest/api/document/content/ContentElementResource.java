@@ -16,8 +16,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -205,7 +205,7 @@ public class ContentElementResource {
       acceptHeader.stream() //
           .map(h -> {
             try {
-              return javax.ws.rs.core.MediaType.valueOf(h);
+              return jakarta.ws.rs.core.MediaType.valueOf(h);
             } catch (Exception e) {
               return null;
             }

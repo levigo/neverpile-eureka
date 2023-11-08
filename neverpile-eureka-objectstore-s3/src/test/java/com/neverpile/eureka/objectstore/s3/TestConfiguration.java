@@ -28,11 +28,11 @@ public class TestConfiguration {
   @Primary
   S3ConnectionConfiguration s3Conf() {
     S3ConnectionConfiguration cc = new S3ConnectionConfiguration();
-    cc.setEndpoint("localhost:9876");
+    cc.setEndpoint("localhost:9000");
     cc.setDefaultBucketName("unit-tests");
     cc.setAccessStyle(AccessStyle.Path);
-    cc.setAccessKeyId("foo");
-    cc.setSecretAccessKey("bar");
+    cc.setAccessKeyId("minioadmin");
+    cc.setSecretAccessKey("minioadmin");
 
     cc.getClientConfiguration().withProtocol(Protocol.HTTP).withTcpKeepAlive(false).withUseExpectContinue(false);
 

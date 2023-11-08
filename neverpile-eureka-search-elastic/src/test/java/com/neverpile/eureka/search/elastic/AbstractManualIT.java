@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import org.elasticsearch.client.RestHighLevelClient;
 import org.junit.Before;

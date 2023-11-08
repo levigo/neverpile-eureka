@@ -37,6 +37,7 @@ import com.neverpile.eureka.tx.wal.local.DefaultTransactionWAL;
 import com.neverpile.eureka.tx.wal.local.FileBasedWAL;
 
 @RunWith(SpringRunner.class)
+@Configuration
 @SpringBootTest
 public class TransactionalFileHandlingTest {
 

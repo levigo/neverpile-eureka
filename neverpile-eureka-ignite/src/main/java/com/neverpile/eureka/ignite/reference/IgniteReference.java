@@ -2,7 +2,7 @@ package com.neverpile.eureka.ignite.reference;
 
 import java.io.Serializable;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteAtomicReference;

@@ -1,6 +1,6 @@
 package com.neverpile.eureka.security.oauth2.configuration;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,7 +34,7 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
 
   @Override
   public void configure(final HttpSecurity http) throws Exception {
-    http.requestMatcher(new OAuthRequestedMatcher()).authorizeRequests().antMatchers(
+    http.securityMatcher(new OAuthRequestedMatcher()).authorizeRequests().requestMatchers(
         HttpMethod.OPTIONS).permitAll().anyRequest().authenticated();
   }
 
