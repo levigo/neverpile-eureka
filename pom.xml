@@ -15,17 +15,22 @@
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <spring-boot.version>3.0.11</spring-boot.version>
+    <spring-boot.version>3.1.5</spring-boot.version>
     <spring-security-oauth2.version>2.6.8</spring-security-oauth2.version>
 
-    <spring-boot-admin.version>3.0.11</spring-boot-admin.version>
+    <spring-boot-admin.version>3.1.7</spring-boot-admin.version>
     <springfox.version>3.0.0</springfox.version>
     <swagger.version>2.2.16</swagger.version>
+
+    <atomikos.version>6.0.0</atomikos.version>
 
     <feign.version>8.18.0</feign.version>
     <jetty.version>11.0.17</jetty.version>
 
+    <h2.version>2.1.214</h2.version>
+
     <jmockit.version>1.49</jmockit.version>
+    <rest-assured.version>5.3.2</rest-assured.version>
 
     <elasticsearch.version>7.17.13</elasticsearch.version>
 
@@ -100,7 +105,7 @@
       <dependency>
         <groupId>com.atomikos</groupId>
         <artifactId>transactions-spring-boot3-starter</artifactId>
-        <version>6.0.0</version>
+        <version>${atomikos.version}</version>
       </dependency>
 
       <!-- neverpile-commons -->
@@ -173,7 +178,7 @@
       <dependency>
         <groupId>com.h2database</groupId>
         <artifactId>h2</artifactId>
-        <version>2.1.214</version>
+        <version>${h2.version}</version>
       </dependency>
 
       <!-- other stuff -->
@@ -301,7 +306,7 @@
       <dependency>
         <groupId>io.rest-assured</groupId>
         <artifactId>rest-assured</artifactId>
-        <version>5.3.2</version>
+        <version>${rest-assured.version}</version>
         <scope>test</scope>
         <exclusions>
           <exclusion>
@@ -357,9 +362,9 @@
           <artifactId>maven-compiler-plugin</artifactId>
           <version>${maven-compiler-plugin.version}</version>
           <configuration>
-            <source>17</source>
-            <target>17</target>
-            <release>17</release>
+            <source>${java.version}</source>
+            <target>${java.version}</target>
+            <release>${java.version}</release>
             <forceJavacCompilerUse>true</forceJavacCompilerUse>
           </configuration>
         </plugin>
@@ -443,7 +448,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>3.3.0</version>
         <executions>
           <execution>
             <id>attach-sources</id>
