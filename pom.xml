@@ -55,6 +55,7 @@
 
     <aws-s3.version>1.12.564</aws-s3.version>
     <commons-io.version>2.11.0</commons-io.version>
+    <commons-fileupload.version>1.5</commons-fileupload.version>
 
     <!-- plugins -->
     <docker-maven-plugin.version>0.43.4</docker-maven-plugin.version>
