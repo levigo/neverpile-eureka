@@ -55,8 +55,7 @@ public class BaseTestConfiguration {
 
     @Bean
     public InMemoryUserDetailsManager userDetailsService() {
-      UserDetails user = User.withDefaultPasswordEncoder() //
-          .username("user") //
+      UserDetails user = User.withUsername("user") //
           .password("password") //
           .roles("USER") //
           .build();
