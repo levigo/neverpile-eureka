@@ -42,12 +42,6 @@
     </dependency>
 
     <dependency>
-      <groupId>com.squareup.okhttp</groupId>
-      <artifactId>okhttp</artifactId>
-      <version>2.7.5</version>
-    </dependency>
-
-    <dependency>
       <groupId>org.apache.ignite</groupId>
       <artifactId>ignite-cloud</artifactId>
       <version>${ignite-cloud.version}</version>
@@ -102,6 +96,30 @@
         <groupId>com.amazonaws</groupId>
         <artifactId>aws-java-sdk-kms</artifactId>
         <version>${aws-s3.version}</version>
+      </dependency>
+      <!--    TODO: delete when ignite-cloud is updated-->
+      <dependency>
+        <groupId>com.squareup.okhttp</groupId>
+        <artifactId>okhttp</artifactId>
+        <version>2.7.5</version>
+      </dependency>
+      <!--    TODO: delete when ignite-aws is updated-->
+      <dependency>
+        <groupId>com.amazonaws</groupId>
+        <artifactId>aws-encryption-sdk-java</artifactId>
+        <version>2.4.0</version>
+      </dependency>
+      <dependency>
+      <!--    TODO: delete when ignite-aws is updated-->
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient</artifactId>
+        <version>4.5.14</version>
+      </dependency>
+      <!--    TODO: delete when ignite-aws is updated-->
+      <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcprov-ext-jdk15on</artifactId>
+        <version>1.70</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
