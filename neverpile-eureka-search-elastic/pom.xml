@@ -92,7 +92,7 @@
                 <!-- Docker Image to use -->
                 <image>
                   <alias>elasticsearch</alias>
-                  <name>elasticsearch:7.17.8</name>
+                  <name>elasticsearch:8.11.1</name>
                   <run>
                     <namingStrategy>none</namingStrategy>
                     <env>
