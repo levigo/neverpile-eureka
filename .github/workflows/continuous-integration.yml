@@ -23,7 +23,7 @@ jobs:
         cache: 'maven'
 
     - name: Perform build
-      run: mvn verify
+      run: mvn verify -P run-integration-tests
 
     - name: Notify developers
       uses: 8398a7/action-slack@v3

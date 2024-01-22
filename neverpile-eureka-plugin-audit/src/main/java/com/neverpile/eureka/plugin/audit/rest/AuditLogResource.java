@@ -143,7 +143,7 @@ public class AuditLogResource {
       "operation", "add", "target", "audit-event"
   }, value = "eureka.audit.add")
   public AuditEventDto create(final Principal principal, @PathVariable("documentId") final String documentId,
-      @RequestBody @Valid @NotNull @NotBlank final AuditEventDto event) throws Exception {
+      @RequestBody @Valid @NotNull final AuditEventDto event) throws Exception {
     documentService.getDocument(documentId).orElseThrow(() -> new NotFoundException("Document not found"));
 
     event.setUserID(principal.getName());
