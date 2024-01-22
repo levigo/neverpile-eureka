@@ -30,8 +30,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import com.neverpile.common.opentracing.Tag;
-import com.neverpile.common.opentracing.TraceInvocation;
+import com.neverpile.common.opentelemetry.Attribute;
+import com.neverpile.common.opentelemetry.TraceInvocation;
 import com.neverpile.eureka.ignite.IgniteConfigurationProperties;
 import com.neverpile.eureka.tx.wal.TransactionWAL.TransactionalAction;
 import com.neverpile.eureka.tx.wal.WALException;
@@ -250,7 +250,7 @@ public class IgniteWAL implements WriteAheadLog {
       "subsystem", "ignite.wal"
   }, value = "eureka.ignite.wal.log")
   @TraceInvocation
-  public void logAction(final String id,  @Tag(name="action") final ActionType type, final TransactionalAction action) {
+  public void logAction(final String id,  @Attribute(name="action") final ActionType type, final TransactionalAction action) {
     logger.debug("Logging {} action for tx {}: {}", type, id, action);
     ActionEntry entry = new ActionEntry(id, type, action);
     log(id, entry);

@@ -28,7 +28,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.neverpile.common.opentracing.TraceInvocation;
+import com.neverpile.common.opentelemetry.TraceInvocation;
 import com.neverpile.common.util.VisibleForTesting;
 import com.neverpile.eureka.api.DocumentAssociatedEntityStore;
 import com.neverpile.eureka.api.MultiVersioningDocumentService;

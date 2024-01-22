@@ -26,8 +26,8 @@ import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
-import com.neverpile.common.opentracing.Tag;
-import com.neverpile.common.opentracing.TraceInvocation;
+import com.neverpile.common.opentelemetry.Attribute;
+import com.neverpile.common.opentelemetry.TraceInvocation;
 import com.neverpile.eureka.api.ObjectStoreService;
 import com.neverpile.eureka.api.exception.VersionMismatchException;
 import com.neverpile.eureka.model.ObjectName;
@@ -134,8 +134,8 @@ public class S3ObjectStoreService implements ObjectStoreService {
       "subsystem", "s3.object-store"
   }, value = "eureka.s3.object-store.put")
   @TraceInvocation
-  public void put(@Tag(name = "key", valueAdapter = ObjectNameMapper.class) final ObjectName objectName,
-      final String version, final InputStream content, @Tag(name = "length") final long length) {
+  public void put(@Attribute(name = "key", valueAdapter = ObjectNameMapper.class) final ObjectName objectName,
+      final String version, final InputStream content, @Attribute(name = "length") final long length) {
     String bucket = connectionConfiguration.getDefaultBucketName();
     String key = toKey(objectName);
 
@@ -263,7 +263,7 @@ public class S3ObjectStoreService implements ObjectStoreService {
   @Override
   @TraceInvocation
   public Stream<StoreObject> list(
-      @Tag(name = "prefix", valueAdapter = ObjectNameMapper.class) final ObjectName prefix) {
+      @Attribute(name = "prefix", valueAdapter = ObjectNameMapper.class) final ObjectName prefix) {
     String prefixKey = toKey(prefix);
 
     ListObjectsRequest lor = new ListObjectsRequest();
@@ -280,7 +280,7 @@ public class S3ObjectStoreService implements ObjectStoreService {
       "subsystem", "s3.object-store"
   }, value = "eureka.s3.object-store.get")
   @TraceInvocation
-  public StoreObject get(@Tag(name = "key", valueAdapter = ObjectNameMapper.class) final ObjectName objectName) {
+  public StoreObject get(@Attribute(name = "key", valueAdapter = ObjectNameMapper.class) final ObjectName objectName) {
     try {
       final S3Object object = s3client.getObject(connectionConfiguration.getDefaultBucketName(), toKey(objectName));
 
@@ -356,7 +356,7 @@ public class S3ObjectStoreService implements ObjectStoreService {
   }, value = "eureka.s3.object-store.check-exists")
   @TraceInvocation
   public boolean checkObjectExists(
-      @Tag(name = "key", valueAdapter = ObjectNameMapper.class) final ObjectName objectName) {
+      @Attribute(name = "key", valueAdapter = ObjectNameMapper.class) final ObjectName objectName) {
     String bucket = connectionConfiguration.getDefaultBucketName();
     String key = toKey(objectName);
 
