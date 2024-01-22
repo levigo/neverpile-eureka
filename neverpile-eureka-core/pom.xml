@@ -20,7 +20,7 @@
     </dependency>
     <dependency>
       <groupId>com.neverpile.commons</groupId>
-      <artifactId>neverpile-commons-opentracing</artifactId>
+      <artifactId>neverpile-commons-opentelemetry</artifactId>
     </dependency>
 
     <!-- Spring -->

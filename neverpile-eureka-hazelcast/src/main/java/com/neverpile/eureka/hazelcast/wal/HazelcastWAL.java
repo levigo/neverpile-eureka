@@ -24,8 +24,8 @@ import com.hazelcast.cp.CPSubsystem;
 import com.hazelcast.cp.lock.FencedLock;
 import com.hazelcast.map.IMap;
 import com.hazelcast.multimap.MultiMap;
-import com.neverpile.common.opentracing.Tag;
-import com.neverpile.common.opentracing.TraceInvocation;
+import com.neverpile.common.opentelemetry.Attribute;
+import com.neverpile.common.opentelemetry.TraceInvocation;
 import com.neverpile.eureka.tx.wal.TransactionWAL.TransactionalAction;
 import com.neverpile.eureka.tx.wal.WALException;
 import com.neverpile.eureka.tx.wal.WriteAheadLog;
@@ -183,7 +183,7 @@ public class HazelcastWAL implements WriteAheadLog {
    */
   @Override
   @TraceInvocation
-  public void logAction(final String id, @Tag(name="action") final ActionType type, final TransactionalAction action) {
+  public void logAction(final String id, @Attribute(name="action") final ActionType type, final TransactionalAction action) {
     logger.debug("Logging {} action for tx {}: {}", type, id, action);
     ActionEntry entry = new ActionEntry(id, type, action);
     log(id, entry);
