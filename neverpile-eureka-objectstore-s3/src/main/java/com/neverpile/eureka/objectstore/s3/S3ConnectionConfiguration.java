@@ -47,6 +47,8 @@ public class S3ConnectionConfiguration implements Serializable {
 
   private String endpoint;
 
+  private String signingRegion = Region.EU_Frankfurt.getFirstRegionId();
+
   private SignatureType signatureType;
 
   private String accessKeyId;
@@ -70,7 +72,7 @@ public class S3ConnectionConfiguration implements Serializable {
     return AmazonS3ClientBuilder.standard() //
         .withCredentials(new AWSStaticCredentialsProvider(credentials)) //
         .withEndpointConfiguration(
-            new EndpointConfiguration(this.getEndpoint(), Region.EU_Frankfurt.getFirstRegionId())) //
+            new EndpointConfiguration(this.getEndpoint(), this.getSigningRegion())) //
         .withClientConfiguration(getClientConfiguration()) //
         .withPathStyleAccessEnabled(accessStyle == AccessStyle.Path) //
         .build();
@@ -90,6 +92,14 @@ public class S3ConnectionConfiguration implements Serializable {
 
   public void setEndpoint(final String endpointUrl) {
     this.endpoint = endpointUrl;
+  }
+
+  public String getSigningRegion() {
+    return signingRegion;
+  }
+
+  public void setSigningRegion(String signingRegion) {
+    this.signingRegion = signingRegion;
   }
 
   public SignatureType getSignatureType() {
