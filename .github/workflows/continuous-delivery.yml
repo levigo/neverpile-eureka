@@ -1,19 +1,19 @@
 name: Continuous Delivery
 
-on: 
+on:
   push:
     branches:
       - master
     paths-ignore:
       - '.github/**'
       - '**/README.md'
-      
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Bump version and create tag
       id: semanticversion
@@ -32,7 +32,7 @@ jobs:
         fi
 
     - name: Set up JDK 17
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
         java-version: '17'
@@ -66,7 +66,7 @@ jobs:
         mkdir -p ~/.m2
         echo "<settings><servers><server><id>neverpile</id><username>${REPOSITORY_USERID}</username><password>${REPOSITORY_CREDENTIALS}</password></server></servers></settings>" > ~/.m2/settings.xml 
         mvn deploy -Dmaven.test.skip.exec=true -DaltDeploymentRepository=neverpile::default::${REPOSITORY_URL}
-        
+
     ## Update README.md
     - name: Edit README.md to contain version number
       run: |
@@ -81,12 +81,12 @@ jobs:
 
         git add README.md
         git commit -m "Edit README.md to contain correct version"
-      
+
     - name: Push changes
       uses: ad-m/github-push-action@master
       with:
         branch: master
-        github_token: ${{ secrets.GITHUB_TOKEN }}    
+        github_token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Notify developers
       uses: 8398a7/action-slack@v3

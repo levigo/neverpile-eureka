@@ -53,7 +53,7 @@ public class EhcacheObjectStoreService implements ObjectStoreService {
         return instance;
     }
 
-    public EhcacheObjectStoreService(String rootPath, String heapEntries, String diskSize) {
+    public EhcacheObjectStoreService(String rootPath, String heapEntries, String diskSize, String expiryTimeMinutes) {
         CacheManager cacheManager = CacheManagerBuilder.newCacheManagerBuilder()
                 .with(CacheManagerBuilder.persistence(rootPath))
                 .build(true);
@@ -71,7 +71,7 @@ public class EhcacheObjectStoreService implements ObjectStoreService {
                                 .heap(Integer.parseInt(heapEntries), EntryUnit.ENTRIES)
                                 .disk(Integer.parseInt(diskSize), MemoryUnit.GB)
                 )
-                .withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.of(1, ChronoUnit.MINUTES)))
+                .withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.of(Integer.parseInt(expiryTimeMinutes), ChronoUnit.MINUTES)))
                 .withService(cacheEventListenerConfiguration)
                 .build();
         cache = cacheManager.createCache("neverpile-eureka", configuration);

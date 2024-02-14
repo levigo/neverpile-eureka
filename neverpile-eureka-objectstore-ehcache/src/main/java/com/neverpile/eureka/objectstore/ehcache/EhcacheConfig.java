@@ -25,10 +25,12 @@ public class EhcacheConfig {
   private String heapEntries = "500"; // around 5GB if we say one entry has 10MB
   @Value("${neverpile-eureka.storage.ehcache.diskSize:20480}")
   private String diskSize = "20480";
+  @Value("${neverpile-eureka.storage.ehcache.expiryTimeMinutes:3}")
+  private String expiryTimeMinutes = "3";
 
   @Bean
   ObjectStoreService ehcacheObjectStoreService() {
-    return new EhcacheObjectStoreService(rootPath, heapEntries, diskSize);
+    return new EhcacheObjectStoreService(rootPath, heapEntries, diskSize, expiryTimeMinutes);
   }
 
 }
