@@ -26,6 +26,6 @@ public class EhcacheObjectStoreServiceTest extends AbstractObjectStoreServiceTes
 
   @BeforeEach
   public void setNewCache() {
-    objectStore = new EhcacheObjectStoreService("./target/testdir", "1000", "100");
+    objectStore = new EhcacheObjectStoreService("./target/testdir", "1000", "100", "1");
   }
 }

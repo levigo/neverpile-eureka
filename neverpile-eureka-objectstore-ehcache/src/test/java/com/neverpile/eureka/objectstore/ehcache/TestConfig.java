@@ -17,7 +17,7 @@ public class TestConfig {
 
   @Bean
   public ObjectStoreService ehcacheObjectStoreService() {
-    return new EhcacheObjectStoreService("./target/testdir", "1000", "100");
+    return new EhcacheObjectStoreService("./target/testdir", "1000", "100", "1");
   }
 
   @Bean
