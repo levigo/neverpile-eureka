@@ -69,7 +69,7 @@ public class EhcacheObjectStoreService implements ObjectStoreService {
         CacheConfiguration<String, byte[]> configuration = CacheConfigurationBuilder.newCacheConfigurationBuilder(String.class, byte[].class,
                         ResourcePoolsBuilder.newResourcePoolsBuilder()
                                 .heap(Integer.parseInt(heapEntries), EntryUnit.ENTRIES)
-                                .disk(Integer.parseInt(diskSize), MemoryUnit.GB)
+                                .disk(Integer.parseInt(diskSize), MemoryUnit.MB)
                 )
                 .withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.of(Integer.parseInt(expiryTimeMinutes), ChronoUnit.MINUTES)))
                 .withService(cacheEventListenerConfiguration)
