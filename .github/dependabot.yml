@@ -11,3 +11,5 @@ updates:
       interval: "daily"
     allow:
       - dependency-name: "com.neverpile*"
+    ignore:
+      - dependency-name: "com.neverpile.eureka:neverpile-eureka"
