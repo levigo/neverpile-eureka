@@ -88,14 +88,16 @@ jobs:
         branch: master
         github_token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Notify developers
+    - name: Notify Mattermost
       uses: 8398a7/action-slack@v3
+      if: failure()
       with:
         username: GitHub
         icon_emoji: octocat
+        channel: "neverpile-ci"
         status: ${{ job.status }}
-        fields: repo,message,commit,author,action,eventName,ref
-        text: Released new version `${{ steps.semanticversion.outputs.new_version }}` of *${{ github.repository }}* ${{ github.workflow }} ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        fields: repo,message,commit,author
+        text: Released new version `${{ steps.semanticversion.outputs.new_version }}` of *${{ github.repository }}* failed!
       env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-      if: always()
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SLACK_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
