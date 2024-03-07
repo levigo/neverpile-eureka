@@ -24,15 +24,3 @@ jobs:
 
     - name: Perform build
       run: mvn verify -P run-integration-tests
-
-    - name: Notify developers
-      uses: 8398a7/action-slack@v3
-      with:
-        username: GitHub
-        icon_emoji: octocat
-        status: ${{ job.status }}
-        fields: repo,message,commit,author,action,eventName,ref
-        text: ${{ github.workflow }} ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-      env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-      if: always()
