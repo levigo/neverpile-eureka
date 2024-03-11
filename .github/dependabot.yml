@@ -13,3 +13,5 @@ updates:
       - dependency-name: "com.neverpile*"
     ignore:
       - dependency-name: "com.neverpile.eureka:neverpile-eureka"
+    reviewers:
+      - "levigo/fusion"
