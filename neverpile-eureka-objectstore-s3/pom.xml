@@ -75,7 +75,7 @@
                     <!-- Docker Image to use -->
                     <image>
                       <alias>S3</alias>
-                      <name>minio/minio:latest</name>
+                      <name>minio/minio:RELEASE.2024-02-04T22-36-13Z</name>
                       <run>
                         <namingStrategy>none</namingStrategy>
                         <entryPoint>
