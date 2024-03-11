@@ -39,7 +39,7 @@
     <spring-boot-admin.version>3.2.2</spring-boot-admin.version>
     <springfox.version>3.0.0</springfox.version>
     <swagger.version>2.2.20</swagger.version>
-    <url-crypto-kit.version>2.1.0</url-crypto-kit.version>
+    <url-crypto-kit.version>2.1.1</url-crypto-kit.version>
 
     <!-- Test -->
     <commons-io.version>2.11.0</commons-io.version>
