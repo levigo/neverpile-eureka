@@ -32,7 +32,7 @@
     <ignite-aws.version>2.11.1</ignite-aws.version>
     <guava.version>32.1.3-jre</guava.version>
 
-    <aws-s3.version>1.12.564</aws-s3.version>
+    <aws-s3.version>1.12.720</aws-s3.version>
     <cassandra-driver-core.version>4.17.0</cassandra-driver-core.version>
     <ehcache.version>3.10.8</ehcache.version>
     <h2.version>2.1.214</h2.version>
