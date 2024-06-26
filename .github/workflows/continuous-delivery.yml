@@ -17,7 +17,7 @@ jobs:
 
     - name: Bump version and create tag
       id: semanticversion
-      uses: mathieudutour/github-tag-action@v6.1
+      uses: mathieudutour/github-tag-action@v6.2
       with:
         release_branches: master
         github_token: ${{ secrets.GITHUB_TOKEN }}
