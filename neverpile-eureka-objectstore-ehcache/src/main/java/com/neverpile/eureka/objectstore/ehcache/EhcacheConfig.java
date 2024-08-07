@@ -1,36 +1,58 @@
 package com.neverpile.eureka.objectstore.ehcache;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
-import org.springframework.boot.autoconfigure.AutoConfigureOrder;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
-import com.neverpile.eureka.api.ObjectStoreService;
-import com.neverpile.eureka.autoconfig.NeverpileEurekaAutoConfiguration;
-
-@Configuration
-@ConditionalOnProperty(name = "neverpile-eureka.storage.ehcache.enabled", havingValue = "true", matchIfMissing = false)
-@AutoConfigureBefore(
-    value = NeverpileEurekaAutoConfiguration.class)
-// we want to provide our goods before NeverpileEurekaAutoConfiguration etc
-@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
+/**
+ * Configuration properties for the EHCache object store.
+ */
+@Component
+@ConfigurationProperties(prefix = "neverpile-eureka.storage.ehcache", ignoreUnknownFields = true)
 public class EhcacheConfig {
 
-  @Value("${neverpile-eureka.storage.ehcache.rootPath:./neverpile-eureka_default}")
+  private boolean enabled;
   private String rootPath = "./neverpile-eureka_default";
-  @Value("${neverpile-eureka.storage.ehcache.heapEntries:500}")
   private String heapEntries = "500"; // around 5GB if we say one entry has 10MB
-  @Value("${neverpile-eureka.storage.ehcache.diskSize:20480}")
   private String diskSize = "20480";
-  @Value("${neverpile-eureka.storage.ehcache.expiryTimeMinutes:3}")
   private String expiryTimeMinutes = "3";
 
-  @Bean
-  ObjectStoreService ehcacheObjectStoreService() {
-    return new EhcacheObjectStoreService(rootPath, heapEntries, diskSize, expiryTimeMinutes);
+  public boolean isEnabled() {
+    return enabled;
   }
 
+  public void setEnabled(boolean enabled) {
+    this.enabled = enabled;
+  }
+
+  public String getRootPath() {
+    return rootPath;
+  }
+
+  public void setRootPath(String rootPath) {
+    this.rootPath = rootPath;
+  }
+
+  public String getHeapEntries() {
+    return heapEntries;
+  }
+
+  public void setHeapEntries(String heapEntries) {
+    this.heapEntries = heapEntries;
+  }
+
+  public String getDiskSize() {
+    return diskSize;
+  }
+
+  public void setDiskSize(String diskSize) {
+    this.diskSize = diskSize;
+  }
+
+  public String getExpiryTimeMinutes() {
+    return expiryTimeMinutes;
+  }
+
+  public void setExpiryTimeMinutes(String expiryTimeMinutes) {
+    this.expiryTimeMinutes = expiryTimeMinutes;
+  }
 }

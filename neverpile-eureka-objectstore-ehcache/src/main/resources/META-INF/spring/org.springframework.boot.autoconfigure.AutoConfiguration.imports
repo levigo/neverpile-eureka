@@ -1,1 +1,1 @@
-com.neverpile.eureka.objectstore.ehcache.EhcacheConfig
+com.neverpile.eureka.objectstore.ehcache.EhcacheAutoConfig

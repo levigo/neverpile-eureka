@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.neverpile.eureka.objectstore.ehcache.EhcacheConfig
+com.neverpile.eureka.objectstore.ehcache.EhcacheAutoConfig
