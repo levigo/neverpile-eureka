@@ -2,6 +2,7 @@ package com.neverpile.eureka.objectstore.ehcache;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.web.context.annotation.RequestScope;
 
 import com.neverpile.eureka.api.ObjectStoreService;
@@ -13,11 +14,12 @@ import com.neverpile.eureka.tx.wal.local.DefaultTransactionWAL;
 import com.neverpile.eureka.tx.wal.local.FileBasedWAL;
 
 @Configuration
+@Import(EhcacheConfig.class)
 public class TestConfig {
 
   @Bean
   public ObjectStoreService ehcacheObjectStoreService() {
-    return new EhcacheObjectStoreService("./target/testdir", "1000", "100", "1");
+    return new EhcacheObjectStoreService();
   }
 
   @Bean
