@@ -15,7 +15,7 @@
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <spring-boot.version>2.7.17</spring-boot.version>
+    <spring-boot.version>2.7.18</spring-boot.version>
     <spring-security-oauth2.version>2.6.8</spring-security-oauth2.version>
     <spring-boot-admin.version>${spring-boot.version}</spring-boot-admin.version>
 
