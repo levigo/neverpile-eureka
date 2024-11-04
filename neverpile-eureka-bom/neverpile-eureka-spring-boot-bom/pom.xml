@@ -16,8 +16,8 @@
   </modules>
 
   <properties>
-    <dropwizard.version>4.2.25</dropwizard.version>
-    <elasticsearch.version>7.17.19</elasticsearch.version>
+    <dropwizard.version>4.2.28</dropwizard.version>
+    <elasticsearch.version>7.17.25</elasticsearch.version>
   </properties>
 
   <dependencyManagement>
