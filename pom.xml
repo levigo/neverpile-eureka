@@ -308,6 +308,12 @@
         <artifactId>bcprov-jdk15on</artifactId>
         <version>${bcprov-jdk15on.version}</version>
       </dependency>
+      <!-- TODO: delete when ignite-aws is updated-->
+      <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcprov-ext-jdk15on</artifactId>
+        <version>${bcprov-jdk15on.version}</version>
+      </dependency>
      <!-- TODO: to be deleted after when elasticsearch is updated-->
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>

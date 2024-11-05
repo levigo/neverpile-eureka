@@ -9,6 +9,10 @@
 
   <artifactId>neverpile-eureka-plugin-metadata</artifactId>
 
+  <properties>
+    <mycila-xmltool.version>4.4.ga</mycila-xmltool.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>com.neverpile.eureka</groupId>
@@ -25,7 +29,7 @@
     <dependency>
       <groupId>com.mycila</groupId>
       <artifactId>mycila-xmltool</artifactId>
-      <version>4.4.ga</version>
+      <version>${mycila-xmltool.version}</version>
     </dependency>
 
     <!-- Test-dependencies -->

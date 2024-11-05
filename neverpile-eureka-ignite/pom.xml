@@ -113,13 +113,11 @@
       <!--    TODO: delete when ignite-aws is updated-->
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
-        <version>4.5.14</version>
       </dependency>
       <!--    TODO: delete when ignite-aws is updated-->
       <dependency>
         <groupId>org.bouncycastle</groupId>
         <artifactId>bcprov-ext-jdk15on</artifactId>
-        <version>1.70</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
