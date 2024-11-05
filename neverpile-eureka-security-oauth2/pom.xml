@@ -13,6 +13,10 @@
 	<artifactId>neverpile-eureka-security-oauth2</artifactId>
 	<packaging>jar</packaging>
 
+	<properties>
+		<jaxb.version>4.0.5</jaxb.version>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -37,12 +41,12 @@
 		<dependency>
 			<groupId>com.sun.xml.bind</groupId>
 			<artifactId>jaxb-core</artifactId>
-			<version>4.0.2</version>
+			<version>${jaxb.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.sun.xml.bind</groupId>
 			<artifactId>jaxb-impl</artifactId>
-			<version>4.0.2</version>
+			<version>${jaxb.version}</version>
 		</dependency>
 	</dependencies>
 </project>

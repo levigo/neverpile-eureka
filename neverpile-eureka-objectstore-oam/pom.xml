@@ -9,6 +9,11 @@
 	</parent>
 	<artifactId>neverpile-eureka-objectstore-oam</artifactId>
 	<packaging>jar</packaging>
+
+	<properties>
+		<oam-connector.version>0.2.0</oam-connector.version>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>com.neverpile.eureka</groupId>
@@ -21,7 +26,7 @@
 		<dependency>
 			<groupId>com.levigo.oam</groupId>
 			<artifactId>oam-connector</artifactId>
-			<version>0.1.21</version>
+			<version>${oam-connector.version}</version>
 		</dependency>
 		<!-- Test dependencies -->
 		<dependency>
