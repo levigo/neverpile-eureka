@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
 
-import org.apache.commons.io.IOUtils;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
