@@ -128,6 +128,12 @@ public class S3ObjectStoreService implements ObjectStoreService {
     s3client = connectionConfiguration.createClient();
     S3TXAction.setConnectionConfiguration(connectionConfiguration);
   }
+  public S3ConnectionConfiguration getConnectionConfiguration() {
+    return connectionConfiguration;
+  }
+  public AmazonS3 getS3Client() {
+    return s3client;
+  }
 
   @Override
   @Timed(description = "put object store element", extraTags = {
