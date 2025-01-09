@@ -14,7 +14,7 @@
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
+    <!--atomikos Fix version due to compatibility problems with Spring boot 3.4 hosted on https://levigo.de/maven2/repository/third-party/ -->
     <atomikos.version>6.0.1-FIX</atomikos.version>
     <aws-s3.version>1.12.671</aws-s3.version>
     <bcprov-jdk15on.version>1.70</bcprov-jdk15on.version>
