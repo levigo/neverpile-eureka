@@ -5,7 +5,6 @@ on:
     branches:
       - master
     paths-ignore:
-      - '.github/**'
       - '**/README.md'
 
 jobs:
@@ -41,10 +40,13 @@ jobs:
     ## Build with maven
     - name: Prepare maven settings
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        REGISTRY_URL: ${{ vars.LEVIGO_CONTAINER_REGISTRY }}
+        REPOSITORY_URL: ${{ vars.LEVIGO_MAVEN2_ALL_REPOSITORIES }}
+        REPOSITORY_USERID: ${{ secrets.LEVIGO_NEXUS_USERNAME }}
+        REPOSITORY_CREDENTIALS: ${{ secrets.LEVIGO_NEXUS_PASSWORD }}
       run: |
         mkdir -p ~/.m2
-        echo "<settings><servers><server><id>github</id><username>x-access-token</username><password>${GITHUB_TOKEN}</password></server></servers></settings>" > ~/.m2/settings.xml 
+        envsubst < ./.github/settings.xml > ~/.m2/settings.xml
 
     - name: Set version
       id: version
