@@ -25,8 +25,8 @@ jobs:
       env:
         REGISTRY_URL: ${{ vars.LEVIGO_CONTAINER_REGISTRY }}
         REPOSITORY_URL: ${{ vars.LEVIGO_MAVEN2_ALL_REPOSITORIES }}
-        REPOSITORY_USERID: ${{ secrets.LEVIGO_NEXUS_USERNAME }}
-        REPOSITORY_CREDENTIALS: ${{ secrets.LEVIGO_NEXUS_PASSWORD }}
+        REPOSITORY_USERID: ${{ secrets.NEXUS_USERNAME }}
+        REPOSITORY_CREDENTIALS: ${{ secrets.NEXUS_PASSWORD }}
       run: |
         mkdir -p ~/.m2
         envsubst < ./.github/settings.xml > ~/.m2/settings.xml
