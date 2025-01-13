@@ -191,7 +191,7 @@ public class NeverpileEurekaAutoConfiguration {
    * @return a TransactionWAL implementation
    */
   @Bean
-  @Scope("singleton")
+  @Scope("prototype")
   @ConditionalOnMissingBean
   public TransactionWAL defaultTransactionWAL() {
     return new DefaultTransactionWAL();
