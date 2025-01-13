@@ -1,6 +1,5 @@
 package com.neverpile.eureka.autoconfig;
 
-import java.io.IOException;
 import java.time.Clock;
 
 import org.slf4j.Logger;
@@ -17,7 +16,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.web.context.annotation.RequestScope;
 
 import com.neverpile.common.authorization.api.AuthorizationService;
 import com.neverpile.common.authorization.basic.AllowAllAuthorizationService;
@@ -193,7 +191,7 @@ public class NeverpileEurekaAutoConfiguration {
    * @return a TransactionWAL implementation
    */
   @Bean
-  @RequestScope
+  @Scope("singleton")
   @ConditionalOnMissingBean
   public TransactionWAL defaultTransactionWAL() {
     return new DefaultTransactionWAL();
