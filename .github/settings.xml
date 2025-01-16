@@ -2,6 +2,11 @@
     <servers>
         <!-- maven repository -->
         <server>
+            <id>neverpile</id>
+            <username>${REPOSITORY_USERID}</username>
+            <password>${REPOSITORY_CREDENTIALS}</password>
+        </server>
+        <server>
             <id>levigo</id>
             <username>${REPOSITORY_USERID}</username>
             <password>${REPOSITORY_CREDENTIALS}</password>

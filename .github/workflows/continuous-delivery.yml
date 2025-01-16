@@ -60,13 +60,8 @@ jobs:
     ## Deploy
     - name: Deploy package
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         REPOSITORY_URL: ${{ secrets.REPOSITORY_URL }}
-        REPOSITORY_USERID: ${{ secrets.REPOSITORY_USERID }}
-        REPOSITORY_CREDENTIALS: ${{ secrets.REPOSITORY_CREDENTIALS }}
       run: |
-        mkdir -p ~/.m2
-        echo "<settings><servers><server><id>neverpile</id><username>${REPOSITORY_USERID}</username><password>${REPOSITORY_CREDENTIALS}</password></server></servers></settings>" > ~/.m2/settings.xml 
         mvn deploy -Dmaven.test.skip.exec=true -DaltDeploymentRepository=neverpile::default::${REPOSITORY_URL}
 
     ## Update README.md
