@@ -5,7 +5,6 @@ on:
     branches-ignore:
       - master
     paths-ignore:
-      - '.github/**'
       - '**/README.md'
 
 jobs:
@@ -21,6 +20,16 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
         cache: 'maven'
+
+    - name: Prepare maven settings
+      env:
+        REGISTRY_URL: ${{ vars.LEVIGO_CONTAINER_REGISTRY }}
+        REPOSITORY_URL: ${{ vars.LEVIGO_MAVEN2_ALL_REPOSITORIES }}
+        REPOSITORY_USERID: ${{ secrets.NEXUS_USERNAME }}
+        REPOSITORY_CREDENTIALS: ${{ secrets.NEXUS_PASSWORD }}
+      run: |
+        mkdir -p ~/.m2
+        envsubst < ./.github/settings.xml > ~/.m2/settings.xml
 
     - name: Perform build
       run: mvn verify -P run-integration-tests

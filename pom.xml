@@ -14,8 +14,8 @@
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-    <atomikos.version>6.0.0</atomikos.version>
+    <!--atomikos Fix version due to compatibility problems with Spring boot 3.4 hosted on https://levigo.de/maven2/repository/third-party/ -->
+    <atomikos.version>6.0.1-FIX</atomikos.version>
     <aws-s3.version>1.12.671</aws-s3.version>
     <bcprov-jdk15on.version>1.70</bcprov-jdk15on.version>
     <cassandra-driver-core.version>4.17.0</cassandra-driver-core.version>
@@ -35,16 +35,14 @@
     <neverpile-commons.version>1.17.0</neverpile-commons.version>
     <opentracing.version>0.33.0</opentracing.version>
     <snakeyaml.version>2.3</snakeyaml.version>
-    <spring-boot-admin.version>3.3.5</spring-boot-admin.version>
-    <spring-boot.version>3.3.5</spring-boot.version>
+    <spring-boot-admin.version>3.4.1</spring-boot-admin.version>
+    <spring-boot.version>3.4.1</spring-boot.version>
     <spring-security-oauth2.version>2.6.8</spring-security-oauth2.version>
     <springfox.version>3.0.0</springfox.version>
     <swagger.version>2.2.25</swagger.version>
     <url-crypto-kit.version>2.1.2</url-crypto-kit.version>
 
     <!-- Test -->
-    <commons-io.version>2.11.0</commons-io.version>
-    <commons-fileupload.version>1.5</commons-fileupload.version>
     <jmockit.version>1.49</jmockit.version>
     <mockito-core.version>5.14.2</mockito-core.version>
     <rest-assured.version>5.5.0</rest-assured.version>

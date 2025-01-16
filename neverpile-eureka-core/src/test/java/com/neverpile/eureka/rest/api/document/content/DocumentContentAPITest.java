@@ -32,7 +32,7 @@ import java.util.function.Function;
 
 import jakarta.ws.rs.core.MediaType;
 
-import org.apache.commons.fileupload.MultipartStream;
+import org.apache.tomcat.util.http.fileupload.MultipartStream;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;

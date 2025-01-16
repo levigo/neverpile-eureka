@@ -24,6 +24,8 @@
     <dependency>
       <groupId>com.hazelcast</groupId>
       <artifactId>hazelcast</artifactId>
+      <!--Version 5.5.0 and onwards has moved the CP subsystem that we use to the paid tier.-->
+      <version>5.4.0</version>
     </dependency>
 
     <!-- Test dependencies -->
