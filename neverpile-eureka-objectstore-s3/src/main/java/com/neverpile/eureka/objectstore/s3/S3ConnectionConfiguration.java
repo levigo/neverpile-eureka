@@ -10,10 +10,15 @@ import com.amazonaws.SDKGlobalConfiguration;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.auth.BasicSessionCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.Region;
+import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
+import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder;
+import com.amazonaws.services.securitytoken.model.AssumeRoleRequest;
+import com.amazonaws.services.securitytoken.model.AssumeRoleResult;
 
 /**
  * Configuration properties for an S3 connection.
@@ -44,38 +49,77 @@ public class S3ConnectionConfiguration implements Serializable {
   }
 
   private String accountName;
-
   private String endpoint;
-
   private String signingRegion = Region.EU_Frankfurt.getFirstRegionId();
-
   private SignatureType signatureType;
-
   private String accessKeyId;
-
   private String secretAccessKey;
-
   private String defaultBucketName;
-
   private AccessStyle accessStyle = AccessStyle.Automatic;
-
   private ClientConfiguration clientConfiguration = new ClientConfiguration();
-
   private boolean disableCertificateChecking;
+  private String roleArn;
+  private String roleSessionName;
+  private int durationSeconds;
 
   public AmazonS3 createClient() {
-    AWSCredentials credentials = new BasicAWSCredentials(getAccessKeyId(), getSecretAccessKey());
+    AWSCredentials credentials;
+
+    if (roleArn != null && !roleArn.isEmpty()) {
+      AWSSecurityTokenService stsClient = AWSSecurityTokenServiceClientBuilder.standard()
+          .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(getAccessKeyId(), getSecretAccessKey())))
+          .withRegion(getSigningRegion())
+          .build();
+
+      AssumeRoleRequest assumeRoleRequest = new AssumeRoleRequest()
+          .withRoleArn(getRoleArn())
+          .withRoleSessionName(getRoleSessionName())
+          .withDurationSeconds(getDurationSeconds());
+
+      AssumeRoleResult assumeRoleResult = stsClient.assumeRole(assumeRoleRequest);
+
+      credentials = new BasicSessionCredentials(
+          assumeRoleResult.getCredentials().getAccessKeyId(),
+          assumeRoleResult.getCredentials().getSecretAccessKey(),
+          assumeRoleResult.getCredentials().getSessionToken());
+    } else {
+      // Use basic credentials if roleArn is not set
+      credentials = new BasicAWSCredentials(getAccessKeyId(), getSecretAccessKey());
+    }
 
     System.setProperty(SDKGlobalConfiguration.DISABLE_CERT_CHECKING_SYSTEM_PROPERTY,
         Boolean.toString(disableCertificateChecking));
 
-    return AmazonS3ClientBuilder.standard() //
-        .withCredentials(new AWSStaticCredentialsProvider(credentials)) //
-        .withEndpointConfiguration(
-            new EndpointConfiguration(this.getEndpoint(), this.getSigningRegion())) //
-        .withClientConfiguration(getClientConfiguration()) //
-        .withPathStyleAccessEnabled(accessStyle == AccessStyle.Path) //
+    return AmazonS3ClientBuilder.standard()
+        .withCredentials(new AWSStaticCredentialsProvider(credentials))
+        .withEndpointConfiguration(new EndpointConfiguration(this.getEndpoint(), this.getSigningRegion()))
+        .withClientConfiguration(getClientConfiguration())
+        .withPathStyleAccessEnabled(accessStyle == AccessStyle.Path)
         .build();
+  }
+
+  public String getRoleArn() {
+    return roleArn;
+  }
+
+  public void setRoleArn(String roleArn) {
+    this.roleArn = roleArn;
+  }
+
+  public String getRoleSessionName() {
+    return roleSessionName;
+  }
+
+  public void setRoleSessionName(String roleSessionName) {
+    this.roleSessionName = roleSessionName;
+  }
+
+  public int getDurationSeconds() {
+    return durationSeconds;
+  }
+
+  public void setDurationSeconds(int durationSeconds) {
+    this.durationSeconds = durationSeconds;
   }
 
   public String getAccountName() {
