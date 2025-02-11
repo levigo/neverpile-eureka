@@ -69,6 +69,7 @@ public class S3ConnectionConfiguration implements Serializable {
       AWSSecurityTokenService stsClient = AWSSecurityTokenServiceClientBuilder.standard()
           .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(getAccessKeyId(), getSecretAccessKey())))
           .withRegion(getSigningRegion())
+          .withEndpointConfiguration(new EndpointConfiguration(this.getEndpoint(), this.getSigningRegion()))
           .build();
 
       AssumeRoleRequest assumeRoleRequest = new AssumeRoleRequest()
