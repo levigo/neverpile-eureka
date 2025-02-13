@@ -50,6 +50,7 @@ public class S3ConnectionConfiguration implements Serializable {
 
   private String accountName;
   private String endpoint;
+  private String stsEndpoint;
   private String signingRegion = Region.EU_Frankfurt.getFirstRegionId();
   private SignatureType signatureType;
   private String accessKeyId;
@@ -68,8 +69,7 @@ public class S3ConnectionConfiguration implements Serializable {
     if (roleArn != null && !roleArn.isEmpty()) {
       AWSSecurityTokenService stsClient = AWSSecurityTokenServiceClientBuilder.standard()
           .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(getAccessKeyId(), getSecretAccessKey())))
-          .withRegion(getSigningRegion())
-          .withEndpointConfiguration(new EndpointConfiguration(this.getEndpoint(), this.getSigningRegion()))
+          .withEndpointConfiguration(new EndpointConfiguration(this.getStsEndpoint(), this.getSigningRegion()))
           .build();
 
       AssumeRoleRequest assumeRoleRequest = new AssumeRoleRequest()
@@ -137,6 +137,14 @@ public class S3ConnectionConfiguration implements Serializable {
 
   public void setEndpoint(final String endpointUrl) {
     this.endpoint = endpointUrl;
+  }
+
+  public String getStsEndpoint() {
+    return stsEndpoint != null ? stsEndpoint : endpoint;
+  }
+
+  public void setStsEndpoint(final String stsEndpointUrl) {
+    this.stsEndpoint = stsEndpointUrl;
   }
 
   public String getSigningRegion() {
