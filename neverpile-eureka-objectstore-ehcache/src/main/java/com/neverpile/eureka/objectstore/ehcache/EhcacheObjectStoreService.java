@@ -62,7 +62,7 @@ public class EhcacheObjectStoreService implements ObjectStoreService {
     Path root = FileSystems.getDefault().getPath(ehcacheConfig.getRootPath()).normalize();
     File rootPathAsFile = root.toFile();
     LOGGER.info("-----");
-    LOGGER.info("Initializing neverpile eureka - EHCache Storage Bridge ...");
+    LOGGER.info("Initializing neverpile eureka - Ehcache Storage Bridge ...");
     LOGGER.info("Root directory for storing objects: '{}'", root.toAbsolutePath());
     LOGGER.info("configured disk space: {} GB", Integer.parseInt(ehcacheConfig.getDiskSize()) / 1000);
     LOGGER.info("Free space left: {} GB", rootPathAsFile.getFreeSpace() / 1000000000);
@@ -71,6 +71,9 @@ public class EhcacheObjectStoreService implements ObjectStoreService {
         rootPathAsFile.canWrite() ? "Write, " : "", //
         rootPathAsFile.canExecute() ? "eXecute" : "");
     LOGGER.info("-----");
+    if (ehcacheConfig.isPersistent()) {
+      throw new IllegalStateException("Incompatible configuration: when multi-versioning is enabled, persistence is not possible with Ehcache");
+    }
 
     CacheManager cacheManager = CacheManagerBuilder.newCacheManagerBuilder()
         .with(CacheManagerBuilder.persistence(ehcacheConfig.getRootPath()))
@@ -79,8 +82,8 @@ public class EhcacheObjectStoreService implements ObjectStoreService {
     // Listener to remove version info if object expired
     CacheEventListenerConfigurationBuilder cacheEventListenerConfiguration = CacheEventListenerConfigurationBuilder
         .newEventListenerConfiguration((CacheEventListener<String, byte[]>) event -> {
-          LOGGER.debug("Removing expired entry " + event.getKey());
-          deleteFromCache(ObjectName.of(event.getKey().substring(0, event.getKey().length() - 6).split(EhcacheHelper.separator)));
+          LOGGER.debug("Removing expired entry {}", event.getKey());
+          deleteFromCache(ObjectName.of(event.getKey().substring(0, event.getKey().length() - 6).split(EhcacheHelper.SEPARATOR)));
         }, EventType.EXPIRED, EventType.EVICTED)
         .unordered().asynchronous();
 
@@ -89,7 +92,7 @@ public class EhcacheObjectStoreService implements ObjectStoreService {
                 .heap(Integer.parseInt(ehcacheConfig.getHeapEntries()), EntryUnit.ENTRIES)
                 .disk(Integer.parseInt(ehcacheConfig.getDiskSize()), MemoryUnit.MB)
         )
-        .withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.of(Integer.parseInt(ehcacheConfig.getExpiryTimeMinutes()), ChronoUnit.MINUTES)))
+        .withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(ehcacheConfig.getExpiryTime()))
         .withService(cacheEventListenerConfiguration)
         .build();
     cache = cacheManager.createCache("neverpile-eureka", configuration);
@@ -136,7 +139,7 @@ public class EhcacheObjectStoreService implements ObjectStoreService {
     fullVersion = String.format("%06X", Integer.parseInt(fullVersion) + 1);
 
     String readableObjectName = EhcacheHelper.getReadableObjectName(objectName);
-    LOGGER.debug("Adding " + readableObjectName + fullVersion);
+    LOGGER.debug("Adding {} {}", readableObjectName, fullVersion);
     try {
       cache.put(readableObjectName + fullVersion, content.readAllBytes());
     } catch (IOException e) {
@@ -167,14 +170,14 @@ public class EhcacheObjectStoreService implements ObjectStoreService {
     for (String objectName : keySet) {
       if (objectName.equals(prefixReadable)) {
         if (withObjectItself) {
-          result.add(new EhcacheStoreObject(ObjectName.of(objectName.split(EhcacheHelper.separator)),
-              getLatestVersionForObject(ObjectName.of(objectName.split(EhcacheHelper.separator))), cache));
+          result.add(new EhcacheStoreObject(ObjectName.of(objectName.split(EhcacheHelper.SEPARATOR)),
+              getLatestVersionForObject(ObjectName.of(objectName.split(EhcacheHelper.SEPARATOR))), cache));
         }
       } else if (objectName.startsWith(prefixReadable)) {
         String objectNameWithoutPrefix = objectName.substring(prefixReadable.length() + 1);
         if (!objectNameWithoutPrefix.contains("#")) {
-          result.add(new EhcacheStoreObject(ObjectName.of(objectName.split(EhcacheHelper.separator)),
-              getLatestVersionForObject(ObjectName.of(objectName.split(EhcacheHelper.separator))), cache));
+          result.add(new EhcacheStoreObject(ObjectName.of(objectName.split(EhcacheHelper.SEPARATOR)),
+              getLatestVersionForObject(ObjectName.of(objectName.split(EhcacheHelper.SEPARATOR))), cache));
         }
       }
     }
@@ -224,7 +227,10 @@ public class EhcacheObjectStoreService implements ObjectStoreService {
 
   @Override
   public StoreObject get(ObjectName objectName) {
-    LOGGER.debug("Getting " + EhcacheHelper.getReadableObjectName(objectName) + getLatestVersionForObject(objectName));
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Getting {} {}", EhcacheHelper.getReadableObjectName(objectName),
+          getLatestVersionForObject(objectName));
+    }
     if (checkObjectExists(objectName)) {
       return new EhcacheStoreObject(objectName, getLatestVersionForObject(objectName), cache);
     } else {
@@ -237,7 +243,7 @@ public class EhcacheObjectStoreService implements ObjectStoreService {
     // Delete all suffixes
     list(objectName, true).forEach(object -> {
       String fullName = EhcacheHelper.getReadableObjectName(object.getObjectName()) + getLatestVersionForObject(object.getObjectName());
-      LOGGER.debug("Deleting " + fullName);
+      LOGGER.debug("Deleting {}", fullName);
       wal.appendUndoAction(new RevertDeleteAction(object.getObjectName(), getLatestVersionForObject(object.getObjectName())));
       byte[] val = deleteFromCache(object.getObjectName());
       tempCache.put(fullName, val);
@@ -250,7 +256,8 @@ public class EhcacheObjectStoreService implements ObjectStoreService {
   }
 
   public byte[] deleteFromCache(ObjectName objectName, String fullVersion) {
-    LOGGER.debug("Removing " + EhcacheHelper.getReadableObjectName(objectName) + getLatestVersionForObject(objectName));
+    LOGGER.debug("Removing {} {}", EhcacheHelper.getReadableObjectName(objectName),
+        getLatestVersionForObject(objectName));
     String readableObjectName = EhcacheHelper.getReadableObjectName(objectName);
     List<String> versions = latestVersions.get(readableObjectName);
     if (versions != null) {

@@ -1,10 +1,15 @@
 package com.neverpile.eureka.objectstore.ehcache;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+import java.util.Objects;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.convert.DurationUnit;
 import org.springframework.stereotype.Component;
 
 /**
- * Configuration properties for the EHCache object store.
+ * Configuration properties for the Ehcache object store.
  */
 @Component
 @ConfigurationProperties(prefix = "neverpile-eureka.storage.ehcache", ignoreUnknownFields = true)
@@ -14,7 +19,10 @@ public class EhcacheConfig {
   private String rootPath = "./neverpile-eureka_default";
   private String heapEntries = "500"; // around 5GB if we say one entry has 10MB
   private String diskSize = "20480";
-  private String expiryTimeMinutes = "3";
+  private boolean persistent = false;
+  private String expiryTimeMinutes;
+  @DurationUnit(ChronoUnit.MINUTES)
+  private Duration expiryTime = Duration.ofMinutes(3);
 
   public boolean isEnabled() {
     return enabled;
@@ -48,11 +56,30 @@ public class EhcacheConfig {
     this.diskSize = diskSize;
   }
 
+  public boolean isPersistent() {
+    return persistent;
+  }
+
+  public void setPersistent(boolean persistent) {
+    this.persistent = persistent;
+  }
+
   public String getExpiryTimeMinutes() {
-    return expiryTimeMinutes;
+    return Objects.requireNonNullElseGet(expiryTimeMinutes, () -> "" + expiryTime.toMinutes());
   }
 
   public void setExpiryTimeMinutes(String expiryTimeMinutes) {
     this.expiryTimeMinutes = expiryTimeMinutes;
+  }
+
+  public Duration getExpiryTime() {
+    if (expiryTimeMinutes != null) {
+      return Duration.ofMinutes(Long.parseLong(expiryTimeMinutes));
+    }
+    return expiryTime;
+  }
+
+  public void setExpiryTime(Duration expiryTime) {
+    this.expiryTime = expiryTime;
   }
 }
