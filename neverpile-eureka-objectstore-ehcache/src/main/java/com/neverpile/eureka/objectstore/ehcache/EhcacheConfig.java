@@ -20,7 +20,15 @@ public class EhcacheConfig {
   private String heapEntries = "500"; // around 5GB if we say one entry has 10MB
   private String diskSize = "20480";
   private boolean persistent = false;
+  /**
+   * The cache entry expiration time in minutes
+   * @deprecated use {@link #expiryTime} instead.
+   */
+  @Deprecated(since = "1.11.0", forRemoval = true)
   private String expiryTimeMinutes;
+  /**
+   * The cache entry expiration time. If a duration suffix is not specified, minutes will be used.
+   */
   @DurationUnit(ChronoUnit.MINUTES)
   private Duration expiryTime = Duration.ofMinutes(3);
 
