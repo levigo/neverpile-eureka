@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 
 import com.neverpile.eureka.autoconfig.NeverpileEurekaAutoConfiguration;
+import com.neverpile.eureka.objectstore.ehcache.simple.EhcacheSimpleObjectStoreService;
 
 @Configuration
 @ConditionalOnProperty(name = "neverpile-eureka.storage.ehcache.enabled", havingValue = "true", matchIfMissing = false)
@@ -18,9 +19,17 @@ import com.neverpile.eureka.autoconfig.NeverpileEurekaAutoConfiguration;
 // we want to provide our goods before NeverpileEurekaAutoConfiguration etc
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 public class EhcacheAutoConfig {
+
   @Bean
+  @ConditionalOnProperty(value = "neverpile-eureka.document-service.enable-multi-versioning", havingValue = "true")
   EhcacheObjectStoreService ehcacheObjectStoreService() {
     return new EhcacheObjectStoreService();
+  }
+
+  @Bean
+  @ConditionalOnProperty(value = "neverpile-eureka.document-service.enable-multi-versioning", havingValue = "false")
+  EhcacheSimpleObjectStoreService ehcacheSimpleObjectStoreService(EhcacheConfig ehcacheConfig) {
+    return new EhcacheSimpleObjectStoreService(ehcacheConfig);
   }
 
 }

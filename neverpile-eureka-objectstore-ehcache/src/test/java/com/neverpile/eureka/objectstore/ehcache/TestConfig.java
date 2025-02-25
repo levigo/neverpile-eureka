@@ -9,9 +9,7 @@ import com.neverpile.eureka.api.ObjectStoreService;
 import com.neverpile.eureka.impl.tx.lock.LocalLockFactory;
 import com.neverpile.eureka.tx.lock.ClusterLockFactory;
 import com.neverpile.eureka.tx.wal.TransactionWAL;
-import com.neverpile.eureka.tx.wal.WriteAheadLog;
 import com.neverpile.eureka.tx.wal.local.DefaultTransactionWAL;
-import com.neverpile.eureka.tx.wal.local.FileBasedWAL;
 
 @Configuration
 @Import(EhcacheConfig.class)
