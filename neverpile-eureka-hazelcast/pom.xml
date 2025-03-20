@@ -10,6 +10,11 @@
 
   <artifactId>neverpile-eureka-hazelcast</artifactId>
 
+  <properties>
+    <!--Version 5.5.0 and onwards has moved the CP subsystem that we use to the paid tier.-->
+    <hazelcast.version>5.4.0</hazelcast.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>com.neverpile.eureka</groupId>
@@ -24,8 +29,7 @@
     <dependency>
       <groupId>com.hazelcast</groupId>
       <artifactId>hazelcast</artifactId>
-      <!--Version 5.5.0 and onwards has moved the CP subsystem that we use to the paid tier.-->
-      <version>5.4.0</version>
+      <version>${hazelcast.version}</version>
     </dependency>
 
     <!-- Test dependencies -->
