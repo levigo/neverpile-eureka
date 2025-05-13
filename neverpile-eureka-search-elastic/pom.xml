@@ -12,7 +12,7 @@
   <properties>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <hppc.version>0.10.0</hppc.version>
-    <joda-time.version>2.13.1</joda-time.version>
+    <joda-time.version>2.14.0</joda-time.version>
   </properties>
 
   <dependencies>
