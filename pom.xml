@@ -40,7 +40,7 @@
     <spring-security-oauth2.version>2.6.8</spring-security-oauth2.version>
     <springfox.version>3.0.0</springfox.version>
     <swagger.version>2.2.30</swagger.version>
-    <url-crypto-kit.version>2.1.6</url-crypto-kit.version>
+    <url-crypto-kit.version>2.1.7</url-crypto-kit.version>
 
     <!-- Test -->
     <jmockit.version>1.49</jmockit.version>
