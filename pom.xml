@@ -35,7 +35,7 @@
     <neverpile-commons.version>1.22.0</neverpile-commons.version>
     <opentracing.version>0.33.0</opentracing.version>
     <snakeyaml.version>2.4</snakeyaml.version>
-    <spring-boot-admin.version>3.4.6</spring-boot-admin.version>
+    <spring-boot-admin.version>3.5.1</spring-boot-admin.version>
     <spring-boot.version>3.5.4</spring-boot.version>
     <spring-security-oauth2.version>2.6.8</spring-security-oauth2.version>
     <springfox.version>3.0.0</springfox.version>
