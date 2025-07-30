@@ -506,6 +506,7 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
 
     MultipartStream ms = new MultipartStream(new ByteArrayInputStream(responseBytes),
         mt.getParameters().get("boundary").getBytes(), 1024, null);
+    ms.setPartHeaderSizeMax(1024);
 
     String[] headers = ms.readHeaders().split("\r\n");
     assertThat(headers).anyMatch(s -> s.startsWith("Content-Disposition: inline; name=\"part\"; filename=\"foo.txt\""));
@@ -586,6 +587,7 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
 
     MultipartStream ms = new MultipartStream(new ByteArrayInputStream(responseBytes),
         mt.getParameters().get("boundary").getBytes(), 1024, null);
+    ms.setPartHeaderSizeMax(1024);
 
     String[] headers = ms.readHeaders().split("\r\n");
     assertThat(headers).anyMatch(
