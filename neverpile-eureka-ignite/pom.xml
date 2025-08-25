@@ -78,23 +78,23 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>com.amazonaws</groupId>
-        <artifactId>aws-java-sdk-core</artifactId>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>aws-core</artifactId>
         <version>${aws-s3.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.amazonaws</groupId>
-        <artifactId>aws-java-sdk-ec2</artifactId>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>ec2</artifactId>
         <version>${aws-s3.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.amazonaws</groupId>
-        <artifactId>aws-java-sdk-elasticloadbalancing</artifactId>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>elasticloadbalancing</artifactId>
         <version>${aws-s3.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.amazonaws</groupId>
-        <artifactId>aws-java-sdk-kms</artifactId>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>kms</artifactId>
         <version>${aws-s3.version}</version>
       </dependency>
       <!--    TODO: delete when ignite-cloud is updated-->
