@@ -20,6 +20,7 @@ import jakarta.annotation.PostConstruct;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.IgniteLock;
+import org.apache.ignite.cache.CacheAtomicityMode;
 import org.apache.ignite.cache.CacheMode;
 import org.apache.ignite.cache.query.ScanQuery;
 import org.apache.ignite.configuration.CacheConfiguration;
@@ -148,6 +149,7 @@ public class IgniteWAL implements WriteAheadLog {
     CacheConfiguration<String, TransactionRecord> ccTx = new CacheConfiguration<>(
         getClass().getName() + "-Transactions");
     ccTx.setBackups(1);
+    ccTx.setAtomicityMode(CacheAtomicityMode.TRANSACTIONAL);
     ccTx.setExpiryPolicyFactory(EternalExpiryPolicy.factoryOf());
     ccTx.setCacheMode(CacheMode.REPLICATED);
 
@@ -159,6 +161,7 @@ public class IgniteWAL implements WriteAheadLog {
     CacheConfiguration<EntryKey, Entry> ccEntries = new CacheConfiguration<>(getClass().getName() + "-Entries");
     ccEntries.setBackups(1);
     ccEntries.setExpiryPolicyFactory(EternalExpiryPolicy.factoryOf());
+    ccEntries.setAtomicityMode(CacheAtomicityMode.TRANSACTIONAL);
 
     ccEntries.setCacheMode(CacheMode.REPLICATED);
 
