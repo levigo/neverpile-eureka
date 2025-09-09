@@ -107,7 +107,6 @@
       <dependency>
         <groupId>software.amazon.awssdk</groupId>
         <artifactId>bom</artifactId>
-        <version>${aws-s3.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
