@@ -164,8 +164,13 @@ public class S3ObjectStoreService implements ObjectStoreService {
       writeAheadLog.appendUndoAction(new PurgeObjectAction(bucket, key));
     }
 
-    PutObjectRequest putObjectRequest = PutObjectRequest.builder().bucket(bucket).key(key).contentLength(
-        length).build();
+    PutObjectRequest.Builder putObjectRequestBuilder = PutObjectRequest.builder().bucket(bucket).key(key);
+
+    if (length >= 0) {
+      putObjectRequestBuilder.contentLength(length);
+    }
+
+    PutObjectRequest putObjectRequest = putObjectRequestBuilder.build();
 
     //    Request Body
     RequestBody requestBody = RequestBody.fromInputStream(content, length);
