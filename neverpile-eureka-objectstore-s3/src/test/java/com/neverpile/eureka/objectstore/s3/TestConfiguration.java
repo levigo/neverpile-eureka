@@ -27,7 +27,7 @@ public class TestConfiguration {
   @Primary
   S3ConnectionConfiguration s3Conf() {
     S3ConnectionConfiguration cc = new S3ConnectionConfiguration();
-    cc.setEndpoint("localhost:9000");
+    cc.setEndpoint("http://localhost:9000");
     cc.setDefaultBucketName("unit-tests");
     cc.setAccessStyle(AccessStyle.Path);
     cc.setAccessKeyId("minioadmin");
