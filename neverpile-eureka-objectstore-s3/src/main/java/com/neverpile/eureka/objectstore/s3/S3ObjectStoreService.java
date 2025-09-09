@@ -14,18 +14,9 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import jakarta.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.amazonaws.services.s3.model.ListObjectsRequest;
-import com.amazonaws.services.s3.model.ObjectListing;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.neverpile.common.opentracing.Tag;
 import com.neverpile.common.opentracing.TraceInvocation;
 import com.neverpile.eureka.api.ObjectStoreService;
@@ -33,14 +24,33 @@ import com.neverpile.eureka.api.exception.VersionMismatchException;
 import com.neverpile.eureka.model.ObjectName;
 import com.neverpile.eureka.tx.wal.TransactionWAL;
 import com.neverpile.eureka.tx.wal.TransactionWAL.TransactionalAction;
+import com.neverpile.eureka.util.ObjectNames;
 
 import io.micrometer.core.annotation.Timed;
+import jakarta.annotation.PostConstruct;
+import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.http.HttpStatusCode;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.CommonPrefix;
+import software.amazon.awssdk.services.s3.model.CopyObjectRequest;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
+import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
+import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
+import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
+import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.S3Exception;
+import software.amazon.awssdk.services.s3.model.S3Object;
 
 public class S3ObjectStoreService implements ObjectStoreService {
   public static class ObjectNameMapper implements Function<ObjectName, String> {
     @Override
     public String apply(final ObjectName n) {
-      return n.stream().map(s -> escape(s)).collect(joining(NAME_DELIMITER));
+      return n.stream().map(ObjectNames::escape).collect(joining(NAME_DELIMITER));
     }
   }
 
@@ -48,7 +58,7 @@ public class S3ObjectStoreService implements ObjectStoreService {
 
   private static final String NAME_DELIMITER = "/";
 
-  private static Pattern DELIMITER_SPLIT_PATTERN = Pattern.compile(Pattern.quote(NAME_DELIMITER));
+  private static final Pattern DELIMITER_SPLIT_PATTERN = Pattern.compile(Pattern.quote(NAME_DELIMITER));
 
   private abstract static class S3TXAction implements TransactionalAction {
     private static final long serialVersionUID = 1L;
@@ -56,7 +66,7 @@ public class S3ObjectStoreService implements ObjectStoreService {
     /**
      * We use this static in order to propagate the connection configuration to the (static)
      * actions.
-     * 
+     * <p>
      * FIXME: this is rather ugly. The alternative would be to make the whole S3 configuration
      * serializable and create connections upon action execution. However, the S3 configuration
      * isn't serializable per se making this endeavor rather tedious.
@@ -88,7 +98,7 @@ public class S3ObjectStoreService implements ObjectStoreService {
 
     @Override
     public void run() {
-      getConnectionConfiguration().createClient().deleteObject(bucket, key);
+      getConnectionConfiguration().createClient().deleteObject(builder -> builder.bucket(bucket).key(key));
     }
   }
 
@@ -109,9 +119,10 @@ public class S3ObjectStoreService implements ObjectStoreService {
 
     @Override
     public void run() {
-      AmazonS3 c = getConnectionConfiguration().createClient();
-      c.copyObject(bucket, fromKey, bucket, toKey);
-      c.deleteObject(bucket, fromKey);
+      S3Client c = getConnectionConfiguration().createClient();
+      c.copyObject(
+          builder -> builder.sourceBucket(bucket).sourceKey(fromKey).destinationKey(toKey).destinationBucket(bucket));
+      c.deleteObject(builder -> builder.bucket(bucket).key(fromKey));
     }
   }
 
@@ -120,8 +131,8 @@ public class S3ObjectStoreService implements ObjectStoreService {
 
   @Autowired
   private TransactionWAL writeAheadLog;
-  
-  private AmazonS3 s3client;
+
+  private S3Client s3client;
 
   @PostConstruct
   private void init() {
@@ -130,8 +141,7 @@ public class S3ObjectStoreService implements ObjectStoreService {
   }
 
   @Override
-  @Timed(description = "put object store element", extraTags = {
-      "subsystem", "s3.object-store"
+  @Timed(description = "put object store element", extraTags = {"subsystem", "s3.object-store"
   }, value = "eureka.s3.object-store.put")
   @TraceInvocation
   public void put(@Tag(name = "key", valueAdapter = ObjectNameMapper.class) final ObjectName objectName,
@@ -154,20 +164,23 @@ public class S3ObjectStoreService implements ObjectStoreService {
       writeAheadLog.appendUndoAction(new PurgeObjectAction(bucket, key));
     }
 
-    ObjectMetadata metadata = new ObjectMetadata();
-    if (length >= 0)
-      metadata.setContentLength(length);
+    PutObjectRequest putObjectRequest = PutObjectRequest.builder().bucket(bucket).key(key).contentLength(
+        length).build();
 
-    s3client.putObject(bucket, key, content, metadata);
+    //    Request Body
+    RequestBody requestBody = RequestBody.fromInputStream(content, length);
+    s3client.putObject(putObjectRequest, requestBody);
   }
 
   private String getCurrentVersion(final String bucket, final String key) {
     String currentVersion = NEW_VERSION;
     try {
-      ObjectMetadata objectMetadata = s3client.getObjectMetadata(bucket, key);
-      currentVersion = objectMetadata.getETag();
-    } catch (AmazonS3Exception e) {
-      if (e.getStatusCode() != HttpStatus.NOT_FOUND.value())
+      HeadObjectRequest headRequest = HeadObjectRequest.builder().bucket(bucket).key(key).build();
+
+      HeadObjectResponse headResponse = s3client.headObject(headRequest);
+      currentVersion = headResponse.eTag();
+    } catch (NoSuchKeyException e) {
+      if (e.statusCode() != HttpStatus.NOT_FOUND.value())
         throw e;
 
       // else fall out
@@ -180,27 +193,31 @@ public class S3ObjectStoreService implements ObjectStoreService {
   }
 
   private final class ObjectListingSpliterator extends Spliterators.AbstractSpliterator<StoreObject> {
-    private ObjectListing listing;
-    private Iterator<S3ObjectSummary> summaries;
+    private ListObjectsV2Response listing;
+    private Iterator<S3Object> summaries;
     private Iterator<String> prefixes;
+    private String continuationToken;
 
-    public ObjectListingSpliterator(final ObjectListing listing) {
-      super(listing.isTruncated() ? Long.MAX_VALUE : listing.getObjectSummaries().size(), Spliterator.ORDERED);
+    public ObjectListingSpliterator(final ListObjectsV2Response listing) {
+      super(listing.isTruncated() ? Long.MAX_VALUE : listing.contents().size(), Spliterator.ORDERED);
       this.listing = listing;
-      summaries = listing.getObjectSummaries().iterator();
-      prefixes = listing.getCommonPrefixes().iterator();
+      this.continuationToken = listing.nextContinuationToken();
+      summaries = listing.contents().iterator();
+      prefixes = listing.commonPrefixes().stream().map(CommonPrefix::prefix).iterator();
     }
 
     @Override
     public boolean tryAdvance(final Consumer<? super StoreObject> action) {
       if (summaries.hasNext()) {
-        S3ObjectSummary s;
+        S3Object s;
         do {
           s = summaries.next();
-        } while (s.getKey().endsWith(BACKUP_SUFFIX) && summaries.hasNext()); // hide backups
+        } while (s.key().endsWith(BACKUP_SUFFIX) && summaries.hasNext()); // hide backups
 
-        action.accept(toStoreObject(s));
-        return true;
+        if (!s.key().endsWith(BACKUP_SUFFIX)) {
+          action.accept(toStoreObject(s));
+          return true;
+        }
       }
 
       if (prefixes.hasNext()) {
@@ -209,11 +226,16 @@ public class S3ObjectStoreService implements ObjectStoreService {
         return true;
       }
 
-      if (listing.isTruncated()) {
-        // fetch next chunnk
-        listing = s3client.listNextBatchOfObjects(listing);
-        summaries = listing.getObjectSummaries().iterator();
-        prefixes = listing.getCommonPrefixes().iterator();
+      if (listing.isTruncated() && continuationToken != null) {
+        // fetch next chunk
+        ListObjectsV2Request nextRequest = ListObjectsV2Request.builder().bucket(
+                listing.name()) // Note: you may need to store bucket name separately
+            .continuationToken(continuationToken).build();
+
+        listing = s3client.listObjectsV2(nextRequest);
+        continuationToken = listing.nextContinuationToken();
+        summaries = listing.contents().iterator();
+        prefixes = listing.commonPrefixes().stream().map(CommonPrefix::prefix).iterator();
 
         return tryAdvance(action);
       }
@@ -221,16 +243,16 @@ public class S3ObjectStoreService implements ObjectStoreService {
       return false;
     }
 
-    private StoreObject toStoreObject(final S3ObjectSummary s) {
+    private StoreObject toStoreObject(final S3Object s) {
       return new StoreObject() {
         @Override
         public String getVersion() {
-          return s.getETag();
+          return s.eTag();
         }
 
         @Override
         public ObjectName getObjectName() {
-          return toObjectName(s.getKey());
+          return toObjectName(s.key());
         }
 
         @Override
@@ -266,28 +288,29 @@ public class S3ObjectStoreService implements ObjectStoreService {
       @Tag(name = "prefix", valueAdapter = ObjectNameMapper.class) final ObjectName prefix) {
     String prefixKey = toKey(prefix);
 
-    ListObjectsRequest lor = new ListObjectsRequest();
-    lor.setBucketName(connectionConfiguration.getDefaultBucketName());
+    ListObjectsV2Request lor = ListObjectsV2Request.builder().bucket(
+        connectionConfiguration.getDefaultBucketName()).prefix(
+        prefixKey.isEmpty() ? prefixKey : prefixKey + NAME_DELIMITER).delimiter(NAME_DELIMITER).build();
 
-    lor.setPrefix(prefixKey.isEmpty() ? prefixKey : prefixKey + NAME_DELIMITER);
-    lor.setDelimiter(NAME_DELIMITER);
-
-    return StreamSupport.stream(new ObjectListingSpliterator(s3client.listObjects(lor)), false);
+    return StreamSupport.stream(new ObjectListingSpliterator(s3client.listObjectsV2(lor)), false);
   }
 
   @Override
-  @Timed(description = "get object store element", extraTags = {
-      "subsystem", "s3.object-store"
+  @Timed(description = "get object store element", extraTags = {"subsystem", "s3.object-store"
   }, value = "eureka.s3.object-store.get")
   @TraceInvocation
   public StoreObject get(@Tag(name = "key", valueAdapter = ObjectNameMapper.class) final ObjectName objectName) {
     try {
-      final S3Object object = s3client.getObject(connectionConfiguration.getDefaultBucketName(), toKey(objectName));
+      GetObjectRequest getRequest = GetObjectRequest.builder().bucket(
+          connectionConfiguration.getDefaultBucketName()).key(toKey(objectName)).build();
+
+      final ResponseInputStream<GetObjectResponse> responseStream = s3client.getObject(getRequest);
+      final GetObjectResponse response = responseStream.response();
 
       return new StoreObject() {
         @Override
         public String getVersion() {
-          return object.getObjectMetadata().getETag();
+          return response.eTag();
         }
 
         @Override
@@ -297,25 +320,29 @@ public class S3ObjectStoreService implements ObjectStoreService {
 
         @Override
         public InputStream getInputStream() {
-          return object.getObjectContent();
+          return responseStream;
         }
       };
-    } catch (AmazonS3Exception e) {
-      if (e.getStatusCode() != HttpStatus.NOT_FOUND.value())
+    } catch (NoSuchKeyException e) {
+      // Object doesn't exist
+      return null;
+    } catch (S3Exception e) {
+      if (e.statusCode() != HttpStatusCode.NOT_FOUND) {
         throw e;
-
+      }
       return null;
     }
   }
 
   @Override
-  @Timed(description = "delete object store element", extraTags = {
-      "subsystem", "s3.object-store"
+  @Timed(description = "delete object store element", extraTags = {"subsystem", "s3.object-store"
   }, value = "eureka.s3.object-store.delete")
   public void delete(final ObjectName prefix) {
-    StreamSupport.stream(new ObjectListingSpliterator(
-        s3client.listObjects(connectionConfiguration.getDefaultBucketName(), toKey(prefix))), false) //
-        .forEach(o -> deleteSingleObject(o.getObjectName()));
+    ListObjectsV2Request listRequest = ListObjectsV2Request.builder().bucket(
+        connectionConfiguration.getDefaultBucketName()).prefix(toKey(prefix)).build();
+
+    StreamSupport.stream(new ObjectListingSpliterator(s3client.listObjectsV2(listRequest)), false).forEach(
+        o -> deleteSingleObject(o.getObjectName()));
   }
 
   private void deleteSingleObject(final ObjectName objectName) {
@@ -330,16 +357,18 @@ public class S3ObjectStoreService implements ObjectStoreService {
       createBackup(bucket, key);
 
       // delete object
-      s3client.deleteObject(bucket, key);
+      DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder().bucket(bucket).key(key).build();
+
+      s3client.deleteObject(deleteRequest);
     }
   }
 
   /**
    * Backup the object for the given key and register transactional actions to purge the backup upon
    * commit or restore the object upon rollback.
-   * 
+   *
    * @param bucket the destination bucket
-   * @param key the S3 object key
+   * @param key    the S3 object key
    */
   private void createBackup(final String bucket, final String key) {
     String backupKey = key + BACKUP_SUFFIX;
@@ -347,12 +376,14 @@ public class S3ObjectStoreService implements ObjectStoreService {
     writeAheadLog.appendCommitAction(new PurgeObjectAction(bucket, backupKey));
     writeAheadLog.appendUndoAction(new MoveObjectAction(bucket, key + BACKUP_SUFFIX, key));
 
-    s3client.copyObject(bucket, key, bucket, backupKey);
+    CopyObjectRequest copyRequest = CopyObjectRequest.builder().sourceBucket(bucket).sourceKey(key).destinationBucket(
+        bucket).destinationKey(backupKey).build();
+
+    s3client.copyObject(copyRequest);
   }
 
   @Override
-  @Timed(description = "verify object store element exists", extraTags = {
-      "subsystem", "s3.object-store"
+  @Timed(description = "verify object store element exists", extraTags = {"subsystem", "s3.object-store"
   }, value = "eureka.s3.object-store.check-exists")
   @TraceInvocation
   public boolean checkObjectExists(

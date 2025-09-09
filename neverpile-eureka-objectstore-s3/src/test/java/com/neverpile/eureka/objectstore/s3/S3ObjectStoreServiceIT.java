@@ -9,8 +9,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.amazonaws.services.s3.AmazonS3;
 import com.neverpile.eureka.api.objectstore.AbstractObjectStoreServiceTest;
+
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
+import software.amazon.awssdk.services.s3.model.DeleteBucketRequest;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
+import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest()
@@ -25,15 +31,28 @@ public class S3ObjectStoreServiceIT extends AbstractObjectStoreServiceTest {
 
   @Before
   public void createBucket() {
-    AmazonS3 s3Client = connectionConfiguration.createClient();
+    S3Client s3Client = connectionConfiguration.createClient();
     try {
-      s3Client.listObjects(BUCKET_NAME).getObjectSummaries().forEach(
-          (object -> s3Client.deleteObject(BUCKET_NAME, object.getKey())));
-      s3Client.deleteBucket(BUCKET_NAME);
+      // List and delete all objects in the bucket
+      ListObjectsV2Request listRequest = ListObjectsV2Request.builder().bucket(BUCKET_NAME).build();
+
+      ListObjectsV2Response listResponse = s3Client.listObjectsV2(listRequest);
+
+      listResponse.contents().forEach(object -> {
+        DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder().bucket(BUCKET_NAME).key(object.key()).build();
+        s3Client.deleteObject(deleteRequest);
+      });
+
+      // Delete the bucket
+      DeleteBucketRequest deleteBucketRequest = DeleteBucketRequest.builder().bucket(BUCKET_NAME).build();
+      s3Client.deleteBucket(deleteBucketRequest);
     } catch (Exception e) {
       // ignored
     }
-    s3Client.createBucket(BUCKET_NAME);
+
+    // Create the bucket
+    CreateBucketRequest createBucketRequest = CreateBucketRequest.builder().bucket(BUCKET_NAME).build();
+    s3Client.createBucket(createBucketRequest);
   }
 
   // For the problem with object collision using MinIO see:

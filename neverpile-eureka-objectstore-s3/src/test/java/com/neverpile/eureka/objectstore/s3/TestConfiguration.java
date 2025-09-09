@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.web.context.annotation.RequestScope;
 
-import com.amazonaws.Protocol;
 import com.neverpile.eureka.api.ObjectStoreService;
 import com.neverpile.eureka.impl.tx.lock.LocalLockFactory;
 import com.neverpile.eureka.objectstore.s3.S3ConnectionConfiguration.AccessStyle;
@@ -33,8 +32,6 @@ public class TestConfiguration {
     cc.setAccessStyle(AccessStyle.Path);
     cc.setAccessKeyId("minioadmin");
     cc.setSecretAccessKey("minioadmin");
-
-    cc.getClientConfiguration().withProtocol(Protocol.HTTP).withTcpKeepAlive(false).withUseExpectContinue(false);
 
     return cc;
   }

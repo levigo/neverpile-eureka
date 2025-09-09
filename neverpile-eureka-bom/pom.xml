@@ -106,28 +106,10 @@
       <!-- Manage AWS client version to a common, sane one -->
       <dependency>
         <groupId>software.amazon.awssdk</groupId>
-        <artifactId>s3</artifactId>
+        <artifactId>bom</artifactId>
         <version>${aws-s3.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>software.amazon.awssdk</groupId>
-        <artifactId>aws-core</artifactId>
-        <version>${aws-s3.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>software.amazon.awssdk</groupId>
-        <artifactId>ec2</artifactId>
-        <version>${aws-s3.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>software.amazon.awssdk</groupId>
-        <artifactId>elasticloadbalancing</artifactId>
-        <version>${aws-s3.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>software.amazon.awssdk</groupId>
-        <artifactId>kms</artifactId>
-        <version>${aws-s3.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
 
       <!-- neverpile misc -->

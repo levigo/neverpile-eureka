@@ -22,10 +22,19 @@
       <artifactId>s3</artifactId>
       <version>${aws-s3.version}</version>
     </dependency>
-
     <dependency>
       <groupId>software.amazon.awssdk</groupId>
       <artifactId>sts</artifactId>
+      <version>${aws-s3.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>aws-core</artifactId>
+      <version>${aws-s3.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>elasticloadbalancing</artifactId>
       <version>${aws-s3.version}</version>
     </dependency>
 
