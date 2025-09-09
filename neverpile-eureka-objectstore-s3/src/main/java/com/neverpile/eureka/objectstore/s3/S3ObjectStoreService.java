@@ -4,6 +4,7 @@ import static com.neverpile.eureka.util.ObjectNames.escape;
 import static com.neverpile.eureka.util.ObjectNames.unescape;
 import static java.util.stream.Collectors.joining;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 import java.util.Spliterator;
@@ -166,14 +167,22 @@ public class S3ObjectStoreService implements ObjectStoreService {
 
     PutObjectRequest.Builder putObjectRequestBuilder = PutObjectRequest.builder().bucket(bucket).key(key);
 
-    if (length >= 0) {
-      putObjectRequestBuilder.contentLength(length);
-    }
-
-    PutObjectRequest putObjectRequest = putObjectRequestBuilder.build();
-
     //    Request Body
-    RequestBody requestBody = RequestBody.fromInputStream(content, length);
+    RequestBody requestBody;
+    if (length > 0) {
+      putObjectRequestBuilder.contentLength(length);
+      requestBody = RequestBody.fromInputStream(content, length);
+    } else {
+      // Read stream into memory
+      byte[] bytes;
+      try {
+        bytes = content.readAllBytes();
+        requestBody = RequestBody.fromBytes(bytes);
+      } catch (IOException e) {
+        throw new RuntimeException("Failed to read input stream", e);
+      }
+    }
+    PutObjectRequest putObjectRequest = putObjectRequestBuilder.build();
     s3client.putObject(putObjectRequest, requestBody);
   }
 
