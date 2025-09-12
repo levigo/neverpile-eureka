@@ -1,22 +1,21 @@
 package com.neverpile.eureka.objectstore.s3;
 
 import java.io.Serializable;
+import java.net.URI;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-import com.amazonaws.ClientConfiguration;
-import com.amazonaws.SDKGlobalConfiguration;
-import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.auth.STSAssumeRoleSessionCredentialsProvider;
-import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.Region;
-import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
-import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.sts.StsClient;
+import software.amazon.awssdk.services.sts.auth.StsAssumeRoleCredentialsProvider;
+import software.amazon.awssdk.services.sts.endpoints.internal.DefaultStsEndpointProvider;
+import software.amazon.awssdk.services.sts.model.AssumeRoleRequest;
 
 /**
  * Configuration properties for an S3 connection.
@@ -49,47 +48,46 @@ public class S3ConnectionConfiguration implements Serializable {
   private String accountName;
   private String endpoint;
   private String stsEndpoint;
-  private String signingRegion = Region.EU_Frankfurt.getFirstRegionId();
+  private String signingRegion = Region.EUSC_DE_EAST_1.id();
   private SignatureType signatureType;
   private String accessKeyId;
   private String secretAccessKey;
   private String defaultBucketName;
   private AccessStyle accessStyle = AccessStyle.Automatic;
-  private ClientConfiguration clientConfiguration = new ClientConfiguration();
+  private ClientOverrideConfiguration clientConfiguration = ClientOverrideConfiguration.builder().build();
+
   private boolean disableCertificateChecking;
   private String roleArn;
   private String roleSessionName;
   private int durationSeconds;
 
-  public AmazonS3 createClient() {
-    AWSCredentialsProvider credentialsProvider;
+  public S3Client createClient() {
+    AwsCredentialsProvider credentialsProvider;
 
-    BasicAWSCredentials basicAWSCredentials = new BasicAWSCredentials(getAccessKeyId(), getSecretAccessKey());
+    AwsBasicCredentials basicAWSCredentials = AwsBasicCredentials.create(getAccessKeyId(), getSecretAccessKey());
     if (roleArn != null && !roleArn.isEmpty()) {
-      AWSSecurityTokenService stsClient = AWSSecurityTokenServiceClientBuilder.standard()
-          .withCredentials(new AWSStaticCredentialsProvider(basicAWSCredentials))
-          .withEndpointConfiguration(new EndpointConfiguration(this.getStsEndpoint(), this.getSigningRegion()))
-          .build();
+      StsClient stsClient = StsClient.builder().credentialsProvider(
+          StaticCredentialsProvider.create(basicAWSCredentials)).endpointProvider(
+          new DefaultStsEndpointProvider()).region(Region.of(this.getSigningRegion())).endpointOverride(
+          URI.create(this.getStsEndpoint())).build();
 
-      credentialsProvider = new STSAssumeRoleSessionCredentialsProvider
-          .Builder(getRoleArn(), getRoleSessionName())
-          .withStsClient(stsClient)
-          .withRoleSessionDurationSeconds(getDurationSeconds())
-          .build();
+      credentialsProvider = StsAssumeRoleCredentialsProvider.builder().refreshRequest(
+          AssumeRoleRequest.builder()
+            .roleArn(roleArn)
+            .roleSessionName(getRoleSessionName())
+            .durationSeconds(getDurationSeconds())
+            .build()).stsClient(
+          stsClient).build();
     } else {
       // Use basic credentials if roleArn is not set
-      credentialsProvider = new AWSStaticCredentialsProvider(basicAWSCredentials);
+      credentialsProvider = StaticCredentialsProvider.create(basicAWSCredentials);
     }
 
-    System.setProperty(SDKGlobalConfiguration.DISABLE_CERT_CHECKING_SYSTEM_PROPERTY,
-        Boolean.toString(disableCertificateChecking));
+    System.setProperty("aws.disableCertChecking", Boolean.toString(disableCertificateChecking));
 
-    return AmazonS3ClientBuilder.standard()
-        .withCredentials(credentialsProvider)
-        .withEndpointConfiguration(new EndpointConfiguration(this.getEndpoint(), this.getSigningRegion()))
-        .withClientConfiguration(getClientConfiguration())
-        .withPathStyleAccessEnabled(accessStyle == AccessStyle.Path)
-        .build();
+    return S3Client.builder().credentialsProvider(credentialsProvider).endpointOverride(
+        URI.create(this.getEndpoint())).region(Region.of(this.getSigningRegion())).overrideConfiguration(
+        getClientConfiguration()).forcePathStyle(accessStyle == AccessStyle.Path).build();
   }
 
   public String getRoleArn() {
@@ -180,12 +178,12 @@ public class S3ConnectionConfiguration implements Serializable {
     this.defaultBucketName = defaultBucketName;
   }
 
-  public ClientConfiguration getClientConfiguration() {
+  public ClientOverrideConfiguration getClientConfiguration() {
     return clientConfiguration;
   }
 
-  public void setClientConfiguration(final ClientConfiguration client) {
-    this.clientConfiguration = client;
+  public void setClientConfiguration(ClientOverrideConfiguration clientConfiguration) {
+    this.clientConfiguration = clientConfiguration;
   }
 
   public AccessStyle getAccessStyle() {

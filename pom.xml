@@ -16,7 +16,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!--atomikos Fix version due to compatibility problems with Spring boot 3.4 hosted on https://levigo.de/maven2/repository/third-party/ -->
     <atomikos.version>6.0.1-FIX</atomikos.version>
-    <aws-s3.version>1.12.671</aws-s3.version>
+    <aws-s3.version>2.33.4</aws-s3.version>
     <bcprov-jdk15on.version>1.70</bcprov-jdk15on.version>
     <cassandra-driver-core.version>4.17.0</cassandra-driver-core.version>
     <ehcache.version>3.10.8</ehcache.version>
@@ -206,6 +206,33 @@
         <groupId>com.neverpile.eureka</groupId>
         <artifactId>neverpile-eureka-objectstore-s3</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>bom</artifactId>
+        <version>${aws-s3.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>s3</artifactId>
+        <version>${aws-s3.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>aws-core</artifactId>
+        <version>${aws-s3.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>elasticloadbalancing</artifactId>
+        <version>${aws-s3.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>kms</artifactId>
+        <version>${aws-s3.version}</version>
       </dependency>
       <dependency>
         <groupId>com.neverpile.eureka</groupId>
