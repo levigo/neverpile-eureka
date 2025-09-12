@@ -72,7 +72,11 @@ public class S3ConnectionConfiguration implements Serializable {
           URI.create(this.getStsEndpoint())).build();
 
       credentialsProvider = StsAssumeRoleCredentialsProvider.builder().refreshRequest(
-          AssumeRoleRequest.builder().roleArn(roleArn).durationSeconds(getDurationSeconds()).build()).stsClient(
+          AssumeRoleRequest.builder()
+            .roleArn(roleArn)
+            .roleSessionName(getRoleSessionName())
+            .durationSeconds(getDurationSeconds())
+            .build()).stsClient(
           stsClient).build();
     } else {
       // Use basic credentials if roleArn is not set
