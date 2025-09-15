@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.web.context.annotation.RequestScope;
 
-import com.amazonaws.Protocol;
 import com.neverpile.eureka.api.ObjectStoreService;
 import com.neverpile.eureka.impl.tx.lock.LocalLockFactory;
 import com.neverpile.eureka.objectstore.s3.S3ConnectionConfiguration.AccessStyle;
@@ -28,13 +27,11 @@ public class TestConfiguration {
   @Primary
   S3ConnectionConfiguration s3Conf() {
     S3ConnectionConfiguration cc = new S3ConnectionConfiguration();
-    cc.setEndpoint("localhost:9000");
+    cc.setEndpoint("http://localhost:9000");
     cc.setDefaultBucketName("unit-tests");
     cc.setAccessStyle(AccessStyle.Path);
     cc.setAccessKeyId("minioadmin");
     cc.setSecretAccessKey("minioadmin");
-
-    cc.getClientConfiguration().withProtocol(Protocol.HTTP).withTcpKeepAlive(false).withUseExpectContinue(false);
 
     return cc;
   }
