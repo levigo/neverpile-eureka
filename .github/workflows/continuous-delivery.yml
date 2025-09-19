@@ -39,6 +39,7 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: '21'
+        cache: 'maven'
 
     - name: Restore Maven cache
       uses: actions/cache/restore@v4
