@@ -46,6 +46,12 @@
       <artifactId>ignite-cloud</artifactId>
       <version>${ignite-cloud.version}</version>
       <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>net.schmizz</groupId>
+          <artifactId>sshj</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.ignite</groupId>
