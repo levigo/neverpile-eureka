@@ -23,14 +23,7 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: '21'
-
-    - name: Restore Maven cache
-      uses: actions/cache/restore@v4
-      with:
-        path: ~/.m2/repository
-        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-maven-
+        cache: 'maven'
 
     - name: Prepare maven settings
       env:
