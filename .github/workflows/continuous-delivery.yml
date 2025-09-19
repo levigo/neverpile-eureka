@@ -41,14 +41,6 @@ jobs:
         java-version: '21'
         cache: 'maven'
 
-    - name: Restore Maven cache
-      uses: actions/cache/restore@v4
-      with:
-        path: ~/.m2/repository
-        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-maven-
-
     ## Build with maven
     - name: Prepare maven settings
       env:
