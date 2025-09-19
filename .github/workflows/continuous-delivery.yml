@@ -39,7 +39,14 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: '21'
-        cache: 'maven'
+
+    - name: Restore Maven cache
+      uses: actions/cache/restore@v4
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-eureka-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-eureka-
 
     ## Build with maven
     - name: Prepare maven settings
