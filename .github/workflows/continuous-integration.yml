@@ -26,11 +26,11 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-maven-
 
-    - name: Set up JDK 21
+    - name: Set up JDK 25
       uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
-        java-version: '21'
+        java-version: '25'
 
     - name: Prepare maven settings
       env:
