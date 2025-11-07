@@ -6,6 +6,8 @@ on:
       - master
     paths-ignore:
       - '**/README.md'
+      - '.github/**'
+      - '!.github/workflows/continuous-integration.yml'
 
 concurrency:
   group: ci-${{ github.ref }}

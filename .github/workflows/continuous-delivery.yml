@@ -6,6 +6,8 @@ on:
       - master
     paths-ignore:
       - '**/README.md'
+      - '.github/**'
+      - '!.github/workflows/continuous-delivery.yml'
 
 concurrency:
   group: cd-${{ github.ref }}
@@ -34,8 +36,8 @@ jobs:
           exit -1
         fi
 
-    - name: Restore Maven cache
-      uses: actions/cache/restore@v4
+    - name: Maven cache
+      uses: actions/cache@v4
       with:
         path: ~/.m2/repository
         key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
