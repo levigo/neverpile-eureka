@@ -14,9 +14,9 @@ import tools.jackson.databind.BeanDescription;
 import tools.jackson.databind.DeserializationConfig;
 import tools.jackson.databind.DeserializationContext;
 import tools.jackson.databind.JavaType;
-import tools.jackson.databind.deser.BeanDeserializer;
-import tools.jackson.databind.deser.BeanDeserializerBase;
-import tools.jackson.databind.deser.BeanDeserializerModifier;
+import tools.jackson.databind.deser.bean.BeanDeserializer;
+import tools.jackson.databind.deser.bean.BeanDeserializerBase;
+import tools.jackson.databind.deser.ValueDeserializerModifier;
 import tools.jackson.databind.module.SimpleModule;
 import com.neverpile.eureka.rest.api.document.DocumentDto;
 import com.neverpile.eureka.rest.api.document.DocumentFacet;
@@ -43,7 +43,7 @@ public class FacetedDocumentDtoModule extends SimpleModule {
     setDeserializerModifier(new FacetedDocumentDtoDeserializerModifier());
   }
 
-  public class FacetedDocumentDtoDeserializerModifier extends BeanDeserializerModifier {
+  public class FacetedDocumentDtoDeserializerModifier extends ValueDeserializerModifier {
     @SuppressWarnings("rawtypes")
     public class FacetDeserializer extends BeanDeserializer {
       @Serial
