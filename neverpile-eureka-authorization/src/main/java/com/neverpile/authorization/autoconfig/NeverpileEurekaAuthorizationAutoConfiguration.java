@@ -1,12 +1,12 @@
 package com.neverpile.authorization.autoconfig;
 
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 import com.neverpile.authorization.rest.PolicyRepositoryResource;
@@ -22,7 +22,7 @@ import com.neverpile.eureka.autoconfig.NeverpileEurekaAutoConfiguration;
 /**
  * Spring-Boot Auto-configuration for the neverpile eureka authorization plugin.
  */
-@Configuration
+@AutoConfiguration
 @ConditionalOnClass(Action.class)
 @AutoConfigureBefore(NeverpileEurekaAutoConfiguration.class)
 @AutoConfigureAfter(AuthorizationServiceAutoConfiguration.class)

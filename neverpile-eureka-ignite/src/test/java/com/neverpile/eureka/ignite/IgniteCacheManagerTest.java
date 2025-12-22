@@ -2,19 +2,15 @@ package com.neverpile.eureka.ignite;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cache.Cache;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import com.neverpile.eureka.ignite.cache.IgniteCacheManager;
-
-@RunWith(SpringRunner.class)
 
 @SpringBootTest
 @ContextConfiguration(classes = TestConfig.class)

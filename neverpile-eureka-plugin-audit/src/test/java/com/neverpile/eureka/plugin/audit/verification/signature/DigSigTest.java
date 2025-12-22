@@ -1,26 +1,20 @@
 package com.neverpile.eureka.plugin.audit.verification.signature;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import com.neverpile.eureka.plugin.audit.verification.DigSigGen;
 import com.neverpile.eureka.plugin.audit.verification.DigSigVer;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = Config.class)
 public class DigSigTest {
 

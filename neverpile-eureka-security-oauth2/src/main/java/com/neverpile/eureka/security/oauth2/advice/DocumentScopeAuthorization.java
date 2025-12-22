@@ -27,8 +27,8 @@ public class DocumentScopeAuthorization implements ResponseBodyAdvice<DocumentDt
     // Get authentication.
     Authentication rawAuthentication = SecurityContextHolder.getContext().getAuthentication();
     OAuth2Authentication oAuth2Authentication;
-    if (rawAuthentication instanceof OAuth2Authentication) {
-      oAuth2Authentication = (OAuth2Authentication) rawAuthentication;
+    if (rawAuthentication instanceof OAuth2Authentication authentication) {
+      oAuth2Authentication = authentication;
     } else {
       throw new IllegalStateException("Authentication not supported!");
     }

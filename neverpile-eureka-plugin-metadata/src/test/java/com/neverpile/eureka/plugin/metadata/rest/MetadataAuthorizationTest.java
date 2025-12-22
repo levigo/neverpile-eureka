@@ -19,16 +19,13 @@ import java.util.Optional;
 
 import jakarta.ws.rs.core.MediaType;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.node.ObjectNode;
 import com.neverpile.common.authorization.policy.impl.AuthenticationMatcher;
 import com.neverpile.eureka.api.DocumentAuthorizationService;
 import com.neverpile.eureka.api.MultiVersioningDocumentService;
@@ -42,29 +39,28 @@ import com.neverpile.eureka.rest.mocks.MockObjectStoreService;
 import com.neverpile.eureka.test.AbstractRestAssuredTest;
 
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class MetadataAuthorizationTest extends AbstractRestAssuredTest {
   // Must mock the MultiVersioningDocumentService or we will break the app context initialization
-  @MockBean
+  @MockitoBean
   MultiVersioningDocumentService mockDocumentService;
 
-  @MockBean
+  @MockitoBean
   MetadataService mockMetadataService;
 
-  @MockBean
+  @MockitoBean
   EventPublisher eventPublisher;
 
   @Autowired
   MockObjectStoreService mockObjectStoreService;
 
-  @MockBean
+  @MockitoBean
   DocumentAuthorizationService mockAuthService;
 
-  @MockBean
+  @MockitoBean
   List<AuthenticationMatcher> authenticationMatchers;
 
-  @Before
+  @BeforeEach
   public void initMock() {
     // provide dummy document
     given(mockDocumentService.getDocument(any())).willAnswer(i -> Optional.of(new Document(i.getArgument(0))));
@@ -78,7 +74,7 @@ public class MetadataAuthorizationTest extends AbstractRestAssuredTest {
   }
 
   @Test
-  public void testThat_documentRetrieveVerifiesAuthorization() throws JsonProcessingException {
+  public void testThat_documentRetrieveVerifiesAuthorization() throws JacksonException {
     Metadata metadata = new Metadata();
     metadata.put("foo", new MetadataElement()); // allowed by authorization
     metadata.put("bar", new MetadataElement()); // disallowed
@@ -103,7 +99,7 @@ public class MetadataAuthorizationTest extends AbstractRestAssuredTest {
   }
 
   @Test
-  public void testThat_documentCreationWithMetadataVerifiesAuthorization() throws JsonProcessingException {
+  public void testThat_documentCreationWithMetadataVerifiesAuthorization() throws JacksonException {
     given(mockDocumentService.getDocument(any())).willAnswer(i -> Optional.empty());
     given(mockDocumentService.documentExists(any())).willReturn(false);
 
@@ -125,7 +121,7 @@ public class MetadataAuthorizationTest extends AbstractRestAssuredTest {
   }
 
   @Test
-  public void testThat_documentUpdateWithMetadataVerifiesAuthorization() throws JsonProcessingException {
+  public void testThat_documentUpdateWithMetadataVerifiesAuthorization() throws JacksonException {
     given(mockAuthService.authorizeSubResourceUpdate(any(), any(String[].class))).willReturn(true);
     given(mockAuthService.authorizeSubResourceCreate(any(), any(String[].class))).willReturn(true);
     given(mockAuthService.authorizeSubResourceDelete(any(), any(String[].class))).willReturn(true);
@@ -156,7 +152,7 @@ public class MetadataAuthorizationTest extends AbstractRestAssuredTest {
   }
 
   @Test
-  public void testThat_metadataRetrieveVerifiesAuthorization() throws JsonProcessingException {
+  public void testThat_metadataRetrieveVerifiesAuthorization() throws JacksonException {
     Metadata metadata = new Metadata();
     metadata.put("foo", new MetadataElement()); // allowed by authorization
     metadata.put("bar", new MetadataElement()); // disallowed
@@ -181,7 +177,7 @@ public class MetadataAuthorizationTest extends AbstractRestAssuredTest {
   }
 
   @Test
-  public void testThat_metadataUpdateVerifiesAuthorization() throws JsonProcessingException {
+  public void testThat_metadataUpdateVerifiesAuthorization() throws JacksonException {
     given(mockAuthService.authorizeSubResourceUpdate(any(), any(String[].class))).willReturn(true);
     given(mockAuthService.authorizeSubResourceCreate(any(), any(String[].class))).willReturn(true);
     given(mockAuthService.authorizeSubResourceDelete(any(), any(String[].class))).willReturn(true);
@@ -218,7 +214,7 @@ public class MetadataAuthorizationTest extends AbstractRestAssuredTest {
   }
 
   @Test
-  public void testThat_metadataUpdateRejectedOnDeniedUpdate() throws JsonProcessingException {
+  public void testThat_metadataUpdateRejectedOnDeniedUpdate() throws JacksonException {
     given(mockAuthService.authorizeSubResourceUpdate(any(), any())).willReturn(false);
     given(mockAuthService.authorizeSubResourceCreate(any(), any())).willReturn(true);
     given(mockAuthService.authorizeSubResourceDelete(any(), any())).willReturn(true);
@@ -241,7 +237,7 @@ public class MetadataAuthorizationTest extends AbstractRestAssuredTest {
   }
 
   @Test
-  public void testThat_metadataUpdateRejectedOnDeniedCreate() throws JsonProcessingException {
+  public void testThat_metadataUpdateRejectedOnDeniedCreate() throws JacksonException {
     given(mockDocumentService.getDocument(any())).willAnswer(i -> Optional.of(new Document(D)));
 
     given(mockAuthService.authorizeSubResourceUpdate(any(), any())).willReturn(true);
@@ -259,7 +255,7 @@ public class MetadataAuthorizationTest extends AbstractRestAssuredTest {
   }
 
   @Test
-  public void testThat_metadataUpdateRejectedOnDeniedDelete() throws JsonProcessingException {
+  public void testThat_metadataUpdateRejectedOnDeniedDelete() throws JacksonException {
     given(mockDocumentService.getDocument(any())).willAnswer(i -> Optional.of(new Document(D)));
 
     given(mockAuthService.authorizeSubResourceUpdate(any(), any())).willReturn(true);
@@ -273,7 +269,7 @@ public class MetadataAuthorizationTest extends AbstractRestAssuredTest {
   }
 
   @Test
-  public void testThat_metadataElementRetrieveVerifiesAuthorization() throws JsonProcessingException {
+  public void testThat_metadataElementRetrieveVerifiesAuthorization() throws JacksonException {
     givenVanillaExistingMetadata();
 
     given(mockAuthService.authorizeSubResourceGet(any(), eq("metadata"), eq("foo"))).willReturn(true);
@@ -301,7 +297,7 @@ public class MetadataAuthorizationTest extends AbstractRestAssuredTest {
   }
 
   @Test
-  public void testThat_metadataElementUpdateVerifiesAuthorization() throws JsonProcessingException {
+  public void testThat_metadataElementUpdateVerifiesAuthorization() throws JacksonException {
     given(mockAuthService.authorizeSubResourceUpdate(any(), any())).willReturn(true);
 
     givenVanillaExistingMetadata();
@@ -319,7 +315,7 @@ public class MetadataAuthorizationTest extends AbstractRestAssuredTest {
   }
 
   @Test
-  public void testThat_metadataElementDeleteVerifiesAuthorization() throws JsonProcessingException {
+  public void testThat_metadataElementDeleteVerifiesAuthorization() throws JacksonException {
     given(mockAuthService.authorizeSubResourceDelete(any(), any())).willReturn(true);
 
     givenVanillaExistingMetadata();
@@ -334,7 +330,7 @@ public class MetadataAuthorizationTest extends AbstractRestAssuredTest {
   }
 
   @Test
-  public void testThat_metadataElementCreateVerifiesAuthorization() throws JsonProcessingException {
+  public void testThat_metadataElementCreateVerifiesAuthorization() throws JacksonException {
     given(mockAuthService.authorizeSubResourceDelete(any(), any())).willReturn(true);
 
     givenVanillaExistingMetadata();
@@ -350,7 +346,7 @@ public class MetadataAuthorizationTest extends AbstractRestAssuredTest {
   }
 
   @Test
-  public void testThat_metadataElementUpdateRejectedOnDeniedUpdate() throws JsonProcessingException {
+  public void testThat_metadataElementUpdateRejectedOnDeniedUpdate() throws JacksonException {
     given(mockAuthService.authorizeSubResourceUpdate(any(), any())).willReturn(false);
     given(mockAuthService.authorizeSubResourceCreate(any(), any())).willReturn(true);
     given(mockAuthService.authorizeSubResourceDelete(any(), any())).willReturn(true);
@@ -372,7 +368,7 @@ public class MetadataAuthorizationTest extends AbstractRestAssuredTest {
 
   // FIXME
   @Test
-  public void testThat_metadataElementDeleteRejectedOnDeniedDelete() throws JsonProcessingException {
+  public void testThat_metadataElementDeleteRejectedOnDeniedDelete() throws JacksonException {
     given(mockAuthService.authorizeSubResourceUpdate(any(), any())).willReturn(true);
     given(mockAuthService.authorizeSubResourceCreate(any(), any())).willReturn(true);
     given(mockAuthService.authorizeSubResourceDelete(any(), any())).willReturn(false);
@@ -391,7 +387,7 @@ public class MetadataAuthorizationTest extends AbstractRestAssuredTest {
 
   // FIXME
   @Test
-  public void testThat_metadataElementCreateRejectedOnDeniedCreated() throws JsonProcessingException {
+  public void testThat_metadataElementCreateRejectedOnDeniedCreated() throws JacksonException {
     given(mockAuthService.authorizeSubResourceUpdate(any(), any())).willReturn(true);
     given(mockAuthService.authorizeSubResourceCreate(any(), any())).willReturn(false);
     given(mockAuthService.authorizeSubResourceDelete(any(), any())).willReturn(true);
@@ -409,7 +405,7 @@ public class MetadataAuthorizationTest extends AbstractRestAssuredTest {
     // @formatter:on
   }
 
-  private MetadataDto createTestMetadata() throws JsonProcessingException {
+  private MetadataDto createTestMetadata() throws JacksonException {
     MetadataElementDto metadataElement = new MetadataElementDto();
     ObjectNode metadataJson = objectMapper.createObjectNode();
     metadataJson.put("foo", "bar");

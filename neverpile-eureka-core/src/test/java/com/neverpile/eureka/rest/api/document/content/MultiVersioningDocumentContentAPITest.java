@@ -17,13 +17,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import jakarta.ws.rs.core.MediaType;
 
 import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import com.neverpile.eureka.api.BaseTestConfiguration;
 import com.neverpile.eureka.api.ContentElementIdGenerationStrategy;
@@ -45,14 +43,13 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {BaseTestConfiguration.class, MultiVersioningContentElementResource.class, DefaultMultiVersioningDocumentService.class})
 public class MultiVersioningDocumentContentAPITest extends AbstractRestAssuredTest {
   // Must mock the MultiVersioningDocumentService or we will break the app context initialization
-  @MockBean
+  @MockitoBean
   MultiVersioningDocumentService mockDocumentService;
 
-  @MockBean
+  @MockitoBean
   EventPublisher eventPublisher;
 
   @Autowired
@@ -61,13 +58,13 @@ public class MultiVersioningDocumentContentAPITest extends AbstractRestAssuredTe
   @Autowired
   MockObjectStoreService mockObjectStoreService;
 
-  @MockBean
+  @MockitoBean
   DocumentIdGenerationStrategy documentIdGenerationStrategy;
 
-  @MockBean
+  @MockitoBean
   ContentElementIdGenerationStrategy contentElementIdGenerationStrategy;
 
-  @Before
+  @BeforeEach
   public void reset() {
     AtomicInteger docIdGenerator = new AtomicInteger(42);
     when(documentIdGenerationStrategy.createDocumentId()).thenAnswer(

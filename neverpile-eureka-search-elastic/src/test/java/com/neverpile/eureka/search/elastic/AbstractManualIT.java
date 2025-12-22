@@ -9,10 +9,10 @@ import java.util.List;
 import jakarta.ws.rs.core.MediaType;
 
 import org.elasticsearch.client.RestHighLevelClient;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import com.neverpile.eureka.api.ContentElementService;
 import com.neverpile.eureka.api.DocumentIdGenerationStrategy;
@@ -29,10 +29,10 @@ public abstract class AbstractManualIT {
 
   protected static final String MAPPING_NAME = "_doc";
 
-  @MockBean
+  @MockitoBean
   protected DocumentService mockDocumentService;
 
-  @MockBean
+  @MockitoBean
   protected DocumentIdGenerationStrategy mockDocumentIdGenerationStrategy;
 
   @Autowired
@@ -41,17 +41,17 @@ public abstract class AbstractManualIT {
   @Autowired
   protected ElasticsearchDocumentIndex index;
 
-  @MockBean
+  @MockitoBean
   protected MetadataService metadataService;
 
-  @MockBean
+  @MockitoBean
   protected ContentElementService contentElementService;
 
   protected static String testIndexName;
 
   protected static List<Document> listOfDocuments = new ArrayList<>();
 
-  @BeforeClass
+  @BeforeAll
   public static void setUp() {
     for (int i = 0; i < 60; i++) {
       listOfDocuments.add(createTestDocumentWithContent(i));
@@ -92,7 +92,7 @@ public abstract class AbstractManualIT {
     return document;
   }
 
-  @Before
+  @BeforeEach
   public void prepare() throws IOException {
     index.ensureIndexUpToDateOrRebuildInProgress();
     testIndexName = index.getIndexNameFromAlias(ElasticsearchDocumentIndex.INDEX_ALIAS_READ);

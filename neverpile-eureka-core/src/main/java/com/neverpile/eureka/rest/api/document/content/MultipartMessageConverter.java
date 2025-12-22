@@ -24,6 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -39,7 +40,6 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.http.converter.ResourceHttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.util.MultiValueMap;
@@ -144,8 +144,7 @@ public class MultipartMessageConverter implements HttpMessageConverter<MultiValu
    */
   private void applyDefaultCharset() {
     for (HttpMessageConverter<?> candidate : this.partConverters) {
-      if (candidate instanceof AbstractHttpMessageConverter) {
-        AbstractHttpMessageConverter<?> converter = (AbstractHttpMessageConverter<?>) candidate;
+      if (candidate instanceof AbstractHttpMessageConverter<?> converter) {
         // Only override default charset if the converter operates with a charset to begin with...
         if (converter.getDefaultCharset() != null) {
           converter.setDefaultCharset(this.charset);
@@ -216,8 +215,7 @@ public class MultipartMessageConverter implements HttpMessageConverter<MultiValu
     HttpHeaders headers = outputMessage.getHeaders();
     headers.setContentType(parameterizedContentType);
 
-    if (outputMessage instanceof StreamingHttpOutputMessage) {
-      StreamingHttpOutputMessage streamingOutputMessage = (StreamingHttpOutputMessage) outputMessage;
+    if (outputMessage instanceof StreamingHttpOutputMessage streamingOutputMessage) {
       streamingOutputMessage.setBody(outputStream -> {
         writeParts(outputStream, parts, boundary);
         writeEnd(outputStream, boundary);
@@ -295,7 +293,7 @@ public class MultipartMessageConverter implements HttpMessageConverter<MultiValu
    *         wrapper for that part
    */
   protected HttpEntity<?> getHttpEntity(final Object part) {
-    return (part instanceof HttpEntity ? (HttpEntity<?>) part : new HttpEntity<>(part));
+    return (part instanceof HttpEntity<?> he ? he : new HttpEntity<>(part));
   }
 
   /**
@@ -310,8 +308,7 @@ public class MultipartMessageConverter implements HttpMessageConverter<MultiValu
    */
   @Nullable
   protected String getFilename(final Object part) {
-    if (part instanceof Resource) {
-      Resource resource = (Resource) part;
+    if (part instanceof Resource resource) {
       return resource.getFilename();
     } else {
       return null;

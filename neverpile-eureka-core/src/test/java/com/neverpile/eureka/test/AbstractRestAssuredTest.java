@@ -2,8 +2,7 @@ package com.neverpile.eureka.test;
 
 import java.lang.reflect.Type;
 import java.time.Instant;
-
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -12,7 +11,7 @@ import org.springframework.hateoas.RepresentationModel;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import com.neverpile.eureka.model.Document;
 
 import io.restassured.RestAssured;
@@ -49,12 +48,12 @@ public abstract class AbstractRestAssuredTest {
   @Autowired
   protected ModelMapper modelMapper;
 
-  @Before
+  @BeforeEach
   public void setupRestAssured() {
     RestAssured.port = port;
   }
 
-  @Before
+  @BeforeEach
   public void before() {
     // Make RestAssured use the application's object mapper so that support for
     // HATEOAS is available.

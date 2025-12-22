@@ -26,9 +26,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import com.neverpile.authorization.rest.ValidationResult.Type;
 import com.neverpile.common.authorization.api.Action;
 import com.neverpile.common.authorization.api.ActionHints;
@@ -170,7 +169,7 @@ public class PolicyRepositoryResource {
                 + " which may mean that you are locking yourself out"));
 
       // FIXME: more ideas for validation?
-    } catch (JsonProcessingException e) {
+    } catch (JacksonException e) {
       result.add(new ValidationResult(Type.ERROR, "Invalid policy specification: " + e.getMessage()));
     } catch (Exception e) {
       result.add(new ValidationResult(Type.ERROR, "Cannot parse policy: " + e.getMessage()));

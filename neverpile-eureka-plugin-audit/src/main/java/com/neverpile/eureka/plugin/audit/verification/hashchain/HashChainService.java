@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import com.neverpile.eureka.api.NeverpileException;
 import com.neverpile.eureka.model.ObjectName;
 import com.neverpile.eureka.plugin.audit.service.AuditEvent;
@@ -99,7 +99,7 @@ public class HashChainService implements HashStrategyService {
     // Get current proof
     Optional<HashChainStoreObject> initProof = Optional.ofNullable(currentProof.get());
     // If distributed atomic is not jet set.
-    if (!initProof.isPresent()) {
+    if (initProof.isEmpty()) {
       // Get current hash from db.
       Optional<InputStream> is = auditStorageBridge.getHeadVerificationElement();
       // If current hash was found in db.
@@ -124,7 +124,7 @@ public class HashChainService implements HashStrategyService {
   @Override
   public boolean verifyHash(AuditEvent auditEvent) {
     Optional<HashChainStoreObject> link = getHashChainLink(getObjectNameOf(auditEvent.getAuditId()));
-    if (!link.isPresent() || null == link.get().getParentId()) {
+    if (link.isEmpty() || null == link.get().getParentId()) {
       return false;
     }
     Optional<HashChainStoreObject> proofLink = getHashChainLink(getObjectNameOf(link.get().getParentId()));

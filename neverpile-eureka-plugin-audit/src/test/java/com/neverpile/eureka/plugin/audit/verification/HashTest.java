@@ -1,14 +1,11 @@
 package com.neverpile.eureka.plugin.audit.verification;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class HashTest {
 
@@ -47,19 +44,25 @@ public class HashTest {
     ;
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void testThat_hashOfNullThrowsException() {
-    new AuditHash(null);
+    assertThrows(NullPointerException.class, () -> {
+      new AuditHash(null);
+    });
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void testThat_concatHashWithFirstArgumentNullThrowsException() {
-    new AuditHash(null, "foo".getBytes());
+    assertThrows(NullPointerException.class, () -> {
+      new AuditHash(null, "foo".getBytes());
+    });
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void testThat_concatHashWithSecondArgumentNullThrowsException() {
-    new AuditHash("foo".getBytes(), null);
+    assertThrows(NullPointerException.class, () -> {
+      new AuditHash("foo".getBytes(), null);
+    });
   }
 
   @Test

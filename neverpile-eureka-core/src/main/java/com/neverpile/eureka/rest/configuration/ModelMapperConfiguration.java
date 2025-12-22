@@ -38,7 +38,7 @@ public class ModelMapperConfiguration {
   public static class DocumentModelMapperConfigurer implements ModelMapperConfigurer {
     private final Optional<ContentElementFacet> contentElementFacet;
     
-    public DocumentModelMapperConfigurer(@Autowired final Optional<ContentElementFacet> contentElementFacet) {
+    public DocumentModelMapperConfigurer(final Optional<ContentElementFacet> contentElementFacet) {
       this.contentElementFacet = contentElementFacet;
     }
     

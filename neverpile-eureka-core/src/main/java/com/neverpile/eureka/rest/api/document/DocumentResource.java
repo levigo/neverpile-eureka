@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,10 +26,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.DatabindException;
+import tools.jackson.databind.ObjectMapper;
 import com.neverpile.eureka.api.DocumentIdGenerationStrategy;
 import com.neverpile.eureka.api.DocumentService;
 import com.neverpile.eureka.model.Document;
@@ -88,7 +87,7 @@ public class DocumentResource {
   }, value = "eureka.document.create")
   public DocumentDto create(@RequestBody final DocumentDto requestDto,
       @RequestParam(name = "facets", required = false) final List<String> requestedFacets)
-      throws JsonMappingException, JsonProcessingException {
+      throws DatabindException, JacksonException {
 
     validate(f -> f.validateCreate(requestDto));
 
@@ -158,7 +157,7 @@ public class DocumentResource {
       throw new NotFoundException("Document not found");
     }
 
-    if (StringUtils.isEmpty(requestDto.getDocumentId())) {
+    if (ObjectUtils.isEmpty(requestDto.getDocumentId())) {
       requestDto.setDocumentId(documentId);
     }
     return update(requestDto, getDocument(documentId), requestedFacets);

@@ -1,13 +1,13 @@
 package com.neverpile.eureka.rest.api.document;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.times;
@@ -22,17 +22,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import jakarta.ws.rs.core.MediaType;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import com.neverpile.eureka.api.BaseTestConfiguration;
 import com.neverpile.eureka.api.ContentElementIdGenerationStrategy;
@@ -58,7 +56,6 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = BaseTestConfiguration.class)
 public class DocumentAPITest extends AbstractRestAssuredTest {
   @TestConfiguration
@@ -71,10 +68,10 @@ public class DocumentAPITest extends AbstractRestAssuredTest {
   }
 
   // Must mock the MultiVersioningDocumentService or we will break the app context initialization
-  @MockBean
+  @MockitoBean
   MultiVersioningDocumentService mockDocumentService;
 
-  @MockBean
+  @MockitoBean
   EventPublisher eventPublisher;
 
   @Autowired
@@ -83,13 +80,13 @@ public class DocumentAPITest extends AbstractRestAssuredTest {
   @Autowired
   MockObjectStoreService mockObjectStoreService;
 
-  @MockBean
+  @MockitoBean
   DocumentIdGenerationStrategy documentIdGenerationStrategy;
 
-  @MockBean
+  @MockitoBean
   ContentElementIdGenerationStrategy contentElementIdGenerationStrategy;
 
-  @Before
+  @BeforeEach
   public void reset() {
     AtomicInteger docIdGenerator = new AtomicInteger(42);
     when(documentIdGenerationStrategy.createDocumentId()).thenAnswer(

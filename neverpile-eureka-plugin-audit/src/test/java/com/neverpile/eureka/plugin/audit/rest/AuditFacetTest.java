@@ -1,10 +1,10 @@
 package com.neverpile.eureka.plugin.audit.rest;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.when;
 
@@ -14,20 +14,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit4.SpringRunner;
-
-import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import tools.jackson.core.util.DefaultPrettyPrinter;
 import com.neverpile.eureka.api.DocumentIdGenerationStrategy;
 import com.neverpile.eureka.api.MultiVersioningDocumentService;
 import com.neverpile.eureka.impl.contentservice.SimpleContentElementService;
@@ -44,7 +41,6 @@ import com.neverpile.eureka.test.AbstractRestAssuredTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AuditFacetTest extends AbstractRestAssuredTest {
   @TestConfiguration
@@ -55,23 +51,23 @@ public class AuditFacetTest extends AbstractRestAssuredTest {
   }
 
   // Must mock the MultiVersioningDocumentService or we will break the app context initialization
-  @MockBean
+  @MockitoBean
   MultiVersioningDocumentService mockDocumentService;
 
-  @MockBean
+  @MockitoBean
   SimpleContentElementService mockContentElementService;
 
 
   @Autowired
   MockObjectStoreService mockObjectStoreService;
 
-  @MockBean
+  @MockitoBean
   AuditLogService mockAuditLogService;
 
-  @MockBean
+  @MockitoBean
   DocumentIdGenerationStrategy idGenerationStrategy;
 
-  @Before
+  @BeforeEach
   public void init() {
     when(idGenerationStrategy.validateDocumentId(D)).thenReturn(true);
   }

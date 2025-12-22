@@ -1,14 +1,11 @@
 package com.neverpile.eureka.plugin.audit.verification.hashchain;
 
 import java.time.Instant;
-
-import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.junit4.SpringRunner;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import com.neverpile.eureka.plugin.audit.service.AuditEvent;
 import com.neverpile.eureka.plugin.audit.service.AuditIdGenerationStrategy;
 import com.neverpile.eureka.plugin.audit.service.impl.DefaultAuditIdGenerationStrategy;
@@ -17,7 +14,6 @@ import com.neverpile.eureka.plugin.audit.verification.AbstractHashStrategyServic
 import com.neverpile.eureka.plugin.audit.verification.AuditHash;
 import com.neverpile.eureka.plugin.audit.verification.HashStrategyService;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = Config.class)
 public class HashChainServiceTest extends AbstractHashStrategyServiceTest {
   @Override

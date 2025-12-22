@@ -122,7 +122,7 @@ public class HazelcastWAL implements WriteAheadLog {
         // find transactions older than the auto rollback timeout without completion events...
         transactions.entrySet().stream() //
             .filter(tx -> tx.getValue().startedBefore(rollbackTransactionsStartedBefore)
-                && !queryEntries(tx.getKey(), e -> isCompletedEvent(e)).findAny().isPresent()) //
+                && queryEntries(tx.getKey(), e -> isCompletedEvent(e)).findAny().isEmpty()) //
             .forEach(e -> {
               // ...and try to roll them back.
               String id = e.getKey();
@@ -158,13 +158,12 @@ public class HazelcastWAL implements WriteAheadLog {
   }
 
   private boolean isCompletedEvent(final Entry e) {
-    return e instanceof EventEntry && ((EventEntry) e).type == EventType.COMPLETED;
+    return e instanceof EventEntry ee && ee.type == EventType.COMPLETED;
   }
 
   private void applyActions(final ActionType type, final List<Entry> txEntries) {
     txEntries.forEach(o -> {
-      if (o instanceof ActionEntry && ((ActionEntry) o).type == type) {
-        ActionEntry ae = (ActionEntry) o;
+      if (o instanceof ActionEntry ae && ae.type == type) {
         try {
           ae.apply();
         } catch (Exception e) {

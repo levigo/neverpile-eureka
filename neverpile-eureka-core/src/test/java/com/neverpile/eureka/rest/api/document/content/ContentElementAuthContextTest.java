@@ -9,17 +9,15 @@ import java.util.Optional;
 
 import jakarta.ws.rs.core.MediaType;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import com.neverpile.common.authorization.api.AuthorizationContext;
 import com.neverpile.common.authorization.api.AuthorizationService;
@@ -41,7 +39,6 @@ import com.neverpile.eureka.test.AbstractRestAssuredTest;
  * client tests. The latter run against a mock, static test Neverpile, though, which will support
  * far less realistic tests.
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes=BaseTestConfiguration.class)
 public class ContentElementAuthContextTest extends AbstractRestAssuredTest {
   @TestConfiguration
@@ -56,30 +53,28 @@ public class ContentElementAuthContextTest extends AbstractRestAssuredTest {
   }
 
   // Must mock the MultiVersioningDocumentService or we will break the app context initialization
-  @MockBean
+  @MockitoBean
   MultiVersioningDocumentService mockDocumentService;
 
-  @MockBean
+  @MockitoBean
   EventPublisher eventPublisher;
 
   @Autowired
   MockObjectStoreService mockObjectStoreService;
 
-  @MockBean
+  @MockitoBean
   AuthorizationService authService;
 
-  @MockBean
+  @MockitoBean
   ContentElementService contentElementService;
 
   @Autowired
   DocumentAuthorizationService documentAuthorizationService;
 
-  @Before
+  @BeforeEach
   public void initMock() {
     // provide dummy document
-    given(mockDocumentService.getDocument(any())).willAnswer(i -> {
-      return Optional.of(createTestDocument(i.getArgument(0)));
-    });
+    given(mockDocumentService.getDocument(any())).willAnswer(i -> Optional.of(createTestDocument(i.getArgument(0))));
     given(mockDocumentService.documentExists(any())).willReturn(true);
   }
 

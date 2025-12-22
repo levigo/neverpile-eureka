@@ -4,15 +4,15 @@ import java.io.IOException;
 
 import jakarta.ws.rs.core.MediaType;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ValueSerializer;
 
-public class MediaTypeSerializer extends JsonSerializer<MediaType> {
+public class MediaTypeSerializer extends ValueSerializer<MediaType> {
   @Override
-  public void serialize(final MediaType value, final JsonGenerator gen, final SerializerProvider serializers)
-      throws IOException, JsonProcessingException {
+  public void serialize(final MediaType value, final JsonGenerator gen, final SerializationContext serializers)
+      throws IOException, JacksonException {
     if(null == value)
       gen.writeNull();
     else

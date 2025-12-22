@@ -1,29 +1,25 @@
 package com.neverpile.eureka.objectstore.cassandra;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 import jakarta.annotation.PostConstruct;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.cassandra.CassandraDataAutoConfiguration;
+import org.springframework.boot.data.cassandra.autoconfigure.DataCassandraAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.neverpile.eureka.api.ObjectStoreService;
 import com.neverpile.eureka.model.ObjectName;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
 @ContextConfiguration(classes = CassandraTestConfig.class)
-@EnableAutoConfiguration(exclude={CassandraDataAutoConfiguration.class})
+@EnableAutoConfiguration(exclude={DataCassandraAutoConfiguration.class})
 public class CassandraLoadIT {
 
   @Autowired

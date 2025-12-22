@@ -7,8 +7,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import com.neverpile.eureka.api.DocumentAssociatedEntityStore;
 import com.neverpile.eureka.impl.documentservice.DefaultDocumentService;
 import com.neverpile.eureka.model.Document;
@@ -34,7 +34,7 @@ public class SimpleMetadataService implements MetadataService {
     Optional<JsonNode> storedDocumentMetadata = associatedEntityStore.retrieve(document,
         ASSOCIATED_ENTITY_KEY);
 
-    if (!storedDocumentMetadata.isPresent())
+    if (storedDocumentMetadata.isEmpty())
       return Optional.empty();
 
     return Optional.ofNullable(getObjectMapper().convertValue(storedDocumentMetadata.get(),

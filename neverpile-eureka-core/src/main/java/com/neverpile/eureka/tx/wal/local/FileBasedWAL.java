@@ -142,8 +142,7 @@ public class FileBasedWAL implements WriteAheadLog {
       // collect list of completed (either committed or properly rolled back) transactions
       Set<String> completedTxIds = new HashSet<>();
       foreachLogEntry(o -> {
-        if (o instanceof EventEntry) {
-          EventEntry ee = (EventEntry) o;
+        if (o instanceof EventEntry ee) {
           if (ee.type == EventType.COMPLETED) {
             completedTxIds.add(ee.txId);
           }
@@ -152,8 +151,7 @@ public class FileBasedWAL implements WriteAheadLog {
 
       // apply all rollback-actions from incomplete transactions
       foreachLogEntryReversed(o -> {
-        if (o instanceof ActionEntry) {
-          ActionEntry ae = (ActionEntry) o;
+        if (o instanceof ActionEntry ae) {
           if (!completedTxIds.contains(ae.txId) && ae.type == ActionType.ROLLBACK) {
             try {
               ae.apply();
@@ -166,8 +164,7 @@ public class FileBasedWAL implements WriteAheadLog {
 
       // apply all commit-actions from completed transactions
       foreachLogEntry(o -> {
-        if (o instanceof ActionEntry) {
-          ActionEntry ae = (ActionEntry) o;
+        if (o instanceof ActionEntry ae) {
           if (completedTxIds.contains(ae.txId) && ae.type == ActionType.COMMIT) {
             try {
               ae.apply();
@@ -274,8 +271,7 @@ public class FileBasedWAL implements WriteAheadLog {
       // collect list of completed (either committed or properly rolled back) transactions
       Set<String> completedTxIds = new HashSet<>();
       foreachLogEntry(o -> {
-        if (o instanceof EventEntry) {
-          EventEntry ee = (EventEntry) o;
+        if (o instanceof EventEntry ee) {
           if (ee.type == EventType.COMPLETED) {
             completedTxIds.add(ee.txId);
           }
@@ -336,8 +332,7 @@ public class FileBasedWAL implements WriteAheadLog {
       Consumer<Entry> consumer = new Consumer<Entry>() {
         @Override
         public void accept(final Entry o) {
-          if (o instanceof ActionEntry) {
-            ActionEntry ae = (ActionEntry) o;
+          if (o instanceof ActionEntry ae) {
             if (Objects.equals(ae.txId, id) && ae.type == type) {
               logger.debug("Applying {} action for tx {}: {}", type, id, ae.action);
               try {

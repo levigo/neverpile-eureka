@@ -15,17 +15,14 @@ import java.util.Optional;
 
 import jakarta.ws.rs.core.MediaType;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.node.ObjectNode;
 import com.mycila.xmltool.XMLDoc;
 import com.mycila.xmltool.XMLTag;
 import com.neverpile.common.authorization.api.AuthorizationContext;
@@ -42,29 +39,28 @@ import com.neverpile.eureka.rest.mocks.MockObjectStoreService;
 import com.neverpile.eureka.test.AbstractRestAssuredTest;
 
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class MetadataAuthContextTest extends AbstractRestAssuredTest {
   // Must mock the MultiVersioningDocumentService or we will break the app context initialization
-  @MockBean
+  @MockitoBean
   MultiVersioningDocumentService mockDocumentService;
 
-  @MockBean
+  @MockitoBean
   MetadataService mockMetadataService;
 
-  @MockBean
+  @MockitoBean
   EventPublisher eventPublisher;
 
   @Autowired
   MockObjectStoreService mockObjectStoreService;
 
-  @MockBean
+  @MockitoBean
   AuthorizationService authService;
 
   @Autowired
   DocumentAuthorizationService documentAuthorizationService;
 
-  @Before
+  @BeforeEach
   public void initMock() {
     // provide dummy document
     given(mockDocumentService.getDocument(any())).willAnswer(i -> Optional.of(new Document(i.getArgument(0))));
@@ -128,7 +124,7 @@ public class MetadataAuthContextTest extends AbstractRestAssuredTest {
     assertThat(authContext.resolveValue("document.metadata.someRawBytes")).isEqualTo(Boolean.TRUE);
   }
 
-  private MetadataDto createTestMetadata() throws JsonProcessingException {
+  private MetadataDto createTestMetadata() throws JacksonException {
     // JSON
     MetadataElementDto jsonElement = new MetadataElementDto();
     jsonElement.setEncryption(EncryptionType.SHARED);

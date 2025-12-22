@@ -86,7 +86,7 @@ public class Structure extends Schema {
       return false;
     
     return elements.stream().anyMatch(e -> e.getName().equals(path.head()) //
-        && e instanceof Structure //
-        && ((Structure) e).isDynamicBranch(path.suffix()));
+        && e instanceof Structure s //
+        && s.isDynamicBranch(path.suffix()));
   }
 }

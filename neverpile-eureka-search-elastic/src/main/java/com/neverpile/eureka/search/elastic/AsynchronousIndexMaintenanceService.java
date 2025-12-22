@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 import com.neverpile.eureka.api.DocumentService;
 import com.neverpile.eureka.api.index.IndexMaintenanceService;
 import com.neverpile.eureka.api.index.Schema;

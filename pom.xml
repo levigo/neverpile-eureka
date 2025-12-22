@@ -17,8 +17,8 @@
     <!--atomikos Fix version due to compatibility problems with Spring boot 3.4 hosted on https://levigo.de/maven2/repository/third-party/ -->
     <atomikos.version>6.0.1-FIX</atomikos.version>
     <aws-s3.version>2.40.13</aws-s3.version>
-    <bcprov-jdk15on.version>1.70</bcprov-jdk15on.version>
-    <cassandra-driver-core.version>4.17.0</cassandra-driver-core.version>
+    <bcprov-jdk15on.version>1.83</bcprov-jdk15on.version>
+    <cassandra-driver-core.version>4.18.1</cassandra-driver-core.version>
     <ehcache.version>3.11.1</ehcache.version>
     <elasticsearch-rest-high-level-client.version>7.17.29</elasticsearch-rest-high-level-client.version>
     <elasticsearch.version>7.17.28</elasticsearch.version>
@@ -28,7 +28,7 @@
     <ignite-aws.version>2.11.1</ignite-aws.version>
     <ignite-cloud.version>2.13.0</ignite-cloud.version>
     <ignite.version>2.17.0</ignite.version>
-    <jetty.version>12.0.5</jetty.version>
+    <jetty.version>12.0.31</jetty.version>
     <lucene.version>8.11.3</lucene.version>
     <org-lz4-java.version>1.8.1</org-lz4-java.version>
     <at-yawk-lz4-java.version>1.10.2</at-yawk-lz4-java.version>
@@ -38,8 +38,7 @@
     <opentracing.version>0.33.0</opentracing.version>
     <snakeyaml.version>2.5</snakeyaml.version>
     <spring-boot-admin.version>3.5.6</spring-boot-admin.version>
-    <spring-boot.version>3.5.9</spring-boot.version>
-    <spring-security-oauth2.version>2.6.8</spring-security-oauth2.version>
+    <spring-boot.version>4.0.1</spring-boot.version>
     <springfox.version>3.0.0</springfox.version>
     <swagger.version>2.2.41</swagger.version>
     <url-crypto-kit.version>2.1.8</url-crypto-kit.version>
@@ -135,17 +134,17 @@
       <!-- Swagger -->
       <dependency>
         <groupId>io.swagger.core.v3</groupId>
-        <artifactId>swagger-annotations</artifactId>
+        <artifactId>swagger-annotations-jakarta</artifactId>
         <version>${swagger.version}</version>
       </dependency>
       <dependency>
         <groupId>io.swagger.core.v3</groupId>
-        <artifactId>swagger-models</artifactId>
+        <artifactId>swagger-models-jakarta</artifactId>
         <version>${swagger.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-servlet</artifactId>
+        <groupId>org.eclipse.jetty.ee9</groupId>
+        <artifactId>jetty-ee9-servlet</artifactId>
         <version>${jetty.version}</version>
       </dependency>
 
@@ -173,7 +172,7 @@
         <version>${guava.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.datastax.oss</groupId>
+        <groupId>org.apache.cassandra</groupId>
         <artifactId>java-driver-core</artifactId>
         <version>${cassandra-driver-core.version}</version>
       </dependency>
@@ -345,7 +344,7 @@
       <!-- TODO: delete when ignite-aws is updated-->
       <dependency>
         <groupId>org.bouncycastle</groupId>
-        <artifactId>bcprov-jdk15on</artifactId>
+        <artifactId>bcprov-jdk15to18</artifactId>
         <version>${bcprov-jdk15on.version}</version>
       </dependency>
       <!-- TODO: delete when ignite-aws is updated-->
@@ -382,11 +381,6 @@
       <artifactId>junit-jupiter-engine</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.junit.vintage</groupId>
-      <artifactId>junit-vintage-engine</artifactId>
-      <scope>test</scope>
-    </dependency>
 
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -407,8 +401,6 @@
           <artifactId>maven-compiler-plugin</artifactId>
           <version>${maven-compiler-plugin.version}</version>
           <configuration>
-            <source>${java.version}</source>
-            <target>${java.version}</target>
             <release>${java.version}</release>
             <forceJavacCompilerUse>true</forceJavacCompilerUse>
             <!-- required for [Parameter Name Discovery](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.2-Release-Notes#parameter-name-discovery) -->

@@ -1,11 +1,14 @@
 package com.neverpile.eureka.objectstore.ehcache;
 
+import java.io.Serial;
+
 import com.neverpile.eureka.model.ObjectName;
 import com.neverpile.eureka.tx.wal.TransactionWAL;
 
 public final class RevertAddAction implements TransactionWAL.TransactionalAction {
 
-    private static final long serialVersionUID = 1L;
+  @Serial
+  private static final long serialVersionUID = 1L;
 
     private final ObjectName objectName;
 

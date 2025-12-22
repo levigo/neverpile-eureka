@@ -14,11 +14,14 @@
 
 package com.neverpile.eureka.rest.api.exception;
 
+import java.io.Serial;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 public class BadInputParameter extends ApiException {
+  @Serial
   private static final long serialVersionUID = 1L;
 
   public BadInputParameter(final String msg) {

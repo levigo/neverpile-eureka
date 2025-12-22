@@ -1,6 +1,6 @@
 package com.neverpile.eureka.plugin.audit.verification;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -16,14 +16,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Optional;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import tools.jackson.databind.ObjectMapper;
 import com.neverpile.eureka.api.ObjectStoreService;
 import com.neverpile.eureka.model.ObjectName;
 import com.neverpile.eureka.plugin.audit.service.AuditEvent;
@@ -32,13 +30,13 @@ import com.neverpile.eureka.tx.atomic.DistributedAtomicReference;
 
 public abstract class AbstractHashStrategyServiceTest {
 
-  @MockBean
+  @MockitoBean
   protected ObjectStoreService objectStore;
 
-  @MockBean
+  @MockitoBean
   protected DistributedAtomicReference distributedAtomicReference;
 
-  @MockBean
+  @MockitoBean
   protected AuditLogService auditLogService;
 
   @Autowired

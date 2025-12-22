@@ -14,9 +14,12 @@
 
 package com.neverpile.eureka.rest.api.exception;
 
+import java.io.Serial;
+
 import com.neverpile.eureka.api.NeverpileException;
 
 public class ApiException extends NeverpileException {
+  @Serial
   private static final long serialVersionUID = 1L;
   
   private final int code;

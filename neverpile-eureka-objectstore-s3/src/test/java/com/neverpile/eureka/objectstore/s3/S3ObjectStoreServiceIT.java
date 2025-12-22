@@ -1,13 +1,12 @@
 package com.neverpile.eureka.objectstore.s3;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import com.neverpile.eureka.api.objectstore.AbstractObjectStoreServiceTest;
 
@@ -18,7 +17,6 @@ import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest()
 @ContextConfiguration(classes = TestConfiguration.class)
 @EnableAutoConfiguration()
@@ -29,7 +27,7 @@ public class S3ObjectStoreServiceIT extends AbstractObjectStoreServiceTest {
   @Autowired
   S3ConnectionConfiguration connectionConfiguration;
 
-  @Before
+  @BeforeEach
   public void createBucket() {
     S3Client s3Client = connectionConfiguration.createClient();
     try {
@@ -60,22 +58,25 @@ public class S3ObjectStoreServiceIT extends AbstractObjectStoreServiceTest {
 
   // This is ignored because of a deviation in behaviour of MinIO that prevents an Object to be discovered
   // with a prefix of an already existing object.
-  @Ignore
+  @Disabled
   @Override
+  @Test
   public void testThat_objectWontGetDeletedIfSuffixGetsDeleted() {
   }
 
   // This is ignored because of a deviation in behaviour of MinIO that prevents an Object to be discovered
   // with a prefix of an already existing object.
-  @Ignore
+  @Disabled
   @Override
+  @Test
   public void testThat_ObjectNamesCanBeListedViaPrefix() {
   }
 
   // This is ignored because of a deviation in behaviour of MinIO that prevents an Object to be discovered
   // with a prefix of an already existing object.
-  @Ignore
+  @Disabled
   @Override
+  @Test
   public void testThat_AllObjectsCanBeListed() {
   }
 }

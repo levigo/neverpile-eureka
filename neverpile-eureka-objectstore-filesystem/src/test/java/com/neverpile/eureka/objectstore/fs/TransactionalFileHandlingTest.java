@@ -3,23 +3,21 @@ package com.neverpile.eureka.objectstore.fs;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.CoreMatchers.startsWith;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.support.TransactionCallback;
@@ -36,7 +34,6 @@ import com.neverpile.eureka.tx.wal.WriteAheadLog;
 import com.neverpile.eureka.tx.wal.local.DefaultTransactionWAL;
 import com.neverpile.eureka.tx.wal.local.FileBasedWAL;
 
-@RunWith(SpringRunner.class)
 @Configuration
 @SpringBootTest
 public class TransactionalFileHandlingTest {
@@ -78,8 +75,8 @@ public class TransactionalFileHandlingTest {
   @Autowired
   FilesystemObjectStoreService oss;
 
-  @Before
-  @After
+  @BeforeEach
+  @AfterEach
   public void cleanup() {
     transactionTemplate.execute(new TransactionCallback<Void>() {
 
@@ -229,7 +226,7 @@ public class TransactionalFileHandlingTest {
       @Override
       public Void doInTransaction(final TransactionStatus status) {
         String contents = "bar";
-        oss.put(someObject, String.format("%06X", 1), toStream(contents));
+        oss.put(someObject, "%06X".formatted(1), toStream(contents));
         assertObjectContent(someObject, contents);
         status.setRollbackOnly();
         return null;

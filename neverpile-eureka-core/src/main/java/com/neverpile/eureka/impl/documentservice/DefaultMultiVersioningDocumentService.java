@@ -26,8 +26,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import com.neverpile.common.opentracing.TraceInvocation;
 import com.neverpile.common.util.VisibleForTesting;
 import com.neverpile.eureka.api.DocumentAssociatedEntityStore;
@@ -370,8 +370,7 @@ public class DefaultMultiVersioningDocumentService
     // @formatter:off
     return documentIds.stream()
         .map(this::getDocument)
-        .filter(Optional::isPresent)
-        .map(Optional::get)
+        .flatMap(Optional::stream)
         .collect(Collectors.toList());
     // @formatter:on
   }

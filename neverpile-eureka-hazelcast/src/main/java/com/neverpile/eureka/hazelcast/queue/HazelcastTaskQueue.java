@@ -84,8 +84,7 @@ public class HazelcastTaskQueue<T> implements TaskQueue<T> {
     public boolean equals(final Object o) {
       if (this == o)
         return true;
-      if (o instanceof HazelcastTaskQueue.CacheData) {
-        CacheData<?> pair = (CacheData<?>) o;
+      if (o instanceof CacheData<?> pair) {
         if (info != null ? !info.equals(pair.info) : pair.info != null)
           return false;
         if (state != null ? !state.equals(pair.state) : pair.state != null)

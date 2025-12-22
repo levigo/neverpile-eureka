@@ -1,8 +1,9 @@
 package com.neverpile.eureka.hazelcast.wal;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.Serial;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -10,6 +11,7 @@ import java.util.UUID;
 import com.neverpile.eureka.tx.wal.TransactionWAL.TransactionalAction;
 
 class SomeTransactionalAction implements TransactionalAction {
+  @Serial
   private static final long serialVersionUID = 1L;
 
   private static final Set<String> executedActions = new HashSet<>();
@@ -29,10 +31,10 @@ class SomeTransactionalAction implements TransactionalAction {
   }
 
   public void assertExecuted() {
-    assertTrue("TransactionalAction: " + name + " was not executed (but should have been)", executedActions.contains(id));
+    assertTrue(executedActions.contains(id), "TransactionalAction: " + name + " was not executed (but should have been)");
   }
 
   public void assertNotExecuted() {
-    assertFalse("TransactionalAction: " + name + " was executed (but should not have been)", executedActions.contains(id));
+    assertFalse(executedActions.contains(id), "TransactionalAction: " + name + " was executed (but should not have been)");
   }
 }

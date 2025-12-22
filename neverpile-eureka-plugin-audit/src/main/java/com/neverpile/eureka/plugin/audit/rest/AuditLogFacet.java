@@ -11,8 +11,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.type.TypeFactory;
+import tools.jackson.databind.JavaType;
+import tools.jackson.databind.type.TypeFactory;
 import com.neverpile.eureka.model.Document;
 import com.neverpile.eureka.plugin.audit.service.AuditEvent;
 import com.neverpile.eureka.plugin.audit.service.AuditEvent.Type;

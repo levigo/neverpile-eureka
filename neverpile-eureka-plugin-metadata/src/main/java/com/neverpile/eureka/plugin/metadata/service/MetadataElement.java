@@ -6,8 +6,8 @@ import java.util.Objects;
 
 import jakarta.ws.rs.core.MediaType;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonSerialize;
 import com.neverpile.eureka.model.EncryptableElement;
 import com.neverpile.eureka.model.MediaTypeDeserializer;
 import com.neverpile.eureka.model.MediaTypeSerializer;

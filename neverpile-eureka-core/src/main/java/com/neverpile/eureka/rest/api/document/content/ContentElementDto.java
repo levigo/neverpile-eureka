@@ -9,8 +9,8 @@ import jakarta.ws.rs.core.MediaType;
 import org.springframework.hateoas.RepresentationModel;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonSerialize;
 import com.neverpile.eureka.model.Digest;
 import com.neverpile.eureka.model.EncryptionType;
 import com.neverpile.eureka.model.MediaTypeDeserializer;

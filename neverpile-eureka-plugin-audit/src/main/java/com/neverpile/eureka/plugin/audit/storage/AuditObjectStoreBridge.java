@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import com.neverpile.eureka.api.DocumentService;
 import com.neverpile.eureka.api.NeverpileException;
 import com.neverpile.eureka.api.ObjectStoreService;

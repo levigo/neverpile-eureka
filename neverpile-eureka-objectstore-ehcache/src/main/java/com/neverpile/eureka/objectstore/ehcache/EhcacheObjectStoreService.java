@@ -129,14 +129,14 @@ public class EhcacheObjectStoreService implements ObjectStoreService {
     String latest = getLatestVersionForObject(objectName);
     // only accept new version or current version, can't override previous or future version
     if (ObjectStoreService.NEW_VERSION.equals(version)) {
-      fullVersion = String.format("%06X", 0);
+      fullVersion = "%06X".formatted(0);
     } else {
       fullVersion = version;
       if (!fullVersion.equals(latest)) {
         throw new VersionMismatchException("mismatch", latest, fullVersion);
       }
     }
-    fullVersion = String.format("%06X", Integer.parseInt(fullVersion) + 1);
+    fullVersion = "%06X".formatted(Integer.parseInt(fullVersion) + 1);
 
     String readableObjectName = EhcacheHelper.getReadableObjectName(objectName);
     LOGGER.debug("Adding {} {}", readableObjectName, fullVersion);

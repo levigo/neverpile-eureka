@@ -2,20 +2,18 @@ package com.neverpile.eureka.rest.api.document;
 
 import static com.neverpile.eureka.rest.api.document.MatchesPattern.matchesPattern;
 import static io.restassured.RestAssured.given;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import com.neverpile.eureka.api.BaseTestConfiguration;
 import com.neverpile.eureka.api.DocumentIdGenerationStrategy;
@@ -38,7 +36,6 @@ import io.restassured.http.ContentType;
  * client tests. The latter run against a mock, static test Neverpile, though, which will support
  * far less realistic tests.
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes= BaseTestConfiguration.class)
 public class IdGenerationTest extends AbstractRestAssuredTest {
   private static final String UUID_PATTERN = "\\p{XDigit}{8}-(\\p{XDigit}{4}-){3}\\p{XDigit}{12}";
@@ -56,13 +53,13 @@ public class IdGenerationTest extends AbstractRestAssuredTest {
   }
 
   // Must mock the MultiVersioningDocumentService or we will break the app context initialization
-  @MockBean
+  @MockitoBean
   MultiVersioningDocumentService mockDocumentService;
 
   @Autowired
   MockObjectStoreService mockObjectStoreService;
 
-  @MockBean
+  @MockitoBean
   SimpleContentElementService mockContentElementService;
 
   /**

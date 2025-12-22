@@ -11,7 +11,7 @@ import com.neverpile.eureka.objectstore.ehcache.EhcacheHelper;
 
 public class EhcacheSimpleStoreObject implements ObjectStoreService.StoreObject {
 
-    public static final String SIMPLE_VERSION = String.format("%06X", 1);
+    public static final String SIMPLE_VERSION = "%06X".formatted(1);
 
     private final ObjectName objectName;
     private final Cache<String, byte[]> cache;

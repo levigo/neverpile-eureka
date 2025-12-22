@@ -18,21 +18,18 @@ import jakarta.ws.rs.core.MediaType;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.xcontent.XContentType;
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.ObjectNode;
 import com.mycila.xmltool.XMLDoc;
 import com.neverpile.common.condition.AndCondition;
 import com.neverpile.common.condition.Condition;
@@ -46,7 +43,6 @@ import com.neverpile.eureka.plugin.metadata.service.Metadata;
 import com.neverpile.eureka.plugin.metadata.service.MetadataElement;
 import com.neverpile.eureka.rest.api.document.content.ContentElementFacet;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
 @ContextConfiguration(classes = ServiceConfig.class)
 @Import({MetadataFacet.class, ContentElementFacet.class, ElasticsearchQueryService.class
@@ -78,9 +74,9 @@ public class ElasticsearchQueryManualIT extends AbstractManualIT {
 
     List<String> response = elasticsearchQueryService.searchDocument(testQuery, testIndexName);
 
-    Assert.assertEquals(1, response.size());
+    Assertions.assertEquals(1, response.size());
 
-    Assert.assertTrue(response.contains("id1"));
+    Assertions.assertTrue(response.contains("id1"));
 
     // combined conditions
 
@@ -94,11 +90,11 @@ public class ElasticsearchQueryManualIT extends AbstractManualIT {
 
     response = elasticsearchQueryService.searchDocument(testQuery, testIndexName);
 
-    Assert.assertEquals(3, response.size());
+    Assertions.assertEquals(3, response.size());
 
-    Assert.assertTrue(response.contains("id9"));
-    Assert.assertTrue(response.contains("id10"));
-    Assert.assertTrue(response.contains("id11"));
+    Assertions.assertTrue(response.contains("id9"));
+    Assertions.assertTrue(response.contains("id10"));
+    Assertions.assertTrue(response.contains("id11"));
   }
 
   @Test

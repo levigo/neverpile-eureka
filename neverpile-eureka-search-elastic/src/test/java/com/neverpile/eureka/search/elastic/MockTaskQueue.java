@@ -53,8 +53,7 @@ public class MockTaskQueue<T> implements TaskQueue<T> {
     public boolean equals(final Object o) {
       if (this == o)
         return true;
-      if (o instanceof MockTaskQueue.CacheData) {
-        CacheData<?> pair = (CacheData<?>) o;
+      if (o instanceof CacheData<?> pair) {
         if (!Objects.equals(info, pair.info))
           return false;
         if (!Objects.equals(state, pair.state))

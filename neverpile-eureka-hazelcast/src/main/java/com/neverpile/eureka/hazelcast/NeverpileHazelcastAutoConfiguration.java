@@ -2,10 +2,10 @@ package com.neverpile.eureka.hazelcast;
 
 import org.springframework.beans.factory.InjectionPoint;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
 import com.hazelcast.config.Config;
@@ -22,7 +22,7 @@ import com.neverpile.eureka.tx.atomic.DistributedAtomicType;
 import com.neverpile.eureka.tx.lock.ClusterLockFactory;
 import com.neverpile.eureka.tx.wal.WriteAheadLog;
 
-@Configuration
+@AutoConfiguration
 @ConditionalOnProperty(name = "neverpile-eureka.hazelcast.enabled", havingValue = "true", matchIfMissing = false)
 @ComponentScan
 public class NeverpileHazelcastAutoConfiguration {

@@ -25,9 +25,8 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.transaction.support.TransactionTemplate;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import com.neverpile.common.authorization.api.CoreActions;
 import com.neverpile.common.authorization.policy.AccessPolicy;
 import com.neverpile.common.authorization.policy.AccessRule;
@@ -329,7 +328,7 @@ public class SimpleMutablePolicyRepository implements MutablePolicyRepository {
       objectStore.put(objectName,
           null != existingStoreObject ? existingStoreObject.getVersion() : ObjectStoreService.NEW_VERSION,
           new ByteArrayInputStream(marshalled.getBytes(StandardCharsets.UTF_8)));
-    } catch (JsonProcessingException e) {
+    } catch (JacksonException e) {
       throw new IllegalArgumentException("Cannot marshal the provided policy", e);
     }
   }

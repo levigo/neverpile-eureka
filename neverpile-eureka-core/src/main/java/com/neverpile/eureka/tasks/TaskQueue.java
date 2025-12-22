@@ -104,8 +104,7 @@ public interface TaskQueue<V> {
 
     public boolean equals(final Object o) {
       if (this == o) return true;
-      if (o instanceof ProcessElement) {
-        ProcessElement<?> element = (ProcessElement<?>) o;
+      if (o instanceof ProcessElement<?> element) {
         if (key != null ? !key.equals(element.key) : element.key != null) return false;
         if (value != null ? !value.equals(element.value) : element.value != null) return false;
         return true;

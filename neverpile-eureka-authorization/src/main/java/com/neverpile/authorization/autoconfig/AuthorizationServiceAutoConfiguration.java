@@ -1,5 +1,6 @@
 package com.neverpile.authorization.autoconfig;
 
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -11,6 +12,7 @@ import com.neverpile.common.authorization.policy.PolicyRepository;
 import com.neverpile.common.authorization.policy.impl.PolicyBasedAuthorizationService;
 import com.neverpile.common.condition.config.ConditionModule;
 
+@AutoConfiguration
 @AutoConfigureAfter(PolicyRepositoryAutoConfiguration.class)
 @ConditionalOnBean(value = PolicyRepository.class)
 @ConditionalOnMissingBean(value = AuthorizationService.class)

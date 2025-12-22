@@ -7,6 +7,4 @@ neverpile:
       enabled: true
       secret-key: default-encryption-secret
 
-server:
-  error:
-    include-message: always
+spring.web.error.include-message: always

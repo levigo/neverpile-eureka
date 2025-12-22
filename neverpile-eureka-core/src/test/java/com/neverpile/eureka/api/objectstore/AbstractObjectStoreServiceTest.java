@@ -4,12 +4,9 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -17,19 +14,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
+import java.util.Optional;
 import java.util.Stack;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import jakarta.validation.constraints.NotNull;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -48,8 +48,8 @@ public abstract class AbstractObjectStoreServiceTest {
   @Autowired
   TransactionTemplate transactionTemplate;
 
-  @Rule
-  public TestName name = new TestName();
+  
+  public String name;
 
   @Test
   @Transactional
@@ -265,13 +265,15 @@ public abstract class AbstractObjectStoreServiceTest {
     assertContent(testContent2);
   }
 
-  @Test(expected = VersionMismatchException.class)
+  @Test
   @Transactional
   public void testTact_VersionControlWorks() {
-    objectStore.put(defaultName(), ObjectStoreService.NEW_VERSION, defaultStream());
-    String initialVersion = currentVersion();
-    objectStore.put(defaultName(), initialVersion, stream("v2"));
-    objectStore.put(defaultName(), initialVersion, stream("v3"));
+    assertThrows(VersionMismatchException.class, () -> {
+      objectStore.put(defaultName(), ObjectStoreService.NEW_VERSION, defaultStream());
+      String initialVersion = currentVersion();
+      objectStore.put(defaultName(), initialVersion, stream("v2"));
+      objectStore.put(defaultName(), initialVersion, stream("v3"));
+    });
   }
 
   @Test
@@ -394,7 +396,7 @@ public abstract class AbstractObjectStoreServiceTest {
       }
 
       // Modify len to satisfy only a random length between 1 and len
-      int toRead = (int) ((Math.random() * (len - 1)) + 1);
+      int toRead = (int) ((ThreadLocalRandom.current().nextDouble() * (len - 1)) + 1);
       toRead = max(toRead, min(toRead, 1));
 
       int c = read();
@@ -461,7 +463,7 @@ public abstract class AbstractObjectStoreServiceTest {
   }
 
   private ObjectName name(final String suffix) {
-    return ObjectName.of(name.getMethodName() + suffix);
+    return ObjectName.of( name + suffix);
   }
 
   private ByteArrayInputStream stream(final String content) {
@@ -486,5 +488,13 @@ public abstract class AbstractObjectStoreServiceTest {
 
   private void assertContent(final ObjectName objectName, final String content) {
     assertEquals("TEST CONTENT" + content, stringInputStreamToString(objectStore.get(objectName).getInputStream()));
+  }
+
+  @BeforeEach
+  public void setup(TestInfo testInfo) {
+    Optional<Method> testMethod = testInfo.getTestMethod();
+    if (testMethod.isPresent()) {
+      this.name = testMethod.get().getName();
+    }
   }
 }

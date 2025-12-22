@@ -1,11 +1,11 @@
 package com.neverpile.eureka.plugin.audit.verification.hashchain;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.neverpile.eureka.plugin.audit.verification.AuditHash;
+
+import org.junit.jupiter.api.Test;
 
 public class ChainTest {
 

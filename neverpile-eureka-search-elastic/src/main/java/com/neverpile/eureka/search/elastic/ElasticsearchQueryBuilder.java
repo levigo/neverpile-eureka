@@ -46,8 +46,8 @@ public class ElasticsearchQueryBuilder {
   }
 
   private QueryBuilder createGroup(final Condition condition) {
-    if (condition instanceof CompositeCondition) {
-      return createCompositeGroup((CompositeCondition<?>) condition);
+    if (condition instanceof CompositeCondition<?> compositeCondition) {
+      return createCompositeGroup(compositeCondition);
     } else {
       return createFiniteGroup(condition);
     }
@@ -113,8 +113,8 @@ public class ElasticsearchQueryBuilder {
 
   private QueryBuilder createFiniteGroup(final Condition pred) {
     BoolQueryBuilder outerGroup = new BoolQueryBuilder();
-    if (pred instanceof ComparisonCondition) {
-      Map<Specifier, List<Object>> predicates = ((ComparisonCondition) pred).getPredicates();
+    if (pred instanceof ComparisonCondition condition1) {
+      Map<Specifier, List<Object>> predicates = condition1.getPredicates();
       Map<String, RangeLimits> rangeValues = new HashMap<>();
       String key = null;
       for (Map.Entry<Specifier, List<Object>> entry : predicates.entrySet()) {
@@ -147,8 +147,8 @@ public class ElasticsearchQueryBuilder {
         outerGroup.should(getRangeQuery(entry.getKey(), entry.getValue()));
       }
 
-    } else if (pred instanceof RangeCondition) {
-      Map<Specifier, List<Comparable<?>>> predicates = ((RangeCondition) pred).getPredicates();
+    } else if (pred instanceof RangeCondition condition) {
+      Map<Specifier, List<Comparable<?>>> predicates = condition.getPredicates();
       Map<String, RangeLimits> rangeValues = new HashMap<>();
       String key = null;
       for (Map.Entry<Specifier, List<Comparable<?>>> entry : predicates.entrySet()) {

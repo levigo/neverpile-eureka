@@ -1,13 +1,13 @@
 package com.neverpile.eureka.tx.wal;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.lessThan;
-import static org.junit.Assert.assertThat;
 
 import java.io.File;
 
-import org.junit.Test;
-
 import com.neverpile.eureka.tx.wal.WriteAheadLog.ActionType;
+
+import org.junit.jupiter.api.Test;
 import com.neverpile.eureka.tx.wal.local.FileBasedWAL;
 
 public class FileBasedWALTest {

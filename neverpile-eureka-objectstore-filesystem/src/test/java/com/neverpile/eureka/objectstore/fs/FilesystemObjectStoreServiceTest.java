@@ -1,28 +1,24 @@
 package com.neverpile.eureka.objectstore.fs;
 
 import java.io.IOException;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 
-import org.junit.Before;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.cassandra.CassandraDataAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.util.FileSystemUtils;
 
 import com.neverpile.eureka.api.objectstore.AbstractObjectStoreServiceTest;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(properties = "neverpile-eureka.bridge.storage.filesystem.rootPath=target/test-store")
 @ContextConfiguration(classes = TestConfig.class)
 @EnableAutoConfiguration()
 @EnableTransactionManagement
 public class FilesystemObjectStoreServiceTest extends AbstractObjectStoreServiceTest {
-  @Before
+  @BeforeEach
   public void cleanStore() throws IOException {
-    FileSystemUtils.deleteRecursively(Paths.get("target/test-store"));
+    FileSystemUtils.deleteRecursively(Path.of("target/test-store"));
   }
 }

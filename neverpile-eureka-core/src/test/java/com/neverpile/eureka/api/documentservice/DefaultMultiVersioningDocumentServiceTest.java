@@ -3,9 +3,10 @@ package com.neverpile.eureka.api.documentservice;
 import static com.neverpile.eureka.impl.documentservice.DefaultMultiVersioningDocumentService.DOCUMENT_PREFIX;
 import static com.neverpile.eureka.impl.documentservice.DefaultMultiVersioningDocumentService.VERSION_FORMATTER;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
@@ -25,25 +26,22 @@ import java.util.stream.Stream;
 
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.support.TransactionTemplate;
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.core.StreamReadException;
+import tools.jackson.databind.DatabindException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 import com.neverpile.eureka.api.DocumentAssociatedEntityStore;
 import com.neverpile.eureka.api.DocumentService.DocumentAlreadyExistsException;
 import com.neverpile.eureka.api.MultiVersioningDocumentService;
@@ -56,7 +54,6 @@ import com.neverpile.eureka.model.Document;
 import com.neverpile.eureka.model.ObjectName;
 import com.neverpile.eureka.rest.api.exception.NotFoundException;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
 public class DefaultMultiVersioningDocumentServiceTest {
   private static final String D = "aDocument";
@@ -71,9 +68,9 @@ public class DefaultMultiVersioningDocumentServiceTest {
     }
   }
 
-  @MockBean
+  @MockitoBean
   protected ObjectStoreService objectStoreService;
-  @MockBean
+  @MockitoBean
   protected EventPublisher eventPublisher;
   @Autowired
   protected ObjectMapper mapper;
@@ -87,7 +84,7 @@ public class DefaultMultiVersioningDocumentServiceTest {
   @Autowired
   CacheManager cacheManager;
 
-  @Before
+  @BeforeEach
   public void clearCache() {
     // The cache isn't automatically cleared between test methods
     cacheManager.getCacheNames().forEach(n -> cacheManager.getCache(n).clear());
@@ -128,7 +125,7 @@ public class DefaultMultiVersioningDocumentServiceTest {
   }
 
   private DocumentPdo readBackFromStream(final ArgumentCaptor<InputStream> isC)
-      throws IOException, JsonParseException, JsonMappingException {
+      throws IOException, StreamReadException, DatabindException {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     IOUtils.copy(isC.getValue(), baos);
 
@@ -191,16 +188,18 @@ public class DefaultMultiVersioningDocumentServiceTest {
     assertThat(updated.getVersionTimestamp(), greaterThan(existing.getVersionTimestamp()));
   }
 
-  @Test(expected = VersionMismatchException.class)
+  @Test
   public void testThat_documentUpdateFailsWithIncorrectTimestamp() throws Exception {
-    Document existing = prepareEmptyDocument();
-    mockExistingVersion(existing);
-    Thread.sleep(100);
+    assertThrows(VersionMismatchException.class, () -> {
+      Document existing = prepareEmptyDocument();
+      mockExistingVersion(existing);
+      Thread.sleep(100);
 
-    transactionTemplate.execute(status -> {
-      // update has _wrong_ timestamp!
-      Document update = prepareEmptyDocument();
-      return documentService.update(update).get();
+      transactionTemplate.execute(status -> {
+        // update has _wrong_ timestamp!
+        Document update = prepareEmptyDocument();
+        return documentService.update(update).get();
+      });
     });
   }
 
@@ -257,9 +256,7 @@ public class DefaultMultiVersioningDocumentServiceTest {
     mockExistingVersion(existing);
 
     // just some spurious update
-    transactionTemplate.execute(status -> {
-      return documentService.update(existing).get();
-    });
+    transactionTemplate.execute(status -> documentService.update(existing).get());
 
     assertSchemaF(verifyStorePut());
   }
@@ -271,13 +268,15 @@ public class DefaultMultiVersioningDocumentServiceTest {
     return doc;
   }
 
-  @Test(expected = DocumentAlreadyExistsException.class)
+  @Test
   public void testThat_documentCantBeCreatedTwice() throws Exception {
-    Document doc = anEmptyDocument();
+    assertThrows(DocumentAlreadyExistsException.class, () -> {
+      Document doc = anEmptyDocument();
 
-    mockExistingVersion(doc);
+      mockExistingVersion(doc);
 
-    documentService.createDocument(doc);
+      documentService.createDocument(doc);
+    });
   }
 
   private ObjectName mockExistingVersion(final Document doc) {
@@ -290,34 +289,36 @@ public class DefaultMultiVersioningDocumentServiceTest {
     return name;
   }
 
-  @Test(expected = VersionMismatchException.class)
+  @Test
   public void testThat_documentUpdateFailsOnVersionClashOnObjectStore() throws Exception {
-    Document existing = prepareEmptyDocument();
-    mockExistingVersion(existing);
+    assertThrows(VersionMismatchException.class, () -> {
+      Document existing = prepareEmptyDocument();
+      mockExistingVersion(existing);
 
-    transactionTemplate.execute(status -> {
-      // prime the tx cache with the current version
-      documentService.getDocument(existing.getDocumentId());
+      transactionTemplate.execute(status -> {
+        // prime the tx cache with the current version
+        documentService.getDocument(existing.getDocumentId());
 
-      try {
-        Thread.sleep(10);
-      } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-      }
+        try {
+          Thread.sleep(10);
+        } catch (InterruptedException e) {
+          throw new RuntimeException(e);
+        }
 
-      // replace the mockery with a new version which appears as having changed outside the scope of the current transaction
-      Document lostUpdateCandidate = prepareEmptyDocument();
-      mockExistingVersion(lostUpdateCandidate);
-      try {
-        Thread.sleep(10);
-      } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-      }
+        // replace the mockery with a new version which appears as having changed outside the scope of the current transaction
+        Document lostUpdateCandidate = prepareEmptyDocument();
+        mockExistingVersion(lostUpdateCandidate);
+        try {
+          Thread.sleep(10);
+        } catch (InterruptedException e) {
+          throw new RuntimeException(e);
+        }
 
-      // update has correct timestamp but we have a clash on the object store since it is no longer the current version
-      Document update = prepareEmptyDocument();
-      update.setVersionTimestamp(existing.getVersionTimestamp());
-      return documentService.update(update);
+        // update has correct timestamp but we have a clash on the object store since it is no longer the current version
+        Document update = prepareEmptyDocument();
+        update.setVersionTimestamp(existing.getVersionTimestamp());
+        return documentService.update(update);
+      });
     });
   }
 
@@ -364,15 +365,17 @@ public class DefaultMultiVersioningDocumentServiceTest {
     assertThat(readBack.isDeleted(), is(true));
   }
 
-  @Test(expected = NotFoundException.class)
+  @Test
   public void testThat_deletedDocumentsCannotBeRetrievedAsCurrent() throws Exception {
-    DocumentPdo deletionMarker = prepareEmptyDocument();
-    deletionMarker.setDeleted(true);
+    assertThrows(NotFoundException.class, () -> {
+      DocumentPdo deletionMarker = prepareEmptyDocument();
+      deletionMarker.setDeleted(true);
 
-    mockExistingVersion(deletionMarker);
+      mockExistingVersion(deletionMarker);
 
-    // should throw not found!
-    documentService.getDocument(D).get();
+      // should throw not found!
+      documentService.getDocument(D).get();
+    });
   }
 
 
@@ -517,11 +520,13 @@ public class DefaultMultiVersioningDocumentServiceTest {
     return base;
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void testThat_mutationsRequireATransaction() throws Exception {
-    Document doc = new Document();
-    doc.setDocumentId("aDocument");
-    documentService.createDocument(doc);
+    assertThrows(IllegalStateException.class, () -> {
+      Document doc = new Document();
+      doc.setDocumentId("aDocument");
+      documentService.createDocument(doc);
+    });
   }
 
   protected ArgumentCaptor<InputStream> verifyPersistOnce() {
@@ -686,11 +691,11 @@ public class DefaultMultiVersioningDocumentServiceTest {
    * @param isC
    * @return
    * @throws IOException
-   * @throws JsonParseException
-   * @throws JsonMappingException
+   * @throws StreamReadException
+   * @throws DatabindException
    */
   private DocumentPdo assertSchemaF(final ArgumentCaptor<InputStream> isC)
-      throws IOException, JsonParseException, JsonMappingException {
+      throws IOException, StreamReadException, DatabindException {
     DocumentPdo doc = getCapturedDocument(isC);
     assertThat(doc.getDocumentId(), equalTo(D));
     assertThat(doc.getSidecarElement("foo"), equalTo(mapper.createObjectNode().put("bar", "baz")));
@@ -698,7 +703,7 @@ public class DefaultMultiVersioningDocumentServiceTest {
   }
 
   private DocumentPdo getCapturedDocument(final ArgumentCaptor<InputStream> isC)
-      throws IOException, JsonParseException, JsonMappingException {
+      throws IOException, StreamReadException, DatabindException {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     IOUtils.copy(isC.getValue(), baos);
 

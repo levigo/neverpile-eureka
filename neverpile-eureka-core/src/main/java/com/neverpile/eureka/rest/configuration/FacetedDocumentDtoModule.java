@@ -1,28 +1,29 @@
 package com.neverpile.eureka.rest.configuration;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
-
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.Version;
-import com.fasterxml.jackson.databind.BeanDescription;
-import com.fasterxml.jackson.databind.DeserializationConfig;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.deser.BeanDeserializer;
-import com.fasterxml.jackson.databind.deser.BeanDeserializerBase;
-import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier;
-import com.fasterxml.jackson.databind.module.SimpleModule;
+import tools.jackson.databind.ValueDeserializer;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.Version;
+import tools.jackson.databind.BeanDescription;
+import tools.jackson.databind.DeserializationConfig;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.JavaType;
+import tools.jackson.databind.deser.BeanDeserializer;
+import tools.jackson.databind.deser.BeanDeserializerBase;
+import tools.jackson.databind.deser.BeanDeserializerModifier;
+import tools.jackson.databind.module.SimpleModule;
 import com.neverpile.eureka.rest.api.document.DocumentDto;
 import com.neverpile.eureka.rest.api.document.DocumentFacet;
 
 @Component
 public class FacetedDocumentDtoModule extends SimpleModule {
+  @Serial
   private static final long serialVersionUID = 1L;
 
   /*
@@ -45,6 +46,7 @@ public class FacetedDocumentDtoModule extends SimpleModule {
   public class FacetedDocumentDtoDeserializerModifier extends BeanDeserializerModifier {
     @SuppressWarnings("rawtypes")
     public class FacetDeserializer extends BeanDeserializer {
+      @Serial
       private static final long serialVersionUID = 1L;
 
       private final Collection<DocumentFacet> facets;
@@ -61,7 +63,7 @@ public class FacetedDocumentDtoModule extends SimpleModule {
         facets.stream().filter(f -> f.getName().equals(propName)).forEach(f -> {
           try {
             JavaType valueType = f.getValueType(ctxt.getTypeFactory());
-            JsonDeserializer<Object> deserializer = ctxt.findRootValueDeserializer(valueType);
+            ValueDeserializer<Object> deserializer = ctxt.findRootValueDeserializer(valueType);
             Object value = deserializer.deserialize(p, ctxt);
             ((DocumentDto) beanOrClass).setFacet(f.getName(), value);
           } catch (Exception e) {
@@ -73,8 +75,8 @@ public class FacetedDocumentDtoModule extends SimpleModule {
     }
 
     @Override
-    public JsonDeserializer<?> modifyDeserializer(final DeserializationConfig config, final BeanDescription beanDesc,
-        final JsonDeserializer<?> deserializer) {
+    public ValueDeserializer<?> modifyDeserializer(final DeserializationConfig config, final BeanDescription beanDesc,
+        final ValueDeserializer<?> deserializer) {
       if (beanDesc.getBeanClass() == DocumentDto.class) {
         @SuppressWarnings("rawtypes")
         Collection<DocumentFacet> facets = appContext.getBeansOfType(DocumentFacet.class).values();

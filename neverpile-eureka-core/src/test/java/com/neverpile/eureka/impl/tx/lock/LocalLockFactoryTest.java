@@ -6,9 +6,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.locks.Lock;
 
-import org.junit.Test;
-
 import com.neverpile.eureka.impl.tx.lock.LocalLockFactory.ReadWriteLockWeakReference.LockWrapper;
+
+import org.junit.jupiter.api.Test;
 
 public class LocalLockFactoryTest {
   @Test

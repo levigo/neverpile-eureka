@@ -2,7 +2,7 @@ package com.neverpile.eureka.search.elastic;
 
 import java.time.Instant;
 
-import org.apache.http.HttpHost;
+import org.apache.hc.core5.http.HttpHost;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,7 +41,7 @@ public class ServiceConfig {
 
   @Bean(destroyMethod = "close")
   public RestHighLevelClient testElasticClient() {
-    return new RestHighLevelClient(RestClient.builder(new HttpHost(elasticHost, elasticPort, "http")));
+    return new RestHighLevelClient(RestClient.builder(new HttpHost("http", elasticHost, elasticPort)));
   }
 
   @Bean

@@ -1,13 +1,14 @@
 package com.neverpile.eureka.queue;
 
+import java.lang.reflect.Method;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 
 import com.neverpile.eureka.tasks.DistributedPersistentQueueType;
 import com.neverpile.eureka.tasks.TaskQueue;
@@ -29,7 +30,7 @@ public abstract class AbstractProcessQueueTest {
     }
     
     public MockListener(final String name) {
-      this.name = testName.getMethodName() + (name.isEmpty() ? "" : " - " + name);
+      this.name =  testName + (name.isEmpty() ? "" : " - " + name);
     }
 
     @Override
@@ -48,16 +49,20 @@ public abstract class AbstractProcessQueueTest {
   private static AtomicInteger notificationCount;
   private static AtomicInteger gotJobCount;
 
-  @Before
-  public void prepare() {
+  @BeforeEach
+  public void prepare(TestInfo testInfo) {
+    Optional<Method> testMethod = testInfo.getTestMethod();
+    if (testMethod.isPresent()) {
+      this.testName = testMethod.get().getName();
+    }
     notificationCount = new AtomicInteger(0);
     gotJobCount = new AtomicInteger(0);
-    System.out.println("Before " + testName.getMethodName());
+    System.out.println("Before " + testName);
   }
 
-  @After
+  @AfterEach
   public void cleanup() {
-    System.out.println("After " + testName.getMethodName());
+    System.out.println("After " + testName);
     TaskQueue.ProcessElement<EventType> job = processQueueCache.getElementToProcess();
     while (job != null) {
       processQueueCache.removeProcessedElement(job.getKey());
@@ -78,33 +83,33 @@ public abstract class AbstractProcessQueueTest {
   @DistributedPersistentQueueType("test3")
   TaskQueue<EventType> test4;
 
-  @Rule
-  public TestName testName = new TestName();
+  
+  public String testName;
 
   @Test
   public void testThat_multipleBeansWithDistinctNamesAccessDistinctQueues() {
-    Assert.assertNotNull(test1);
-    Assert.assertNotNull(test2);
-    Assert.assertNotEquals(test1.toString(), test2.toString());
+    Assertions.assertNotNull(test1);
+    Assertions.assertNotNull(test2);
+    Assertions.assertNotEquals(test1.toString(), test2.toString());
     test1.putInQueue("1", EventType.UPDATE);
     TaskQueue.ProcessElement<EventType> job = test2.getElementToProcess();
-    Assert.assertNull(job);
+    Assertions.assertNull(job);
     job = test1.getElementToProcess();
-    Assert.assertEquals("1", job.getKey());
+    Assertions.assertEquals("1", job.getKey());
     test1.removeProcessedElement(job.getKey());
   }
 
   @Test
   public void testThat_multipleBeansWithTheSameNameAccessTheSameQueue() {
-    Assert.assertNotNull(test3);
-    Assert.assertNotNull(test4);
-    Assert.assertEquals(test3.toString(), test4.toString());
+    Assertions.assertNotNull(test3);
+    Assertions.assertNotNull(test4);
+    Assertions.assertEquals(test3.toString(), test4.toString());
     test3.putInQueue("1", EventType.UPDATE);
     TaskQueue.ProcessElement<EventType> job = test4.getElementToProcess();
-    Assert.assertEquals("1", job.getKey());
+    Assertions.assertEquals("1", job.getKey());
     test4.removeProcessedElement(job.getKey());
     job = test3.getElementToProcess();
-    Assert.assertNull(job);
+    Assertions.assertNull(job);
   }
 
   @Test
@@ -116,12 +121,12 @@ public abstract class AbstractProcessQueueTest {
 
     String id = "TESTID1";
 
-    Assert.assertEquals(0, notificationCount.get());
+    Assertions.assertEquals(0, notificationCount.get());
 
     processQueueCache.putInQueue(id, EventType.CREATE);
     Thread.sleep(500);
 
-    Assert.assertEquals(1, notificationCount.get());
+    Assertions.assertEquals(1, notificationCount.get());
 
     processQueueCache.unregisterListener(mockListener);
   }
@@ -137,12 +142,12 @@ public abstract class AbstractProcessQueueTest {
 
     String id = "TESTID2";
 
-    Assert.assertEquals(0, notificationCount.get());
+    Assertions.assertEquals(0, notificationCount.get());
 
     processQueueCache.putInQueue(id, EventType.CREATE);
     Thread.sleep(500);
 
-    Assert.assertEquals(2, notificationCount.get());
+    Assertions.assertEquals(2, notificationCount.get());
 
     processQueueCache.unregisterListener(mockListener1);
     processQueueCache.unregisterListener(mockListener2);
@@ -159,12 +164,12 @@ public abstract class AbstractProcessQueueTest {
 
     String id = "TESTID2";
 
-    Assert.assertEquals(0, gotJobCount.get());
+    Assertions.assertEquals(0, gotJobCount.get());
 
     processQueueCache.putInQueue(id, EventType.CREATE);
     Thread.sleep(500);
 
-    Assert.assertEquals(1, gotJobCount.get());
+    Assertions.assertEquals(1, gotJobCount.get());
 
     processQueueCache.unregisterListener(mockListener1);
     processQueueCache.unregisterListener(mockListener2);
@@ -179,17 +184,17 @@ public abstract class AbstractProcessQueueTest {
 
     String id = "TESTID3";
 
-    Assert.assertEquals(0, notificationCount.get());
+    Assertions.assertEquals(0, notificationCount.get());
 
     processQueueCache.putInQueue(id, EventType.CREATE);
     Thread.sleep(500);
 
-    Assert.assertEquals(1, notificationCount.get());
+    Assertions.assertEquals(1, notificationCount.get());
 
     processQueueCache.putInQueue(id, EventType.CREATE);
     Thread.sleep(500);
 
-    Assert.assertEquals(2, notificationCount.get());
+    Assertions.assertEquals(2, notificationCount.get());
 
     processQueueCache.unregisterListener(mockListener);
   }
@@ -203,17 +208,17 @@ public abstract class AbstractProcessQueueTest {
 
     String id = "TESTID4";
 
-    Assert.assertEquals(0, notificationCount.get());
+    Assertions.assertEquals(0, notificationCount.get());
 
     processQueueCache.putInQueue(id, EventType.CREATE);
     Thread.sleep(500);
 
-    Assert.assertEquals(1, notificationCount.get());
+    Assertions.assertEquals(1, notificationCount.get());
     processQueueCache.unregisterListener(mockListener);
 
     processQueueCache.putInQueue(id, EventType.CREATE);
     Thread.sleep(500);
 
-    Assert.assertEquals(1, notificationCount.get());
+    Assertions.assertEquals(1, notificationCount.get());
   }
 }

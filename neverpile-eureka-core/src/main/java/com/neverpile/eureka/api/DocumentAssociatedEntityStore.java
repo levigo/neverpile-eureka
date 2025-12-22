@@ -2,7 +2,7 @@ package com.neverpile.eureka.api;
 
 import java.util.Optional;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 import com.neverpile.eureka.model.Document;
 
 /**

@@ -1,7 +1,7 @@
 package com.neverpile.eureka.api.documentservice;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -9,14 +9,14 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.hamcrest.Matcher;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.event.EventListener;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import com.neverpile.eureka.api.DocumentService;
 import com.neverpile.eureka.api.ObjectStoreService;
 import com.neverpile.eureka.event.AggregatedUpdateEvent;
@@ -93,7 +93,7 @@ public abstract class AbstractEventTest {
       }
     }
 
-  @MockBean
+  @MockitoBean
   protected ObjectStoreService objectStoreService;
   @Autowired
   DocumentService documentService;
@@ -166,7 +166,7 @@ public abstract class AbstractEventTest {
     assertThat(eventCounter.count("Delete"), equalTo(1));
   }
 
-  @Before
+  @BeforeEach
   public void resetDocumentIdGenerationStrategy() {
     eventCounter.clear();
   }

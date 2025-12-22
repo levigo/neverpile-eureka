@@ -26,18 +26,16 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import tools.jackson.core.JacksonException;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.neverpile.common.authorization.api.ActionHints;
 import com.neverpile.common.authorization.api.CoreActionHints;
 import com.neverpile.common.authorization.api.CoreActions;
@@ -58,7 +56,6 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class PolicyRepositoryResourceTest extends AbstractRestAssuredTest {
   @TestConfiguration
@@ -109,10 +106,10 @@ public class PolicyRepositoryResourceTest extends AbstractRestAssuredTest {
     }
   }
 
-  @MockBean
+  @MockitoBean
   MutablePolicyRepository mockPolicyRepository;
 
-  @MockBean
+  @MockitoBean
   PolicyBasedAuthorizationService mockAuthService;
 
   private Instant oneMinuteAgo;
@@ -127,7 +124,7 @@ public class PolicyRepositoryResourceTest extends AbstractRestAssuredTest {
 
   DateTimeFormatter formatter =  DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").withZone(ZoneId.of("UTC"));
 
-  @Before
+  @BeforeEach
   public void initMocks() {
     given(mockAuthService.isAccessAllowed(any(), any(), any())).willReturn(true);
 
@@ -147,7 +144,7 @@ public class PolicyRepositoryResourceTest extends AbstractRestAssuredTest {
   }
 
   @Test
-  public void testThat_currentPolicyRetrievalWorks() throws JsonProcessingException {
+  public void testThat_currentPolicyRetrievalWorks() throws JacksonException {
     given(mockPolicyRepository.getCurrentPolicy()).willReturn( //
         new AccessPolicy() //
             .withDescription("current") //
@@ -191,7 +188,7 @@ public class PolicyRepositoryResourceTest extends AbstractRestAssuredTest {
   }
 
   @Test
-  public void testThat_policyListingWorks() throws JsonProcessingException {
+  public void testThat_policyListingWorks() throws JacksonException {
     given(mockPolicyRepository.queryRepository(any(), any(), anyInt())).willReturn( //
         Arrays.asList( //
             new AccessPolicy().withDescription("older").withValidFrom(threeHoursAgo), //
@@ -228,7 +225,7 @@ public class PolicyRepositoryResourceTest extends AbstractRestAssuredTest {
   }
 
   @Test
-  public void testThat_policyCreationViaPostWorks() throws JsonProcessingException {
+  public void testThat_policyCreationViaPostWorks() throws JacksonException {
     AccessRule testAR = new AccessRule().withName("newAR").withEffect(Effect.DENY).withCondition(new EqualsCondition());
     // @formatter:off
     RestAssured
@@ -257,7 +254,7 @@ public class PolicyRepositoryResourceTest extends AbstractRestAssuredTest {
   }
 
   @Test
-  public void testThat_policyCreationViaPutWorks() throws JsonProcessingException {
+  public void testThat_policyCreationViaPutWorks() throws JacksonException {
     AccessRule testAR = new AccessRule().withName("newAR").withEffect(Effect.DENY).withCondition(new EqualsCondition());
     // @formatter:off
     RestAssured
@@ -288,7 +285,7 @@ public class PolicyRepositoryResourceTest extends AbstractRestAssuredTest {
   }
 
   @Test
-  public void testThat_policyUpdateWorks() throws JsonProcessingException {
+  public void testThat_policyUpdateWorks() throws JacksonException {
     given(mockPolicyRepository.get(now)).willReturn( //
         new AccessPolicy() //
             .withDescription("current") //
@@ -317,7 +314,7 @@ public class PolicyRepositoryResourceTest extends AbstractRestAssuredTest {
   }
 
   @Test
-  public void testThat_policyDeletionWorks() throws JsonProcessingException {
+  public void testThat_policyDeletionWorks() throws JacksonException {
     given(mockPolicyRepository.get(now)).willReturn( //
         new AccessPolicy() //
             .withDescription("current") //
@@ -346,7 +343,7 @@ public class PolicyRepositoryResourceTest extends AbstractRestAssuredTest {
   }
 
   @Test
-  public void testThat_hintsCanBeRetrieved() throws JsonProcessingException {
+  public void testThat_hintsCanBeRetrieved() throws JacksonException {
     // @formatter:off
     RestAssured
       .given()

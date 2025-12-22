@@ -15,18 +15,15 @@ import java.util.Optional;
 
 import jakarta.ws.rs.core.MediaType;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
-import org.springframework.test.context.junit4.SpringRunner;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.node.ObjectNode;
 import com.mycila.xmltool.XMLDoc;
 import com.mycila.xmltool.XMLTag;
 import com.neverpile.common.authorization.api.CoreActions;
@@ -54,34 +51,33 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
     BaseTestConfiguration.class
 })
 public class MetadataAuthorizationIntegrationTest extends AbstractRestAssuredTest {
   // Must mock the MultiVersioningDocumentService or we will break the app context initialization
-  @MockBean
+  @MockitoBean
   MultiVersioningDocumentService mockDocumentService;
 
-  @MockBean
+  @MockitoBean
   MetadataService mockMetadataService;
 
-  @MockBean
+  @MockitoBean
   EventPublisher eventPublisher;
 
   @Autowired
   MockObjectStoreService mockObjectStoreService;
 
-  @MockBean
+  @MockitoBean
   Authentication mockAuthentication;
 
-  @MockBean
+  @MockitoBean
   PolicyRepository policyRepository;
 
-  @MockBean
+  @MockitoBean
   List<AuthenticationMatcher> authenticationMatchers;
 
-  @Before
+  @BeforeEach
   public void initMock() {
     // provide dummy document
     given(mockDocumentService.getDocument(any())).willAnswer(
@@ -108,8 +104,7 @@ public class MetadataAuthorizationIntegrationTest extends AbstractRestAssuredTes
   @Test
   public void testThat_getDocumentAndMetadataAllowed() {
     // @formatter:off
-    given(policyRepository.getCurrentPolicy()).will(i -> {
-      return new AccessPolicy()
+    given(policyRepository.getCurrentPolicy()).will(i -> new AccessPolicy()
         .withDefaultEffect(Effect.DENY)
         .withRule(new AccessRule()
           .withName("Allow access to documents for authenticated users")
@@ -117,8 +112,7 @@ public class MetadataAuthorizationIntegrationTest extends AbstractRestAssuredTes
           .withSubjects("authenticated")
           .withActions(CoreActions.GET)
           .withResources("document")
-        );
-    });
+        ));
 
     RestAssured.given()
         .accept(ContentType.ANY)
@@ -137,8 +131,7 @@ public class MetadataAuthorizationIntegrationTest extends AbstractRestAssuredTes
   @Test
   public void testThat_getDocumentAndMetadataDeniedForAnonymous() {
     // @formatter:off
-    given(policyRepository.getCurrentPolicy()).will(i -> {
-      return new AccessPolicy()
+    given(policyRepository.getCurrentPolicy()).will(i -> new AccessPolicy()
           .withDefaultEffect(Effect.DENY)
           .withRule(new AccessRule()
             .withName("Allow access to documents for authenticated users")
@@ -146,8 +139,7 @@ public class MetadataAuthorizationIntegrationTest extends AbstractRestAssuredTes
             .withSubjects("authenticated")
             .withActions(CoreActions.GET)
             .withResources("document")
-          );
-    });
+          ));
     
     RestAssured.given()
         .accept(ContentType.ANY) // not authenticated
@@ -162,8 +154,7 @@ public class MetadataAuthorizationIntegrationTest extends AbstractRestAssuredTes
   @Test
   public void testThat_denyGetForSingleMetadataElement() {
     // @formatter:off
-    given(policyRepository.getCurrentPolicy()).will(i -> {
-      return new AccessPolicy()
+    given(policyRepository.getCurrentPolicy()).will(i -> new AccessPolicy()
         .withDefaultEffect(Effect.DENY)
         .withRule(new AccessRule()
           .withName("Deny access to xml metadata")
@@ -178,8 +169,7 @@ public class MetadataAuthorizationIntegrationTest extends AbstractRestAssuredTes
           .withSubjects("authenticated")
           .withActions(CoreActions.GET)
           .withResources("document")
-        );
-    });
+        ));
 
     RestAssured.given()
         .accept(ContentType.ANY)
@@ -243,7 +233,7 @@ public class MetadataAuthorizationIntegrationTest extends AbstractRestAssuredTes
     return doc;
   }
 
-  private MetadataDto createTestMetadata() throws JsonProcessingException {
+  private MetadataDto createTestMetadata() throws JacksonException {
     // JSON
     MetadataElementDto jsonElement = new MetadataElementDto();
     jsonElement.setEncryption(EncryptionType.SHARED);

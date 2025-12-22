@@ -4,14 +4,14 @@ import java.io.IOException;
 
 import jakarta.ws.rs.core.MediaType;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ValueDeserializer;
 
-public class MediaTypeDeserializer extends JsonDeserializer<MediaType> {
+public class MediaTypeDeserializer extends ValueDeserializer<MediaType> {
   @Override
-  public MediaType deserialize(final JsonParser p, final DeserializationContext ctxt) throws IOException, JsonProcessingException {
+  public MediaType deserialize(final JsonParser p, final DeserializationContext ctxt) throws IOException, JacksonException {
     String mediaTypeString = p.readValueAs(String.class);
     if(null == mediaTypeString)
       return null;

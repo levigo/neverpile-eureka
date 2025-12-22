@@ -11,6 +11,7 @@ import static java.time.temporal.ChronoUnit.HOURS;
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -28,24 +29,21 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.support.NoOpCache;
 import org.springframework.cache.support.SimpleValueWrapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.junit4.SpringRunner;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import tools.jackson.databind.ObjectMapper;
 import com.neverpile.authorization.service.impl.SimpleMutablePolicyRepository.CacheEntry;
 import com.neverpile.common.authorization.policy.AccessPolicy;
 import com.neverpile.common.authorization.policy.Effect;
@@ -53,7 +51,6 @@ import com.neverpile.common.authorization.policy.impl.AuthenticationMatcher;
 import com.neverpile.eureka.api.ObjectStoreService;
 import com.neverpile.eureka.model.ObjectName;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
 public class SimpleMutablePolicyRepositoryTest {
   private final class SimpleStoreObject implements ObjectStoreService.StoreObject {
@@ -103,16 +100,16 @@ public class SimpleMutablePolicyRepositoryTest {
     }
   }
 
-  @MockBean
+  @MockitoBean
   ObjectStoreService mockObjectStore;
 
-  @MockBean
+  @MockitoBean
   CacheManager cacheManager;
 
-  @MockBean
+  @MockitoBean
   Cache cache;
 
-  @MockBean
+  @MockitoBean
   List<AuthenticationMatcher> authenticationMatchers;
 
   @Autowired
@@ -171,13 +168,11 @@ public class SimpleMutablePolicyRepositoryTest {
     oneHourAgoName = POLICY_REPO_PREFIX.append(OBJECT_NAME_FORMATTER.format(oneHourAgo));
 
     // assume un-archived policies present
-    given(mockObjectStore.list(POLICY_REPO_PREFIX)).willAnswer(i -> {
-      return Stream.of( //
-          new SimpleStoreObject(threeHoursAgoName, "1", String.format(policyPattern, "older").getBytes(UTF_8)), //
-          new SimpleStoreObject(oneHourAgoName, "1", String.format(policyPattern, "old").getBytes(UTF_8)), //
-          new SimpleStoreObject(oneMinuteAgoName, "1", String.format(policyPattern, "current").getBytes(UTF_8)), //
-          new SimpleStoreObject(inOneHourName, "1", String.format(policyPattern, "upcoming").getBytes(UTF_8)));
-    });
+    given(mockObjectStore.list(POLICY_REPO_PREFIX)).willAnswer(i -> Stream.of( //
+          new SimpleStoreObject(threeHoursAgoName, "1", policyPattern.formatted("older").getBytes(UTF_8)), //
+          new SimpleStoreObject(oneHourAgoName, "1", policyPattern.formatted("old").getBytes(UTF_8)), //
+          new SimpleStoreObject(oneMinuteAgoName, "1", policyPattern.formatted("current").getBytes(UTF_8)), //
+          new SimpleStoreObject(inOneHourName, "1", policyPattern.formatted("upcoming").getBytes(UTF_8))));
 
     policyRepository.getCurrentPolicy();
 
@@ -229,20 +224,22 @@ public class SimpleMutablePolicyRepositoryTest {
     ).containsExactly("upcoming", "later");
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testThat_saveIsDeniedForCurrentPolicy() throws Exception {
-    policyRepository.save(new AccessPolicy() //
-        .withDefaultEffect(Effect.DENY) //
-        .withValidFrom(oneMinuteAgo) // "current"
-    );
+    assertThrows(IllegalArgumentException.class, () ->
+      policyRepository.save(new AccessPolicy() //
+          .withDefaultEffect(Effect.DENY) //
+          .withValidFrom(oneMinuteAgo) // "current"
+      ));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testThat_saveIsDeniedForOldPolicies() throws Exception {
-    policyRepository.save(new AccessPolicy() //
-        .withDefaultEffect(Effect.DENY) //
-        .withValidFrom(oneHourAgo) // "old"
-    );
+    assertThrows(IllegalArgumentException.class, () ->
+      policyRepository.save(new AccessPolicy() //
+          .withDefaultEffect(Effect.DENY) //
+          .withValidFrom(oneHourAgo) // "old"
+      ));
   }
 
   @Test
@@ -276,9 +273,10 @@ public class SimpleMutablePolicyRepositoryTest {
     assertThat(objectMapper.readValue(c.getValue(), AccessPolicy.class).getDescription()).contains("new");
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testThat_deletePolicyDeniesDeleteOfOldPolicy() throws Exception {
-    policyRepository.delete(oneHourAgo);
+    assertThrows(IllegalArgumentException.class, () ->
+      policyRepository.delete(oneHourAgo));
   }
 
   @Test
@@ -320,7 +318,7 @@ public class SimpleMutablePolicyRepositoryTest {
 
     // in contrast to above, there is no upcoming policy
     given(mockObjectStore.list(POLICY_REPO_PREFIX)).willAnswer(i -> Stream.of(
-        new SimpleStoreObject(oneMinuteAgoName, "1", String.format(policyPattern, "current").getBytes(UTF_8))));
+        new SimpleStoreObject(oneMinuteAgoName, "1", policyPattern.formatted("current").getBytes(UTF_8))));
 
     // no cached value
     policyRepository.getCurrentPolicy();
@@ -365,7 +363,7 @@ public class SimpleMutablePolicyRepositoryTest {
     verify(mockObjectStore).list(any());
   }
 
-  @Before
+  @BeforeEach
   public void initMocks() {
     now = now();
 
@@ -385,25 +383,19 @@ public class SimpleMutablePolicyRepositoryTest {
 
     ObjectName inTwoHoursName = POLICY_REPO_PREFIX.append(OBJECT_NAME_FORMATTER.format(now.plus(2, HOURS)));
 
-    given(mockObjectStore.list(POLICY_REPO_PREFIX)).willAnswer(i -> {
-      return Stream.of( //
-          new SimpleStoreObject(twoMinutesAgoName, "1", String.format(policyPattern, "past").getBytes(UTF_8)), //
-          new SimpleStoreObject(oneMinuteAgoName, "1", String.format(policyPattern, "current").getBytes(UTF_8)), //
-          new SimpleStoreObject(inOneHourName, "1", String.format(policyPattern, "upcoming").getBytes(UTF_8)), //
-          new SimpleStoreObject(inTwoHoursName, "1", String.format(policyPattern, "later").getBytes(UTF_8)));
-    });
+    given(mockObjectStore.list(POLICY_REPO_PREFIX)).willAnswer(i -> Stream.of( //
+          new SimpleStoreObject(twoMinutesAgoName, "1", policyPattern.formatted("past").getBytes(UTF_8)), //
+          new SimpleStoreObject(oneMinuteAgoName, "1", policyPattern.formatted("current").getBytes(UTF_8)), //
+          new SimpleStoreObject(inOneHourName, "1", policyPattern.formatted("upcoming").getBytes(UTF_8)), //
+          new SimpleStoreObject(inTwoHoursName, "1", policyPattern.formatted("later").getBytes(UTF_8))));
 
     // must also consider expired ones!
-    given(mockObjectStore.list(EXPIRED_POLICY_REPO_PREFIX)).willAnswer(i -> {
-      return Stream.of( //
-          new SimpleStoreObject(threeHoursAgoName, "1", String.format(policyPattern, "older").getBytes(UTF_8)), //
-          new SimpleStoreObject(oneHourAgoName, "1", String.format(policyPattern, "old").getBytes(UTF_8)) //
-      );
-    });
+    given(mockObjectStore.list(EXPIRED_POLICY_REPO_PREFIX)).willAnswer(i -> Stream.of( //
+          new SimpleStoreObject(threeHoursAgoName, "1", policyPattern.formatted("older").getBytes(UTF_8)), //
+          new SimpleStoreObject(oneHourAgoName, "1", policyPattern.formatted("old").getBytes(UTF_8)) //
+      ));
 
-    given(mockObjectStore.get(inOneHourName)).willAnswer(i -> {
-      return new SimpleStoreObject(inOneHourName, "1", String.format(policyPattern, "upcoming").getBytes(UTF_8));
-    });
+    given(mockObjectStore.get(inOneHourName)).willAnswer(i -> new SimpleStoreObject(inOneHourName, "1", policyPattern.formatted("upcoming").getBytes(UTF_8)));
 
     // caching
     given(cacheManager.getCache(any())).will((n) -> new NoOpCache(n.getArgument(0)));

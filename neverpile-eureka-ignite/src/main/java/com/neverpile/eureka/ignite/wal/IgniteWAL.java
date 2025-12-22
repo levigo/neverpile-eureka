@@ -181,7 +181,7 @@ public class IgniteWAL implements WriteAheadLog {
         // find transactions with a completion event...
         transactions //
             .query(new ScanQuery<String, TransactionRecord>((k, v) -> queryEntries(k,
-                e -> e instanceof EventEntry && ((EventEntry) e).type == EventType.COMPLETED).findAny().isPresent())) //
+                e -> e instanceof EventEntry ee && ee.type == EventType.COMPLETED).findAny().isPresent())) //
             .forEach(e -> {
               // ...and clear the corresponding events
               String txId = e.getKey();
@@ -192,8 +192,8 @@ public class IgniteWAL implements WriteAheadLog {
         // find transactions older than the auto rollback timeout without completion events...
         transactions //
             .query(new ScanQuery<String, TransactionRecord>((k, v) -> v.startedBefore(rollbackTransactionsStartedBefore) //
-                && !queryEntries(k, e -> e instanceof EventEntry
-                    && ((EventEntry) e).type == EventType.COMPLETED).findAny().isPresent())) //
+                && queryEntries(k, e -> e instanceof EventEntry ee
+                && ee.type == EventType.COMPLETED).findAny().isEmpty())) //
             .forEach(e -> {
               // ...and try to roll them back.
               String id = e.getKey();
@@ -230,8 +230,7 @@ public class IgniteWAL implements WriteAheadLog {
 
   private void applyActions(final ActionType type, final List<Entry> txEntries) {
     txEntries.forEach(o -> {
-      if (o instanceof ActionEntry && ((ActionEntry) o).type == type) {
-        ActionEntry ae = (ActionEntry) o;
+      if (o instanceof ActionEntry ae && ae.type == type) {
         try {
           ae.apply();
         } catch (Exception e) {

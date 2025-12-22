@@ -1,8 +1,11 @@
 package com.neverpile.eureka.tx.wal.util;
 
+import java.io.Serial;
+
 import com.neverpile.eureka.tx.wal.WriteAheadLog.EventType;
 
 public class EventEntry extends Entry {
+  @Serial
   private static final long serialVersionUID = 1L;
 
   public EventType type;

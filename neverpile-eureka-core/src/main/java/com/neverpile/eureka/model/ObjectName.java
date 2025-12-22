@@ -1,5 +1,6 @@
 package com.neverpile.eureka.model;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.stream.Stream;
@@ -9,6 +10,7 @@ import java.util.stream.Stream;
  * which are strings. Object names are immutable.
  */
 public class ObjectName implements Serializable, Comparable<ObjectName> {
+  @Serial
   private static final long serialVersionUID = 1L;
 
   private final String[] components;

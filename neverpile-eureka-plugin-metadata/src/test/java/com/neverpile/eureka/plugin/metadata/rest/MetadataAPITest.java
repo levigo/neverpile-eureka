@@ -1,12 +1,12 @@
 package com.neverpile.eureka.plugin.metadata.rest;
 
 import static io.restassured.matcher.RestAssuredMatchers.equalToPath;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.when;
@@ -17,18 +17,15 @@ import java.util.Optional;
 import jakarta.ws.rs.core.MediaType;
 
 import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.node.ObjectNode;
 import com.neverpile.common.authorization.api.AuthorizationService;
 import com.neverpile.eureka.api.DocumentIdGenerationStrategy;
 import com.neverpile.eureka.api.MultiVersioningDocumentService;
@@ -44,29 +41,28 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class MetadataAPITest extends AbstractRestAssuredTest {
   // Must mock the MultiVersioningDocumentService or we will break the app context initialization
-  @MockBean
+  @MockitoBean
   MultiVersioningDocumentService mockDocumentService;
 
-  @MockBean
+  @MockitoBean
   MetadataService mockMetadataService;
 
-  @MockBean
+  @MockitoBean
   EventPublisher eventPublisher;
 
   @Autowired
   MockObjectStoreService mockObjectStoreService;
 
-  @MockBean
+  @MockitoBean
   DocumentIdGenerationStrategy idGenerationStrategy;
 
-  @MockBean
+  @MockitoBean
   AuthorizationService authorizationService;
 
-  @Before
+  @BeforeEach
   public void init() {
     when(idGenerationStrategy.validateDocumentId(D)).thenReturn(true);
     mockObjectStoreService.streams.clear();
@@ -74,7 +70,7 @@ public class MetadataAPITest extends AbstractRestAssuredTest {
   }
 
   @Test
-  public void testThat_documentCreationWithMetadataWorks() throws JsonProcessingException {
+  public void testThat_documentCreationWithMetadataWorks() throws JacksonException {
     Instant now = Instant.now();
     BDDMockito.given(mockDocumentService.createDocument(notNull())).willAnswer(i -> {
       Document d = i.getArgument(0);
@@ -146,7 +142,7 @@ public class MetadataAPITest extends AbstractRestAssuredTest {
     stored.getElements().get("foo").setDateModified(null);
   }
 
-  private MetadataDto createTestMetadata() throws JsonProcessingException {
+  private MetadataDto createTestMetadata() throws JacksonException {
     MetadataElementDto metadataElement = new MetadataElementDto();
     ObjectNode metadataJson = objectMapper.createObjectNode();
     metadataJson.put("foo", "bar");
@@ -162,7 +158,7 @@ public class MetadataAPITest extends AbstractRestAssuredTest {
   }
 
   @Test
-  public void testThat_retrievalOfAllDocumentMetadataWorks() throws JsonProcessingException {
+  public void testThat_retrievalOfAllDocumentMetadataWorks() throws JacksonException {
     withTestDocumentAndMetadata();
 
     // Create a document
@@ -189,14 +185,14 @@ public class MetadataAPITest extends AbstractRestAssuredTest {
     // @formatter:on
   }
 
-  private void withTestDocumentAndMetadata() throws JsonProcessingException {
+  private void withTestDocumentAndMetadata() throws JacksonException {
     BDDMockito.given(mockDocumentService.getDocument(notNull())).willReturn(Optional.of(createTestDocument()));
     BDDMockito.given(mockMetadataService.get(any())).willReturn(
         Optional.of(modelMapper.map(createTestMetadata(), Metadata.class)));
   }
 
   @Test
-  public void testThat_replacementOfAllDocumentMetadataWorks() throws JsonProcessingException {
+  public void testThat_replacementOfAllDocumentMetadataWorks() throws JacksonException {
     withTestDocumentAndMetadata();
 
     Instant now = Instant.now();
@@ -273,7 +269,7 @@ public class MetadataAPITest extends AbstractRestAssuredTest {
   }
 
   @Test
-  public void testThat_retrievalOfSingleMetadataElementWorks() throws JsonProcessingException {
+  public void testThat_retrievalOfSingleMetadataElementWorks() throws JacksonException {
     withTestDocumentAndMetadata();
 
     // Create a document
@@ -301,7 +297,7 @@ public class MetadataAPITest extends AbstractRestAssuredTest {
   }
 
   @Test
-  public void testThat_updateOfSingleMetadataElementWorks() throws JsonProcessingException {
+  public void testThat_updateOfSingleMetadataElementWorks() throws JacksonException {
 
     withTestDocumentAndMetadata();
 
@@ -351,7 +347,7 @@ public class MetadataAPITest extends AbstractRestAssuredTest {
   }
 
   @Test
-  public void testThat_deleteOfSingleMetadataElementWorks() throws JsonProcessingException {
+  public void testThat_deleteOfSingleMetadataElementWorks() throws JacksonException {
     withTestDocumentAndMetadata();
 
     ArgumentCaptor<Metadata> storedMetadataC = captureStoredMetadata();
@@ -382,7 +378,7 @@ public class MetadataAPITest extends AbstractRestAssuredTest {
   }
 
   @Test
-  public void testThat_deleteOfNotexistingMetadataElementYieldsError() throws JsonProcessingException {
+  public void testThat_deleteOfNotexistingMetadataElementYieldsError() throws JacksonException {
     withTestDocumentAndMetadata();
 
     // Create a document

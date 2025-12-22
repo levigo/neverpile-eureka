@@ -1,9 +1,10 @@
 package com.neverpile.eureka.api.documentservice;
 
 import static com.neverpile.eureka.api.ObjectStoreService.NEW_VERSION;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
@@ -19,23 +20,20 @@ import java.io.InputStream;
 import java.time.Instant;
 
 import org.apache.tomcat.util.http.fileupload.IOUtils;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.support.TransactionTemplate;
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.core.StreamReadException;
+import tools.jackson.databind.DatabindException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 import com.neverpile.eureka.api.DocumentAssociatedEntityStore;
 import com.neverpile.eureka.api.DocumentService;
 import com.neverpile.eureka.api.DocumentService.DocumentAlreadyExistsException;
@@ -46,7 +44,6 @@ import com.neverpile.eureka.impl.documentservice.DocumentPdo;
 import com.neverpile.eureka.model.Document;
 import com.neverpile.eureka.model.ObjectName;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
 public class DefaultDocumentServiceTest {
 
@@ -64,10 +61,10 @@ public class DefaultDocumentServiceTest {
 
   }
 
-  @MockBean
+  @MockitoBean
   protected ObjectStoreService objectStoreService;
 
-  @MockBean
+  @MockitoBean
   protected EventPublisher eventPublisher;
 
   @Autowired
@@ -100,14 +97,15 @@ public class DefaultDocumentServiceTest {
     assertThat(readBack.getDateModified(), notNullValue());
   }
 
-  @Test(
-      expected = DocumentAlreadyExistsException.class)
+  @Test
   public void testThat_documentCantBeCreatedTwice() throws Exception {
-    Document doc = new Document();
-    doc.setDocumentId("aDocument");
-    ObjectName name = ObjectName.of("document", "aDocument", "document.json");
-    given(objectStoreService.get(eq(name))).will(i -> new DocObject(mapper, doc, name));
-    documentService.createDocument(doc);
+    assertThrows(DocumentAlreadyExistsException.class, () -> {
+      Document doc = new Document();
+      doc.setDocumentId("aDocument");
+      ObjectName name = ObjectName.of("document", "aDocument", "document.json");
+      given(objectStoreService.get(eq(name))).will(i -> new DocObject(mapper, doc, name));
+      documentService.createDocument(doc);
+    });
   }
 
   @Test
@@ -121,12 +119,13 @@ public class DefaultDocumentServiceTest {
     verify(objectStoreService).get(name);
   }
 
-  @Test(
-      expected = IllegalStateException.class)
+  @Test
   public void testThat_mutationsRequireATransaction() throws Exception {
-    Document doc = new Document();
-    doc.setDocumentId("aDocument");
-    documentService.createDocument(doc);
+    assertThrows(IllegalStateException.class, () -> {
+      Document doc = new Document();
+      doc.setDocumentId("aDocument");
+      documentService.createDocument(doc);
+    });
   }
 
   protected ArgumentCaptor<InputStream> verifyPersistOnce(final String expectedVersion) {
@@ -271,11 +270,11 @@ public class DefaultDocumentServiceTest {
    * @param isC
    * @return
    * @throws IOException
-   * @throws JsonParseException
-   * @throws JsonMappingException
+   * @throws StreamReadException
+   * @throws DatabindException
    */
   private DocumentPdo assertSchemaF(final ArgumentCaptor<InputStream> isC)
-      throws IOException, JsonParseException, JsonMappingException {
+      throws IOException, StreamReadException, DatabindException {
     DocumentPdo doc = getCapturedDocument(isC);
     assertThat(doc.getDocumentId(), equalTo(D));
     assertThat(doc.getSidecarElement("foo"), equalTo(mapper.createObjectNode().put("bar", "baz")));
@@ -283,7 +282,7 @@ public class DefaultDocumentServiceTest {
   }
 
   private DocumentPdo getCapturedDocument(final ArgumentCaptor<InputStream> isC)
-      throws IOException, JsonParseException, JsonMappingException {
+      throws IOException, StreamReadException, DatabindException {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     IOUtils.copy(isC.getValue(), baos);
     return mapper.readValue(new ByteArrayInputStream(baos.toByteArray()), DocumentPdo.class);

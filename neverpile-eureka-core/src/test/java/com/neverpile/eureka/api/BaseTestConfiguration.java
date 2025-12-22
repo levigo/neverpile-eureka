@@ -2,7 +2,7 @@ package com.neverpile.eureka.api;
 
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.boot.security.autoconfigure.web.servlet.SecurityFilterProperties;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
@@ -44,7 +44,7 @@ import com.neverpile.eureka.tx.lock.ClusterLockFactory;
 public class BaseTestConfiguration {
   @EnableWebSecurity
   @TestConfiguration
-  @Order(SecurityProperties.BASIC_AUTH_ORDER)
+  @Order(SecurityFilterProperties.BASIC_AUTH_ORDER)
   public static class SecurityConfig {
     @Bean
     SecurityFilterChain web(HttpSecurity http) throws Exception {

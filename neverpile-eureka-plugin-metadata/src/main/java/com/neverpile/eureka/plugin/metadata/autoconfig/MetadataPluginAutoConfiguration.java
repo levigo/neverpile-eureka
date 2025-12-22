@@ -1,11 +1,11 @@
 package com.neverpile.eureka.plugin.metadata.autoconfig;
 
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
 import com.neverpile.common.openapi.ResourceOpenApiFragment;
@@ -19,7 +19,7 @@ import com.neverpile.eureka.plugin.metadata.service.impl.SimpleMetadataService;
 /**
  * Spring-Boot Auto-configuration for the neverpile eureka metadata plugin.
  */
-@Configuration
+@AutoConfiguration
 @ConditionalOnClass({
     Document.class
 })

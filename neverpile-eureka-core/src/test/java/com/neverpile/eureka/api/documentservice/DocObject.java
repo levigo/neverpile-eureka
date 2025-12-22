@@ -5,7 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import com.neverpile.eureka.api.ObjectStoreService;
 import com.neverpile.eureka.model.Document;
 import com.neverpile.eureka.model.ObjectName;

@@ -2,9 +2,8 @@ package com.neverpile.eureka.plugin.audit.rest;
 
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.boot.security.autoconfigure.web.servlet.SecurityFilterProperties;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
@@ -18,6 +17,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.neverpile.common.authorization.api.Action;
@@ -42,7 +42,7 @@ import com.neverpile.eureka.rest.mocks.MockObjectStoreService;
 public class BaseTestConfiguration {
   @EnableWebSecurity
   @TestConfiguration
-  @Order(SecurityProperties.BASIC_AUTH_ORDER)
+  @Order(SecurityFilterProperties.BASIC_AUTH_ORDER)
   public static class SecurityConfig {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -84,6 +84,6 @@ public class BaseTestConfiguration {
     };
   }
 
-  @MockBean
+  @MockitoBean
   VerificationService mockVerificationService;
 }

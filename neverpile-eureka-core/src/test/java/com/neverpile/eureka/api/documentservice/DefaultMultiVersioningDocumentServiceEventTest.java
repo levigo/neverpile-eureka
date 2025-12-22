@@ -8,14 +8,12 @@ import static org.mockito.BDDMockito.given;
 import java.time.Instant;
 import java.util.stream.Stream;
 
-import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.neverpile.eureka.api.DocumentService;
@@ -29,7 +27,6 @@ import com.neverpile.eureka.model.ObjectName;
  * client tests. The latter run against a mock, static test Neverpile, though, which will support
  * far less realistic tests.
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest
 public class DefaultMultiVersioningDocumentServiceEventTest extends AbstractEventTest {
 

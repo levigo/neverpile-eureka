@@ -1,0 +1,5 @@
+type: specs.openrewrite.org/v1beta/recipe
+name: SpringBoot4-Jackson3
+recipeList:
+  - org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0
+  - org.openrewrite.java.jackson.UpgradeJackson_2_3

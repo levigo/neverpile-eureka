@@ -7,12 +7,11 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.TypeFactory;
+import org.springframework.util.ObjectUtils;
+import tools.jackson.databind.JavaType;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.type.TypeFactory;
 import com.neverpile.common.authorization.api.AuthorizationContext;
 import com.neverpile.common.authorization.policy.impl.SingleValueAuthorizationContext;
 import com.neverpile.eureka.api.DocumentIdGenerationStrategy;
@@ -45,7 +44,7 @@ public class IdFacet implements DocumentFacet<String> {
   @Override
   public Set<ConstraintViolation> validateCreate(final DocumentDto requestDto) {
     String suppliedId = requestDto.getDocumentId();
-    if (StringUtils.isEmpty(suppliedId)) {
+    if (ObjectUtils.isEmpty(suppliedId)) {
       requestDto.setDocumentId(idGenerationStrategy.createDocumentId());
     } else if (!idGenerationStrategy.validateDocumentId(suppliedId)) {
       return Collections.singleton(

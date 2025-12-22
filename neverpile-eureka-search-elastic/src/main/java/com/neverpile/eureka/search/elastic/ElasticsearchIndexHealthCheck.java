@@ -12,8 +12,8 @@ import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 @Component("ElasticIndexHealthIndicator")
 public class ElasticsearchIndexHealthCheck implements HealthIndicator {
@@ -53,8 +53,8 @@ public class ElasticsearchIndexHealthCheck implements HealthIndicator {
       builder.withDetail("Write Index", response.getHost().toString() + "/"
           + index.getIndexNameFromAlias(ElasticsearchDocumentIndex.INDEX_ALIAS_READ));
 
-      builder.withDetail("Cluster Name", responseJson.path("cluster_name").asText("<unknown>"));
-      builder.withDetail("Cluster Health", responseJson.path("status").asText("<unknown>"));
+      builder.withDetail("Cluster Name", responseJson.path("cluster_name").asString("<unknown>"));
+      builder.withDetail("Cluster Health", responseJson.path("status").asString("<unknown>"));
       builder.withDetail("Cluster Details", responseJson);
 
       return builder.up();

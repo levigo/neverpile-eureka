@@ -1,5 +1,6 @@
 package com.neverpile.eureka.rest.api.exception;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -8,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import com.neverpile.eureka.rest.api.document.DocumentFacet.ConstraintViolation;
 
 public class ValidationError extends ApiException {
+  @Serial
   private static final long serialVersionUID = 1L;
 
   public final Collection<ConstraintViolation> violations;

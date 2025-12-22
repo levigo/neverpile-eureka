@@ -6,6 +6,7 @@ import java.time.Clock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InjectionPoint;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -67,7 +68,7 @@ import com.neverpile.eureka.tx.wal.local.FileBasedWAL;
  * act as a fallback an can be overwritten by configuration provided by tie implementation. The Services configured here 
  * are mostly the simple or default implementations of each service.
  */
-@Configuration
+@AutoConfiguration
 @Import({
     /*
      * Due to a subtle detail of how the Spring Boot auto configuration process works, we must not

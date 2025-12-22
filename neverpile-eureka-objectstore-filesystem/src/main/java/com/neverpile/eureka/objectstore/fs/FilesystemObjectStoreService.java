@@ -14,7 +14,6 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Comparator;
 import java.util.UUID;
@@ -47,7 +46,7 @@ public class FilesystemObjectStoreService implements ObjectStoreService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(FilesystemObjectStoreService.class);
 
-  private final String newVersion = String.format("%06X", 0);
+  private final String newVersion = "%06X".formatted(0);
 
   private static final class PurgeBackup implements TransactionalAction {
 
@@ -322,7 +321,7 @@ public class FilesystemObjectStoreService implements ObjectStoreService {
         backupObject(objectName, target);
         delete(objectName, target);
       }
-      version = String.format("%06X", Long.parseLong(version, 16) + 1);
+      version = "%06X".formatted(Long.parseLong(version, 16) + 1);
       target = toObjectPath(objectName, version);
       targetFile = target.toFile();
       // on rollback: delete written object
@@ -558,16 +557,16 @@ public class FilesystemObjectStoreService implements ObjectStoreService {
   }
 
   private Path toPathWithRoot(final ObjectName objectName) {
-    return Paths.get(root.toString(), toPath(objectName).toString());
+    return Path.of(root.toString(), toPath(objectName).toString());
   }
 
   private Path toPath(final ObjectName objectName) {
-    return Paths.get(objectName.stream().map(s -> escape(s)).collect(joining(DELIMITER)));
+    return Path.of(objectName.stream().map(s -> escape(s)).collect(joining(DELIMITER)));
   }
 
   private static final Pattern VERSION_PATTERN = Pattern.compile("(.*)\\.\\$(\\p{XDigit}{6})$");
 
-  private static final String NULL_VERSION = String.format("%06X", 0);
+  private static final String NULL_VERSION = "%06X".formatted(0);
 
   private String getVersion(final ObjectName objectName) {
     Path pathWithRoot = toPathWithRoot(objectName);

@@ -40,10 +40,10 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.codec.Hex;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 import com.neverpile.common.specifier.Specifier;
 import com.neverpile.common.util.DevNullOutputStream;
 import com.neverpile.common.util.VisibleForTesting;
@@ -282,8 +282,7 @@ public class ElasticsearchDocumentIndex {
   }
 
   private void schemaToMapping(final Schema s, final boolean isRoot, final ObjectNode elementNode) {
-    if (s instanceof Structure) {
-      Structure t = (Structure) s;
+    if (s instanceof Structure t) {
 
       if (!isRoot)
         elementNode.put("type", "object");
@@ -291,11 +290,9 @@ public class ElasticsearchDocumentIndex {
 
       t.getElements().stream().sorted().forEach(
           e -> schemaToMapping(e, false, elementNode.with("properties").putObject(e.getName())));
-    } else if (s instanceof Array) {
-      Array a = (Array) s;
+    } else if (s instanceof Array a) {
       schemaToMapping(a.getElementSchema(), false, elementNode);
-    } else if (s instanceof Field) {
-      Field f = (Field) s;
+    } else if (s instanceof Field f) {
 
       // primary type
       elementNode.put("type", toElasticType(f.getType()));
@@ -493,7 +490,7 @@ public class ElasticsearchDocumentIndex {
     for (Iterator<Entry<String, JsonNode>> i = node.fields(); i.hasNext();) {
       Entry<String, JsonNode> e = i.next();
       JsonNode v = e.getValue();
-      if (v.isTextual())
+      if (v.isString())
         typeified.set(e.getKey() + "_text", v);
       else if (v.isFloatingPointNumber())
         typeified.set(e.getKey() + "_float", v);

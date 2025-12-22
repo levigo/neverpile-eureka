@@ -4,8 +4,8 @@ import java.time.Instant;
 
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.type.TypeFactory;
+import tools.jackson.databind.JavaType;
+import tools.jackson.databind.type.TypeFactory;
 import com.neverpile.eureka.model.Document;
 import com.neverpile.eureka.rest.api.document.DocumentDto;
 import com.neverpile.eureka.rest.api.document.DocumentFacet;

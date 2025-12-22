@@ -4,17 +4,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import com.neverpile.eureka.ignite.lock.IgniteLockFactory;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = TestConfig.class, properties = {
     "neverpile.wal.ignite.auto-rollback-timeout=1", "neverpile.wal.ignite.prune-interval=1000"
 })
@@ -45,12 +42,12 @@ public class IgniteReadWriteLockTest {
       t1.start();
       Thread.sleep(1000);
 
-      Assert.assertEquals(1, count.get());
+      Assertions.assertEquals(1, count.get());
     } finally {
       lock.unlock();
     }
     t1.join();
-    Assert.assertEquals(2, count.get());
+    Assertions.assertEquals(2, count.get());
   }
 
   @Test
@@ -73,12 +70,12 @@ public class IgniteReadWriteLockTest {
 
       t1.start();
       Thread.sleep(1000);
-      Assert.assertEquals(2, count.get());
+      Assertions.assertEquals(2, count.get());
     } finally {
       lock1.unlock();
     }
 
-    Assert.assertEquals(2, count.get());
+    Assertions.assertEquals(2, count.get());
   }
 
   @Test
@@ -102,12 +99,12 @@ public class IgniteReadWriteLockTest {
       count.incrementAndGet();
       t1.start();
       Thread.sleep(1000);
-      Assert.assertEquals(1, count.get());
+      Assertions.assertEquals(1, count.get());
     } finally {
       lock1.unlock();
     }
     t1.join();
-    Assert.assertEquals(2, count.get());
+    Assertions.assertEquals(2, count.get());
   }
 
   @Test
@@ -131,12 +128,12 @@ public class IgniteReadWriteLockTest {
       count.incrementAndGet();
       t1.start();
       Thread.sleep(1000);
-      Assert.assertEquals(1, count.get());
+      Assertions.assertEquals(1, count.get());
     } finally {
       lock1.unlock();
     }
     t1.join();
-    Assert.assertEquals(2, count.get());
+    Assertions.assertEquals(2, count.get());
   }
 
   private void readerTryRun() {
@@ -160,7 +157,7 @@ public class IgniteReadWriteLockTest {
 
     t1.start();
     t1.join();
-    Assert.assertEquals(1, count.get());
+    Assertions.assertEquals(1, count.get());
 
     t1 = new Thread(() -> readerTryRun());
 
@@ -169,11 +166,11 @@ public class IgniteReadWriteLockTest {
     try {
       t1.start();
       t1.join();
-      Assert.assertEquals(0, count.get());
+      Assertions.assertEquals(0, count.get());
     } finally {
       lock1.unlock();
     }
-    Assert.assertEquals(0, count.get());
+    Assertions.assertEquals(0, count.get());
   }
 
   private void writersTryRun() {
@@ -197,7 +194,7 @@ public class IgniteReadWriteLockTest {
 
     t1.start();
     t1.join();
-    Assert.assertEquals(1, count.get());
+    Assertions.assertEquals(1, count.get());
 
     t1 = new Thread(() -> writersTryRun());
 
@@ -206,11 +203,11 @@ public class IgniteReadWriteLockTest {
     try {
       t1.start();
       t1.join();
-      Assert.assertEquals(0, count.get());
+      Assertions.assertEquals(0, count.get());
     } finally {
       lock1.unlock();
     }
-    Assert.assertEquals(0, count.get());
+    Assertions.assertEquals(0, count.get());
   }
 
   @Test
@@ -239,13 +236,13 @@ public class IgniteReadWriteLockTest {
     try {
       t1.start();
       Thread.sleep(500);
-      Assert.assertEquals(0, count.get());
+      Assertions.assertEquals(0, count.get());
       Thread.sleep(500);
     } finally {
       lock1.unlock();
     }
     t1.join();
-    Assert.assertEquals(1, count.get());
+    Assertions.assertEquals(1, count.get());
   }
 
   @Test
@@ -274,13 +271,13 @@ public class IgniteReadWriteLockTest {
     try {
       t1.start();
       Thread.sleep(500);
-      Assert.assertEquals(0, count.get());
+      Assertions.assertEquals(0, count.get());
       Thread.sleep(500);
     } finally {
       lock1.unlock();
     }
     t1.join();
-    Assert.assertEquals(1, count.get());
+    Assertions.assertEquals(1, count.get());
   }
 
 }

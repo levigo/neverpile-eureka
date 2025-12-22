@@ -12,7 +12,6 @@ import static org.hamcrest.Matchers.in;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.times;
@@ -34,15 +33,13 @@ import jakarta.ws.rs.core.MediaType;
 
 import org.apache.tomcat.util.http.fileupload.MultipartStream;
 import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import com.neverpile.eureka.api.BaseTestConfiguration;
 import com.neverpile.eureka.api.ContentElementIdGenerationStrategy;
@@ -68,14 +65,13 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = BaseTestConfiguration.class)
 public class DocumentContentAPITest extends AbstractRestAssuredTest {
   // Must mock the MultiVersioningDocumentService or we will break the app context initialization
-  @MockBean
+  @MockitoBean
   MultiVersioningDocumentService mockDocumentService;
 
-  @MockBean
+  @MockitoBean
   EventPublisher eventPublisher;
 
   @Autowired
@@ -84,13 +80,13 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
   @Autowired
   MockObjectStoreService mockObjectStoreService;
 
-  @MockBean
+  @MockitoBean
   DocumentIdGenerationStrategy documentIdGenerationStrategy;
 
-  @MockBean
+  @MockitoBean
   ContentElementIdGenerationStrategy contentElementIdGenerationStrategy;
 
-  @Before
+  @BeforeEach
   public void reset() {
     AtomicInteger docIdGenerator = new AtomicInteger(42);
     when(documentIdGenerationStrategy.createDocumentId()).thenAnswer(
@@ -198,28 +194,28 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
 
     // verify returned document
     Instant now = Instant.now();
-    assertThat(returnedDocument.getDocumentId(), equalTo(expectedDocId));
-    assertThat(returnedDocument.getDateCreated(), allOf(greaterThanOrEqualTo(then), lessThanOrEqualTo(now)));
+    org.hamcrest.MatcherAssert.assertThat(returnedDocument.getDocumentId(), equalTo(expectedDocId));
+    org.hamcrest.MatcherAssert.assertThat(returnedDocument.getDateCreated(), allOf(greaterThanOrEqualTo(then), lessThanOrEqualTo(now)));
 
     // verify stored document
     Document storedDocument = storedDocumentC.getValue();
-    assertThat(storedDocument.getDocumentId(), equalTo(expectedDocId));
-    assertThat(storedDocument.getDateCreated(), allOf(greaterThanOrEqualTo(then), lessThanOrEqualTo(now)));
+    org.hamcrest.MatcherAssert.assertThat(storedDocument.getDocumentId(), equalTo(expectedDocId));
+    org.hamcrest.MatcherAssert.assertThat(storedDocument.getDateCreated(), allOf(greaterThanOrEqualTo(then), lessThanOrEqualTo(now)));
 
     // FIXME: cannot currently be checked as the representation changes
     // assertThat(storedDocument.getMetadata(), contains(metadata));
 
-    assertThat(storedDocument.getContentElements(), hasSize(3));
+    org.hamcrest.MatcherAssert.assertThat(storedDocument.getContentElements(), hasSize(3));
 
     // verify stored streams
-    assertThat(mockObjectStoreService.streams.size(), equalTo(3));
-    assertThat(mockObjectStoreService.streams, hasEntry(
+    org.hamcrest.MatcherAssert.assertThat(mockObjectStoreService.streams.size(), equalTo(3));
+    org.hamcrest.MatcherAssert.assertThat(mockObjectStoreService.streams, hasEntry(
         ObjectName.of("document", expectedDocId, "TheAnswerIs42"),
         "foo".getBytes()));
-    assertThat(mockObjectStoreService.streams, hasEntry(
+    org.hamcrest.MatcherAssert.assertThat(mockObjectStoreService.streams, hasEntry(
         ObjectName.of("document", expectedDocId, "TheAnswerIs43"),
         "<foo>foobar</foo>".getBytes()));
-    assertThat(mockObjectStoreService.streams, hasEntry(
+    org.hamcrest.MatcherAssert.assertThat(mockObjectStoreService.streams, hasEntry(
         ObjectName.of("document", expectedDocId, "TheAnswerIs44"),
         new byte[]{0,1,2,3}));
     // @formatter:on
@@ -314,7 +310,7 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
           .extract().asByteArray();
 
     // can't use rest-assured body check at it messes up binary content
-    assertThat(bodyBytes, equalTo(new byte[] {0, 1, 2, 3}));
+    org.hamcrest.MatcherAssert.assertThat(bodyBytes, equalTo(new byte[] {0, 1, 2, 3}));
 
     // @formatter:on
   }
@@ -984,8 +980,8 @@ public class DocumentContentAPITest extends AbstractRestAssuredTest {
         .then()
           .statusCode(204);
 
-    assertThat(storedDocumentC.getValue().getContentElements().size(), equalTo(--contentCount));
-    assertThat(mockObjectStoreService.get(ObjectName.of("document", D, contentId)), nullValue());
+    org.hamcrest.MatcherAssert.assertThat(storedDocumentC.getValue().getContentElements().size(), equalTo(--contentCount));
+    org.hamcrest.MatcherAssert.assertThat(mockObjectStoreService.get(ObjectName.of("document", D, contentId)), nullValue());
   }
 
   // @formatter:off

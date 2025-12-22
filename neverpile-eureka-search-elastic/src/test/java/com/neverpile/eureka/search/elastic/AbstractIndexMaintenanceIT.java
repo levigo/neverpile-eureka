@@ -1,10 +1,8 @@
 package com.neverpile.eureka.search.elastic;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 
 import java.io.IOException;
@@ -28,16 +26,15 @@ import org.elasticsearch.client.core.CountResponse;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.xcontent.XContentType;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.ObjectNode;
 import com.mycila.xmltool.XMLDoc;
 import com.neverpile.eureka.api.index.IndexMaintenanceService;
 import com.neverpile.eureka.model.Document;
@@ -55,7 +52,7 @@ public abstract class AbstractIndexMaintenanceIT extends AbstractManualIT {
 
   public abstract void waitOrNot();
 
-  @Before
+  @BeforeEach
   @Override
   public void prepare() throws IOException {
     index.ensureIndexUpToDateOrRebuildInProgress();
@@ -100,7 +97,7 @@ public abstract class AbstractIndexMaintenanceIT extends AbstractManualIT {
 
     GetResponse response = client.get(new GetRequest(testIndexName, listOfDocuments.get(0).getDocumentId()),
         RequestOptions.DEFAULT);
-    Assert.assertEquals(1000000000000L, response.getSource().get("dateCreated"));
+    Assertions.assertEquals(1000000000000L, response.getSource().get("dateCreated"));
 
     Document doc = new Document(listOfDocuments.get(0).getDocumentId());
     doc.setDateCreated(Instant.ofEpochMilli(1100000000000L));
@@ -112,7 +109,7 @@ public abstract class AbstractIndexMaintenanceIT extends AbstractManualIT {
 
     response = client.get(new GetRequest(testIndexName, listOfDocuments.get(0).getDocumentId()),
         RequestOptions.DEFAULT);
-    Assert.assertEquals(1100000000000L, response.getSource().get("dateCreated"));
+    Assertions.assertEquals(1100000000000L, response.getSource().get("dateCreated"));
   }
 
   @Test
@@ -173,7 +170,7 @@ public abstract class AbstractIndexMaintenanceIT extends AbstractManualIT {
     CountResponse countResponse = client.count(countRequest, RequestOptions.DEFAULT);
     ;
 
-    Assert.assertEquals(20, countResponse.getCount());
+    Assertions.assertEquals(20, countResponse.getCount());
   }
 
   private Map<String, Object> getTestDocMap(final int index) {
@@ -359,19 +356,21 @@ public abstract class AbstractIndexMaintenanceIT extends AbstractManualIT {
         RequestOptions.DEFAULT);
     GetResponse response = client.get(new GetRequest(testIndexName, listOfDocuments.get(0).getDocumentId()),
         RequestOptions.DEFAULT);
-    Assert.assertNotNull(response);
+    Assertions.assertNotNull(response);
   }
 
-  @Test(expected = ElasticsearchStatusException.class)
+  @Test
   public void testThat_IndexAliasCanBeRemoved() throws IOException {
-    index.setAliasForIndex(testIndexName, "test_alias");
-    client.index(new IndexRequest("test_alias").id("id" + 0).source(getTestDocMap(0), XContentType.JSON),
-        RequestOptions.DEFAULT);
-    GetResponse response = client.get(new GetRequest("test_alias", listOfDocuments.get(0).getDocumentId()),
-        RequestOptions.DEFAULT);
-    Assert.assertNotNull(response);
-    index.removeAliasForIndex(testIndexName, "test_alias");
-    // should throw exception
-    client.get(new GetRequest("test_alias", listOfDocuments.get(0).getDocumentId()), RequestOptions.DEFAULT);
+    assertThrows(ElasticsearchStatusException.class, () -> {
+      index.setAliasForIndex(testIndexName, "test_alias");
+      client.index(new IndexRequest("test_alias").id("id" + 0).source(getTestDocMap(0), XContentType.JSON),
+          RequestOptions.DEFAULT);
+      GetResponse response = client.get(new GetRequest("test_alias", listOfDocuments.get(0).getDocumentId()),
+          RequestOptions.DEFAULT);
+      Assertions.assertNotNull(response);
+      index.removeAliasForIndex(testIndexName, "test_alias");
+      // should throw exception
+      client.get(new GetRequest("test_alias", listOfDocuments.get(0).getDocumentId()), RequestOptions.DEFAULT);
+    });
   }
 }

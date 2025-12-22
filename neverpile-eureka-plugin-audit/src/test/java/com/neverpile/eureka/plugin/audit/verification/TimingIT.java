@@ -15,9 +15,9 @@ import java.util.Random;
 import java.util.Stack;
 import java.util.UUID;
 
-import org.junit.Test;
-
 import com.neverpile.eureka.model.EncryptionType;
+
+import org.junit.jupiter.api.Test;
 import com.neverpile.eureka.plugin.audit.service.AuditEvent;
 import com.neverpile.eureka.plugin.audit.verification.signature.SimpleDigSigGen;
 import com.neverpile.eureka.plugin.audit.verification.signature.SimpleDigSigVer;

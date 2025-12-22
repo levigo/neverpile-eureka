@@ -1,5 +1,6 @@
 package com.neverpile.eureka.objectstore.s3;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.net.URI;
 
@@ -23,6 +24,7 @@ import software.amazon.awssdk.services.sts.model.AssumeRoleRequest;
 @Component
 @ConfigurationProperties(prefix = "neverpile-eureka.storage.s3.connection", ignoreUnknownFields = true)
 public class S3ConnectionConfiguration implements Serializable {
+  @Serial
   private static final long serialVersionUID = 1L;
 
   public enum SignatureType {
