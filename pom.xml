@@ -16,7 +16,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!--atomikos Fix version due to compatibility problems with Spring boot 3.4 hosted on https://levigo.de/maven2/repository/third-party/ -->
     <atomikos.version>6.0.1-FIX</atomikos.version>
-    <aws-s3.version>2.40.13</aws-s3.version>
+    <aws-s3.version>2.41.4</aws-s3.version>
     <bcprov-jdk15on.version>1.70</bcprov-jdk15on.version>
     <cassandra-driver-core.version>4.17.0</cassandra-driver-core.version>
     <ehcache.version>3.11.1</ehcache.version>
