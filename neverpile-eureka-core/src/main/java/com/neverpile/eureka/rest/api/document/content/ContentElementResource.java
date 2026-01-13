@@ -243,14 +243,7 @@ public class ContentElementResource {
 
     var cdBuilder = ContentDisposition //
       .builder("inline") //
-      .name(contentElement.getRole())
-      .size(contentElement.getLength());
-    if(document.getDateCreated() != null) {
-      cdBuilder.creationDate(document.getDateCreated().atZone(ZoneId.systemDefault()));
-    }
-    if(document.getDateModified() != null) {
-      cdBuilder.modificationDate(document.getDateModified().atZone(ZoneId.systemDefault()));
-    }
+      .name(contentElement.getRole());
     if (StringUtils.hasText(contentElement.getFileName())) {
       cdBuilder.filename(contentElement.getFileName());
     }

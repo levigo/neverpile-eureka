@@ -335,7 +335,7 @@ public class DefaultDocumentService implements DocumentService, DocumentAssociat
     try {
       DocumentPdo doc = objectMapper.readValue(storedDocument.getInputStream(), DocumentPdo.class);
       return new TransactionalDocument(Optional.of(doc), storedDocument.getVersion());
-    } catch (IOException e) {
+    } catch (Exception e) {
       LOGGER.error("Failed to deserialize document @{}", objectName, e);
       throw new DocumentServiceException("Failed to retrieve document");
     }
@@ -360,7 +360,7 @@ public class DefaultDocumentService implements DocumentService, DocumentAssociat
         LOGGER.error("Failed to store document @{}", objectName, e);
         throw new DocumentServiceException("Failed to store document");
       }
-    } catch (IOException e) {
+    } catch (Exception e) {
       LOGGER.error("Failed to serialize document", e);
       throw new DocumentServiceException("Failed to serialize document");
     }

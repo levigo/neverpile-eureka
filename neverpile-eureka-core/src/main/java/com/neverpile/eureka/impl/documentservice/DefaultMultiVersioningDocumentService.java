@@ -419,7 +419,7 @@ public class DefaultMultiVersioningDocumentService
 
     try {
       return objectMapper.readValue(storedDocument.getInputStream(), DocumentPdo.class);
-    } catch (IOException e) {
+    } catch (Exception e) {
       LOGGER.error("Failed to deserialize document @{}", objectName, e);
       throw new DocumentServiceException("Failed to retrieve document");
     }
@@ -462,7 +462,7 @@ public class DefaultMultiVersioningDocumentService
           LOGGER.error("Failed to store document @{}", objectName, e);
           throw new DocumentServiceException("Failed to store document");
         }
-      } catch (IOException e) {
+      } catch (Exception e) {
         LOGGER.error("Failed to serialize document", e);
         throw new DocumentServiceException("Failed to serialize document");
       }

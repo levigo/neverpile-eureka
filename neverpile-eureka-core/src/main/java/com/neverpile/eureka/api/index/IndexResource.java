@@ -72,7 +72,7 @@ public class IndexResource {
         activeFacets(requestedFacets, f -> f.onRetrieve(document, responseDto));
         dtos.add(responseDto);
       }
-    } catch (IOException e) {
+    } catch (Exception e) {
       e.printStackTrace();
       return new ArrayList<>();
     }

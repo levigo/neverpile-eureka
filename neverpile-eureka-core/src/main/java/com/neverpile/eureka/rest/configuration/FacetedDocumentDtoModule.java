@@ -1,6 +1,5 @@
 package com.neverpile.eureka.rest.configuration;
 
-import java.io.IOException;
 import java.io.Serial;
 import java.util.Collection;
 
@@ -26,14 +25,6 @@ public class FacetedDocumentDtoModule extends SimpleModule {
   @Serial
   private static final long serialVersionUID = 1L;
 
-  /*
-   * Cannot inject those at this time, because spring resolves this circular dependency in a way
-   * that causes this jackson-module to be applied only after the creation of the relevant object
-   * mapper instances, making the module ineffective.
-   */
-  // @Autowired(required = false)
-  // private final List<DocumentFacet<?>> facets = Collections.emptyList();
-
   @Autowired
   ApplicationContext appContext;
 
@@ -51,7 +42,7 @@ public class FacetedDocumentDtoModule extends SimpleModule {
 
       private final Collection<DocumentFacet> facets;
 
-      public FacetDeserializer(final BeanDeserializerBase base, final Collection<DocumentFacet> facets) {
+      public FacetDeserializer(final BeanDeserializer base, final Collection<DocumentFacet> facets) {
         super(base);
         this.facets = facets;
 
@@ -59,7 +50,7 @@ public class FacetedDocumentDtoModule extends SimpleModule {
 
       @Override
       protected void handleUnknownProperty(final JsonParser p, final DeserializationContext ctxt,
-          final Object beanOrClass, final String propName) throws IOException {
+          final Object beanOrClass, final String propName) {
         facets.stream().filter(f -> f.getName().equals(propName)).forEach(f -> {
           try {
             JavaType valueType = f.getValueType(ctxt.getTypeFactory());
@@ -75,12 +66,12 @@ public class FacetedDocumentDtoModule extends SimpleModule {
     }
 
     @Override
-    public ValueDeserializer<?> modifyDeserializer(final DeserializationConfig config, final BeanDescription beanDesc,
-        final ValueDeserializer<?> deserializer) {
-      if (beanDesc.getBeanClass() == DocumentDto.class) {
+    public ValueDeserializer<?> modifyDeserializer(final DeserializationConfig config, final BeanDescription.Supplier beanDescRef, final ValueDeserializer<?> deserializer) {
+      if (beanDescRef.getBeanClass() == DocumentDto.class
+            && deserializer instanceof BeanDeserializer) {
         @SuppressWarnings("rawtypes")
         Collection<DocumentFacet> facets = appContext.getBeansOfType(DocumentFacet.class).values();
-        return new FacetDeserializer((BeanDeserializerBase) deserializer, facets);
+        return new FacetDeserializer((BeanDeserializer) deserializer, facets);
       }
       return deserializer;
     }

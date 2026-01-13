@@ -11,7 +11,7 @@ import tools.jackson.databind.ValueDeserializer;
 
 public class MediaTypeDeserializer extends ValueDeserializer<MediaType> {
   @Override
-  public MediaType deserialize(final JsonParser p, final DeserializationContext ctxt) throws IOException, JacksonException {
+  public MediaType deserialize(final JsonParser p, final DeserializationContext ctxt) throws JacksonException {
     String mediaTypeString = p.readValueAs(String.class);
     if(null == mediaTypeString)
       return null;

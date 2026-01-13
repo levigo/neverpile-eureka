@@ -38,7 +38,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.support.TransactionTemplate;
-import tools.jackson.core.StreamReadException;
 import tools.jackson.databind.DatabindException;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ObjectNode;
@@ -125,7 +124,7 @@ public class DefaultMultiVersioningDocumentServiceTest {
   }
 
   private DocumentPdo readBackFromStream(final ArgumentCaptor<InputStream> isC)
-      throws IOException, StreamReadException, DatabindException {
+      throws IOException, DatabindException {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     IOUtils.copy(isC.getValue(), baos);
 
@@ -691,11 +690,10 @@ public class DefaultMultiVersioningDocumentServiceTest {
    * @param isC
    * @return
    * @throws IOException
-   * @throws StreamReadException
    * @throws DatabindException
    */
   private DocumentPdo assertSchemaF(final ArgumentCaptor<InputStream> isC)
-      throws IOException, StreamReadException, DatabindException {
+      throws IOException, DatabindException {
     DocumentPdo doc = getCapturedDocument(isC);
     assertThat(doc.getDocumentId(), equalTo(D));
     assertThat(doc.getSidecarElement("foo"), equalTo(mapper.createObjectNode().put("bar", "baz")));
@@ -703,7 +701,7 @@ public class DefaultMultiVersioningDocumentServiceTest {
   }
 
   private DocumentPdo getCapturedDocument(final ArgumentCaptor<InputStream> isC)
-      throws IOException, StreamReadException, DatabindException {
+      throws IOException, DatabindException {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     IOUtils.copy(isC.getValue(), baos);
 

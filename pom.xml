@@ -18,7 +18,7 @@
     <atomikos.version>6.0.1-FIX</atomikos.version>
     <aws-s3.version>2.41.4</aws-s3.version>
     <bcprov-jdk15on.version>1.70</bcprov-jdk15on.version>
-    <cassandra-driver-core.version>4.17.0</cassandra-driver-core.version>
+    <cassandra-driver-core.version>4.19.2</cassandra-driver-core.version>
     <ehcache.version>3.11.1</ehcache.version>
     <elasticsearch-rest-high-level-client.version>7.17.29</elasticsearch-rest-high-level-client.version>
     <elasticsearch.version>7.17.28</elasticsearch.version>

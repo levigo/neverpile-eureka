@@ -57,13 +57,13 @@ public abstract class AbstractRestAssuredTest {
   public void before() {
     // Make RestAssured use the application's object mapper so that support for
     // HATEOAS is available.
-    RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
-        new ObjectMapperConfig().jackson2ObjectMapperFactory(new Jackson2ObjectMapperFactory() {
-          @Override
-          public ObjectMapper create(final Type cls, final String charset) {
-            return objectMapper.addMixIn(RepresentationModel.class, ResourceSupportMixin.class);
-          }
-        }));
+//    RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
+//        new ObjectMapperConfig().jackson2ObjectMapperFactory(new Jackson2ObjectMapperFactory() {
+//          @Override
+//          public ObjectMapper create(final Type cls, final String charset) {
+//            return objectMapper.addMixIn(RepresentationModel.class, ResourceSupportMixin.class);
+//          }
+//        }));
   }
 
   protected Document createTestDocument() {

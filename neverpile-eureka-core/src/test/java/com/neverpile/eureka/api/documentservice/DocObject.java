@@ -2,7 +2,6 @@ package com.neverpile.eureka.api.documentservice;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 
 import tools.jackson.databind.ObjectMapper;
@@ -31,7 +30,7 @@ final class DocObject implements ObjectStoreService.StoreObject {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     try {
       mapper.writeValue(baos, doc);
-    } catch (IOException e) {
+    } catch (Exception e) {
       throw new RuntimeException(e);
     }
     return new ByteArrayInputStream(baos.toByteArray());

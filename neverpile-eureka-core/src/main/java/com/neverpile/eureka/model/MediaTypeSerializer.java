@@ -12,7 +12,7 @@ import tools.jackson.databind.ValueSerializer;
 public class MediaTypeSerializer extends ValueSerializer<MediaType> {
   @Override
   public void serialize(final MediaType value, final JsonGenerator gen, final SerializationContext serializers)
-      throws IOException, JacksonException {
+      throws JacksonException {
     if(null == value)
       gen.writeNull();
     else
