@@ -15,69 +15,17 @@ concurrency:
 
 jobs:
   build:
+    uses: levigo/reusable-workflows/.github/workflows/continuous-delivery.yml@latest
+    secrets: inherit
+    with:
+      multiModule: true
+      jdkVersion: 25
+      mattermostChannel: 'neverpile-ci'
+
+  updateReadme:
+    needs: build
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v4
-
-    - name: Bump version and create tag
-      id: semanticversion
-      uses: mathieudutour/github-tag-action@v6.2
-      with:
-        release_branches: master
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Verify and print new build number
-      run: |
-        if echo '${{ steps.semanticversion.outputs.new_tag }}' |grep -Eq '^v[0-9]+[.][0-9]+[.][0-9]+$'; then 
-          echo Tag '${{ steps.semanticversion.outputs.new_tag }}', New version '${{ steps.semanticversion.outputs.new_version }}', Changelog '${{ steps.semanticversion.outputs.changelog }}'
-        else
-          echo 'unexpected tag format - aborting'
-          exit -1
-        fi
-
-    - name: Maven cache
-      uses: actions/cache@v4
-      with:
-        path: ~/.m2/repository
-        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-maven-
-
-    - name: Set up JDK 25
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'temurin'
-        java-version: '25'
-
-    ## Build with maven
-    - name: Prepare maven settings
-      env:
-        REGISTRY_URL: ${{ vars.LEVIGO_CONTAINER_REGISTRY }}
-        REPOSITORY_URL: ${{ vars.LEVIGO_MAVEN2_ALL_REPOSITORIES }}
-        REPOSITORY_USERID: ${{ secrets.NEXUS_USERNAME }}
-        REPOSITORY_CREDENTIALS: ${{ secrets.NEXUS_PASSWORD }}
-      run: |
-        mkdir -p ~/.m2
-        envsubst < ./.github/settings.xml > ~/.m2/settings.xml
-
-    - name: Set version
-      id: version
-      run: |
-        echo Releasing as ${{ steps.semanticversion.outputs.new_version }}
-        mvn versions:set -DnewVersion=${{ steps.semanticversion.outputs.new_version }}
-
-    - name: Perform build
-      run: mvn -B package --file pom.xml
-
-    ## Deploy
-    - name: Deploy package
-      env:
-        REPOSITORY_URL: ${{ secrets.REPOSITORY_URL }}
-      run: |
-        mvn deploy -Dmaven.test.skip.exec=true -DaltDeploymentRepository=neverpile::default::${REPOSITORY_URL}
-
-    ## Update README.md
     - name: Edit README.md to contain version number
       run: |
         git config --local user.email "action@github.com"
@@ -97,17 +45,3 @@ jobs:
       with:
         branch: master
         github_token: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Notify Mattermost
-      uses: 8398a7/action-slack@v3
-      if: failure()
-      with:
-        username: GitHub
-        icon_emoji: octocat
-        channel: "neverpile-ci"
-        status: ${{ job.status }}
-        fields: repo,message,commit,author
-        text: Released new version `${{ steps.semanticversion.outputs.new_version }}` of *${{ github.repository }}* failed!
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SLACK_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
